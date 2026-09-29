@@ -1,0 +1,1420 @@
+import {
+  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES,
+  SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX,
+  PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL,
+  load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed,
+  itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse,
+  buyUpgrade, upgradeCost, upgradeCostN, buyStone, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc,
+  passiveChance, passiveMult, classSkills, changeClass,
+  teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur,
+  syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS,
+  driveState, driveStatus, driveLink, driveUnlink, driveSync,
+  itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX,
+  t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize,
+  compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A,
+} from './game.js';
+// 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
+const chrome = globalThis.browser ?? globalThis.chrome;
+
+const $ = s => document.querySelector(s);
+// ---- 다국어
+function reasonText(r) {
+  if (!r) return '';
+  if (r.startsWith('before:')) return t('ui.r.before', { w: reasonText(r.slice(7)) });
+  const k = 'ui.r.' + r, v = t(k);
+  return v === k ? r : v;          // 예전 세이브의 한국어 사유는 그대로 표시
+}
+function applyI18n() {
+  document.documentElement.lang = getLang();
+  for (const el of document.querySelectorAll('[data-i18n]')) el.textContent = t(el.dataset.i18n);
+  for (const el of document.querySelectorAll('[data-i18n-ph]')) el.placeholder = t(el.dataset.i18nPh);
+  for (const el of document.querySelectorAll('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle);
+  $('#pull1Cost').textContent = t('ui.stones', { n: PULL_COST });
+  $('#pull10Cost').textContent = t('ui.stones', { n: PULL10_COST }) + ' · ' + t('ui.srPlus');
+  $('#rateLine').textContent = C_RARITY.map(r => r.name + ' ' + +(r.rate * 100).toFixed(1) + '%').join(' · ');
+  const ls = $('#langSel');
+  ls.innerHTML = Object.entries(LANGS).map(([k, n]) => `<option value="${k}" ${k === getLang() ? 'selected' : ''}>${n}</option>`).join('');
+}
+function changeLang(l) {
+  S.lang = setLang(l); save(S, 'force');
+  applyI18n();
+  hudSig = '';
+  buildSlots(); buildBag(); buildShop(); buildSkills(); buildComps(); refreshSave(); refreshSyncLine();
+  render();
+}
+const rnd = (a, b) => a + Math.random() * (b - a);
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const A = {};
+let S = null, st = null;
+
+// ================= 에셋 =================
+function img(src) { return new Promise(r => { const i = new Image(); i.onload = () => r(i); i.onerror = () => r(null); i.src = src; }); }
+async function preload() {
+  const n = ['ui/gold', 'ui/stone', 'ui/orb', 'ui/rune'];
+  for (const c of CLASS_IDS) {
+    n.push('cls/' + c);
+    for (let t = 0; t < 8; t++) n.push(`wpn/${c}${t}_d`, `gear/body_${c}${t}_d`);
+    for (let t = 0; t < 6; t++) n.push(`gear/head_${c}${t}_d`);
+  }
+  for (const s of ['cloak', 'gloves', 'boots']) for (let t = 0; t < 5; t++) n.push(`gear/${s}${t}_d`);
+  for (let i = 0; i < 16; i++) n.push('mon/m' + i);
+  for (let i = 0; i < 12; i++) n.push('floor/f' + i);
+  for (const c of COMPANIONS) n.push('comp/' + c.id);
+  for (const s of SKILLS) n.push('skill/' + s.id);
+  for (const f of ['arrow', 'dagger', 'icicle', 'beam', 'zap', 'dart', 'poison', 'flame', 'frost', 'b_fire', 'b_blue', 'b_yellow', 'b_pink', 'b_green', 'b_smoke', 'firestorm', 'iceblast', 'arc', 'eblast', 'holy', 'mystic', 'pcloud', 'shadow', 'blood', 'drain', 'meteor', 'smoke', 'warp', 'sanct', 'gold_dust', 'orb']) n.push('fx/' + f);
+  await Promise.all(n.map(async k => { A[k] = await img(`assets/${k}.png`); }));
+}
+const compSrc = id => `assets/comp/${id}.png`;
+const skillSrc = id => `assets/skill/${id}.png`;
+
+// ================= 연출 시스템 =================
+const W = 180, H = 96, GROUND = 62;
+const HERO_X = 50, MON_X = 122;
+const cv = $('#cv'), cx = cv.getContext('2d');
+const parts = [], sprites = [], projs = [], slashes = [], bolts = [], timers = [];
+let shake = { t: 0, d: 1, m: 0 };
+const hero = { lunge: 0, lungeV: 0, flash: 0, dash: 0, ghosts: [] };
+const mon = { flash: 0, knock: 0, die: 0, spawn: 0, drop: 0 };
+let trans = null;              // 층 돌파 연출
+let pillar = null;             // 레벨업 / 성광 기둥
+const compState = {};
+
+function later(t, fn) { timers.push({ t, fn }); }
+function part(o) { parts.push(Object.assign({ x: 0, y: 0, vx: 0, vy: 0, g: 0, t: 0, life: .6, size: 2, color: '#fff', drag: 2 }, o)); }
+function burst(x, y, n, colors, spd = 60, g = 140, size = 2, life = .5) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = spd * rnd(.35, 1.1);
+    part({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - spd * .35, g, size: size * rnd(.7, 1.3), color: pick(colors), life: life * rnd(.6, 1.3) });
+  }
+}
+function rise(x, y, n, colors, w = 14) {
+  for (let i = 0; i < n; i++) part({ x: x + rnd(-w, w), y: y + rnd(-4, 6), vx: rnd(-6, 6), vy: rnd(-40, -18), g: -10, size: rnd(1, 2.2), color: pick(colors), life: rnd(.5, 1), drag: .5 });
+}
+function fxs(key, x, y, o = {}) { const im = A['fx/' + key]; if (im) sprites.push(Object.assign({ im, x, y, t: 0, dur: .4, s0: .6, s1: 1.6, a0: 1, rot: 0, add: true }, o)); }
+function proj(key, x0, y0, x1, y1, dur, o = {}) { projs.push(Object.assign({ im: A['fx/' + key], x0, y0, x1, y1, t: 0, dur, arc: 0, scale: 1, rot: 0, trail: null }, o)); }
+function slash(x, y, o = {}) { slashes.push(Object.assign({ x, y, t: 0, dur: .16, r: 12, a0: -2.2, a1: .6, color: '#ffffff', w: 2 }, o)); }
+function bolt(x0, y0, x1, y1, o = {}) { bolts.push(Object.assign({ x0, y0, x1, y1, t: 0, dur: .28, color: '#bfe4ff' }, o)); }
+function doShake(m, d = .25) { if (m >= shake.m * (shake.t / shake.d || 0)) shake = { t: d, d, m }; }
+function flash(color, o = .6, d = .3) {
+  const f = $('#flash');
+  f.style.background = color; f.style.setProperty('--fo', o); f.style.setProperty('--fd', d + 's');
+  f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
+}
+function popText(txt, x, y, cls = '') {
+  const box = $('#dmgs');
+  if (box.childElementCount > 26) box.firstElementChild.remove();
+  const d = document.createElement('span');
+  d.textContent = txt; if (cls) d.className = cls;
+  d.style.left = (x * 2) + 'px'; d.style.top = (y * 2) + 'px';
+  box.appendChild(d);
+  setTimeout(() => d.remove(), 1000);
+}
+function banner(html, cls, ms = 1600) {
+  const b = document.createElement('div');
+  b.className = 'bnr ' + cls; b.innerHTML = html;
+  $('#banners').appendChild(b);
+  setTimeout(() => b.remove(), ms);
+}
+function cutin(sd) {
+  const b = document.createElement('div');
+  b.className = 'cutin';
+  b.style.color = CLASSES[sd.cls].color;
+  b.innerHTML = `<img class="px" src="${skillSrc(sd.id)}">${sd.name}`;
+  $('#banners').appendChild(b);
+  setTimeout(() => b.remove(), 1000);
+}
+function flyTo(src, cxp, cyp, target, n = 1) {
+  const fl = $('#flyer'), sr = $('#screen').getBoundingClientRect(), tr = target.getBoundingClientRect();
+  for (let i = 0; i < n; i++) {
+    const im = document.createElement('img');
+    im.src = src; im.className = 'px';
+    const x0 = sr.left + 2 + cxp * 2 + rnd(-10, 10), y0 = sr.top + 2 + cyp * 2 + rnd(-8, 8);
+    im.style.left = x0 + 'px'; im.style.top = y0 + 'px';
+    fl.appendChild(im);
+    setTimeout(() => {
+      im.style.transform = `translate(${tr.left + tr.width / 2 - x0 - 9}px, ${tr.top + tr.height / 2 - y0 - 9}px) scale(.7)`;
+      im.style.opacity = '.3';
+    }, 30 + i * 60);
+    setTimeout(() => { im.remove(); target.classList.remove('bump'); void target.offsetWidth; target.classList.add('bump'); }, 780 + i * 60);
+  }
+}
+
+// 몬스터 좌표
+function monBox() {
+  const boss = !!(S && S.boss);
+  const sc = boss ? 1.55 : 1;
+  const w = 32 * sc;
+  return { x: MON_X + (32 - w) / 2 + mon.knock, y: GROUND - w, w, sc, cx: MON_X + 16 + mon.knock, cy: GROUND - w / 2 };
+}
+const heroC = () => ({ x: HERO_X + 16 + hero.lunge, y: GROUND - 16 });
+
+// ================= 그리기 =================
+function drawHero(ctx, x, y, cls, alpha = 1) {
+  const c = cls || 'war';
+  const eq = S.equip;
+  const L = [];
+  if (eq.cloak) L.push(itemDoll('cloak', eq.cloak.t, c));
+  L.push('cls/' + c);
+  if (eq.boots) L.push(itemDoll('boots', eq.boots.t, c));
+  if (eq.body) L.push(itemDoll('body', eq.body.t, c));
+  if (eq.gloves) L.push(itemDoll('gloves', eq.gloves.t, c));
+  if (eq.head) L.push(itemDoll('head', eq.head.t, c));
+  L.push(itemDoll('weapon', eq.weapon ? eq.weapon.t : 0, c));
+  ctx.globalAlpha = alpha;
+  for (const k of L) { const im = A[k]; if (im) ctx.drawImage(im, Math.round(x), Math.round(y)); }
+  ctx.globalAlpha = 1;
+}
+function whiteFlash(ctx, im, x, y, w, h, a, flip) {
+  // 스프라이트 실루엣을 흰색으로 덧칠
+  const off = whiteFlash.c || (whiteFlash.c = document.createElement('canvas'));
+  off.width = im.width; off.height = im.height;
+  const o = off.getContext('2d');
+  o.clearRect(0, 0, off.width, off.height);
+  o.drawImage(im, 0, 0);
+  o.globalCompositeOperation = 'source-atop';
+  o.fillStyle = '#fff'; o.fillRect(0, 0, off.width, off.height);
+  o.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.globalAlpha = a;
+  if (flip) { ctx.translate(x + w, y); ctx.scale(-1, 1); ctx.drawImage(off, 0, 0, w, h); }
+  else ctx.drawImage(off, x, y, w, h);
+  ctx.restore();
+}
+
+function drawScene(dt) {
+  const now = performance.now() / 1000;
+  cx.imageSmoothingEnabled = false;
+  cx.save();
+  if (shake.t > 0) { const m = shake.m * (shake.t / shake.d); cx.translate(Math.round(rnd(-m, m)), Math.round(rnd(-m, m))); shake.t -= dt; }
+
+  // 배경
+  const g = cx.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, S.boss ? '#2a0f1a' : '#171228'); g.addColorStop(1, '#0a0912');
+  cx.fillStyle = g; cx.fillRect(-6, -6, W + 12, H + 12);
+  // 원경 기둥
+  cx.fillStyle = 'rgba(255,255,255,.035)';
+  for (let i = 0; i < 6; i++) cx.fillRect(((i * 37 - (trans ? trans.scroll : 0)) % (W + 30) + W + 30) % (W + 30) - 15, 6, 10, GROUND - 6);
+  const tile = A['floor/f' + (FLOOR_TILES[monsterIndex(S.floor)] ?? 0)];
+  const scroll = trans ? trans.scroll % 32 : 0;
+  if (tile) for (let x = -32; x < W + 32; x += 32) { cx.drawImage(tile, x - scroll, GROUND); cx.drawImage(tile, x - scroll, GROUND + 32); }
+  cx.fillStyle = 'rgba(0,0,0,.45)'; cx.fillRect(-6, GROUND, W + 12, 2);
+  cx.fillStyle = 'rgba(0,0,0,.3)'; cx.fillRect(-6, GROUND + 2, W + 12, H);
+
+  // 버프 오라
+  for (const b of S.buffs || []) {
+    const sd = SKILL_BY_ID[b.id];
+    if (!sd || !sd.color) continue;
+    const hc = heroC();
+    const p = .5 + .5 * Math.sin(now * 8);
+    cx.save(); cx.globalCompositeOperation = 'lighter';
+    cx.fillStyle = sd.color; cx.globalAlpha = .18 + p * .14;
+    cx.beginPath(); cx.ellipse(hc.x, GROUND - 1, 15 + p * 2, 4.5, 0, 0, 7); cx.fill();
+    cx.globalAlpha = .07 + p * .05;
+    cx.fillRect(hc.x - 12, GROUND - 34, 24, 34);
+    cx.restore();
+    if (Math.random() < dt * 14) rise(hc.x, GROUND - 4, 1, [sd.color, '#ffffff'], 11);
+    if (sd.fx === 'shield') {
+      cx.save(); cx.strokeStyle = sd.color; cx.globalAlpha = .45 + p * .25; cx.lineWidth = 1;
+      cx.beginPath(); cx.ellipse(hc.x, GROUND - 16, 17, 20, 0, 0, 7); cx.stroke(); cx.restore();
+    }
+  }
+
+  // 동료
+  (S.team || []).forEach((id, k) => {
+    const im = A['comp/' + id]; if (!im) return;
+    const cs = compState[id] || (compState[id] = { t: rnd(.4, 1.4), lunge: 0 });
+    const bx = 2 + k * 15 + cs.lunge, by = GROUND - 26 + Math.sin(now * 3 + k) * .8 - (k % 2) * 3;
+    const sc = .8;
+    cx.fillStyle = 'rgba(0,0,0,.35)';
+    cx.beginPath(); cx.ellipse(bx + 13, GROUND - 1 - (k % 2) * 3, 8, 2.5, 0, 0, 7); cx.fill();
+    cx.drawImage(im, 0, 0, im.width, im.height, bx, by - (im.height - 32) * sc, im.width * sc, im.height * sc);
+  });
+
+  // 잔상 (그림자 질주)
+  for (const gh of hero.ghosts) { drawHero(cx, gh.x, GROUND - 32, S.cls, gh.a * .35); gh.a -= dt * 2.5; }
+  hero.ghosts = hero.ghosts.filter(g2 => g2.a > 0);
+
+  // 용사
+  const bob = Math.sin(now * (trans ? 16 : 4)) * (trans ? 1.5 : 1);
+  const hx = HERO_X + hero.lunge + hero.dash, hy = GROUND - 32 + bob;
+  cx.fillStyle = 'rgba(0,0,0,.45)';
+  cx.beginPath(); cx.ellipse(hx + 16, GROUND - 1, 10, 3, 0, 0, 7); cx.fill();
+  drawHero(cx, hx, hy, S.cls);
+
+  // 몬스터
+  const mi = monsterIndex(S.floor), mim = A['mon/m' + mi];
+  if (mim && !(trans && trans.t < trans.d * .55)) {
+    const b = monBox();
+    let mx = b.x, my = b.y, a = 1, rot = 0;
+    if (mon.spawn > 0) { mx += mon.spawn * 60; mon.spawn = Math.max(0, mon.spawn - dt * 8); }
+    if (mon.drop > 0) { my -= mon.drop * 70; mon.drop = Math.max(0, mon.drop - dt * 2.2); if (mon.drop === 0) { doShake(4, .3); burst(b.cx, GROUND, 14, ['#6b5f9c', '#9a93b8', '#3a3358'], 50, 120, 2); } }
+    if (mon.die > 0) { a = mon.die / .18; rot = (1 - a) * .9; }
+    cx.fillStyle = 'rgba(0,0,0,.45)';
+    cx.beginPath(); cx.ellipse(b.cx, GROUND - 1, 10 * b.sc, 3 * b.sc, 0, 0, 7); cx.fill();
+    cx.save();
+    cx.globalAlpha = a;
+    cx.translate(mx + b.w / 2, my + b.w);
+    cx.rotate(rot);
+    cx.scale(-1, 1);
+    cx.drawImage(mim, -b.w / 2, -b.w, b.w, b.w);
+    cx.restore();
+    if (mon.flash > 0 && mon.spawn < .3 && mon.die <= 0) whiteFlash(cx, mim, mx, my, b.w, b.w, Math.min(.5, mon.flash * 5), true);
+    if (S.boss) {
+      cx.fillStyle = '#ff5a5a'; cx.font = 'bold 7px monospace'; cx.textAlign = 'center';
+      cx.fillText('BOSS', b.cx, my - 2);
+    }
+  }
+  mon.flash = Math.max(0, mon.flash - dt);
+  mon.knock *= Math.pow(.001, dt);
+  if (mon.die > 0) { mon.die -= dt; if (mon.die <= 0) mon.spawn = 1; }
+
+  // 레벨업 / 빛 기둥
+  if (pillar) {
+    pillar.t += dt;
+    const k = 1 - pillar.t / pillar.d;
+    if (k <= 0) pillar = null;
+    else {
+      cx.save(); cx.globalCompositeOperation = 'lighter';
+      const pg = cx.createLinearGradient(0, 0, 0, GROUND);
+      pg.addColorStop(0, 'rgba(0,0,0,0)'); pg.addColorStop(1, pillar.color);
+      cx.globalAlpha = k * .8; cx.fillStyle = pg;
+      const w = pillar.w * (1 + (1 - k) * .4);
+      cx.fillRect(pillar.x - w / 2, 0, w, GROUND);
+      cx.restore();
+    }
+  }
+
+  // 베기 궤적
+  for (const s of slashes) {
+    s.t += dt;
+    const k = s.t / s.dur;
+    const a1 = s.a0 + (s.a1 - s.a0) * Math.min(1, k * 1.6);
+    cx.save(); cx.globalCompositeOperation = 'lighter';
+    cx.strokeStyle = s.color; cx.globalAlpha = Math.max(0, 1 - k); cx.lineWidth = s.w * (1.2 - k * .6);
+    cx.beginPath(); cx.arc(s.x, s.y, s.r, s.a0, a1); cx.stroke();
+    cx.lineWidth = 1; cx.strokeStyle = '#fff';
+    cx.beginPath(); cx.arc(s.x, s.y, s.r - 1.5, s.a0 + .2, a1); cx.stroke();
+    cx.restore();
+  }
+  for (let i = slashes.length - 1; i >= 0; i--) if (slashes[i].t >= slashes[i].dur) slashes.splice(i, 1);
+
+  // 번개
+  for (const b of bolts) {
+    b.t += dt;
+    const k = 1 - b.t / b.dur;
+    cx.save(); cx.globalCompositeOperation = 'lighter';
+    for (const [lw, col, al] of [[3, b.color, .45], [1, '#ffffff', 1]]) {
+      cx.strokeStyle = col; cx.lineWidth = lw; cx.globalAlpha = k * al;
+      cx.beginPath(); cx.moveTo(b.x0, b.y0);
+      const n = 7;
+      for (let i = 1; i < n; i++) { const f = i / n; cx.lineTo(b.x0 + (b.x1 - b.x0) * f + rnd(-4, 4), b.y0 + (b.y1 - b.y0) * f + rnd(-4, 4)); }
+      cx.lineTo(b.x1, b.y1); cx.stroke();
+    }
+    cx.restore();
+  }
+  for (let i = bolts.length - 1; i >= 0; i--) if (bolts[i].t >= bolts[i].dur) bolts.splice(i, 1);
+
+  // 투사체
+  for (const p of projs) {
+    p.t += dt;
+    const k = Math.min(1, p.t / p.dur);
+    const x = p.x0 + (p.x1 - p.x0) * k, y = p.y0 + (p.y1 - p.y0) * k - Math.sin(k * Math.PI) * p.arc;
+    if (p.trail && Math.random() < .9) part({ x, y, vx: rnd(-8, 8), vy: rnd(-8, 8), size: rnd(1, 2.4), color: pick(p.trail), life: .3 });
+    if (p.im) {
+      cx.save(); cx.translate(x, y); cx.rotate(p.rot); cx.scale(p.scale, p.scale);
+      if (p.add) cx.globalCompositeOperation = 'lighter';
+      cx.drawImage(p.im, -16, -16); cx.restore();
+    } else { cx.fillStyle = p.color || '#fff'; cx.fillRect(x - 1.5, y - 1.5, 3, 3); }
+    if (k >= 1 && !p.done) { p.done = true; p.onHit && p.onHit(); }
+  }
+  for (let i = projs.length - 1; i >= 0; i--) if (projs[i].done) projs.splice(i, 1);
+
+  // 이펙트 스프라이트
+  for (const s of sprites) {
+    s.t += dt;
+    const k = s.t / s.dur;
+    const sc = s.s0 + (s.s1 - s.s0) * k;
+    cx.save(); if (s.add) cx.globalCompositeOperation = 'lighter';
+    cx.globalAlpha = Math.max(0, s.a0 * (1 - k * k));
+    cx.translate(s.x, s.y); cx.rotate(s.rot + (s.spin || 0) * s.t); cx.scale(sc, sc);
+    cx.drawImage(s.im, -16, -16); cx.restore();
+  }
+  for (let i = sprites.length - 1; i >= 0; i--) if (sprites[i].t >= sprites[i].dur) sprites.splice(i, 1);
+
+  // 파티클
+  for (const p of parts) {
+    p.t += dt;
+    p.vx *= Math.max(0, 1 - p.drag * dt); p.vy = p.vy * Math.max(0, 1 - p.drag * dt) + p.g * dt;
+    p.x += p.vx * dt; p.y += p.vy * dt;
+    cx.globalAlpha = Math.max(0, 1 - p.t / p.life);
+    cx.fillStyle = p.color;
+    cx.fillRect(Math.round(p.x), Math.round(p.y), Math.max(1, Math.round(p.size)), Math.max(1, Math.round(p.size)));
+  }
+  cx.globalAlpha = 1;
+  for (let i = parts.length - 1; i >= 0; i--) if (parts[i].t >= parts[i].life) parts.splice(i, 1);
+  if (parts.length > 400) parts.splice(0, parts.length - 400);
+
+  // 층 돌파 전환 (검은 막이 지나감)
+  if (trans) {
+    trans.t += dt;
+    const k = trans.t / trans.d;
+    trans.scroll += dt * 140 * (1 - Math.abs(k - .5) * 2);
+    const cover = k < .5 ? k * 2 : (1 - k) * 2;
+    cx.fillStyle = 'rgba(8,6,16,' + (cover * .85) + ')';
+    cx.fillRect(-6, -6, W + 12, H + 12);
+    for (let i = 0; i < 3; i++) { const y = rnd(4, GROUND); cx.fillStyle = 'rgba(255,255,255,.25)'; cx.fillRect(rnd(0, W), y, rnd(8, 22), 1); }
+    if (k >= 1) trans = null;
+  }
+  cx.restore();
+
+  // 용사 모션 복귀
+  hero.lunge += (0 - hero.lunge) * Math.min(1, dt * 16);
+  hero.dash += (0 - hero.dash) * Math.min(1, dt * 6);
+}
+
+// ================= 전투 연출 =================
+const CLS_HIT = {
+  war: { col: '#ffb070', sp: ['#ffffff', '#ffcf8a', '#ff8a5c'] },
+  rog: { col: '#9dffb0', sp: ['#ffffff', '#b8ffcf', '#7ee08a'] },
+  mag: { col: '#c9a8ff', sp: ['#ffffff', '#e2c9ff', '#b58cff'] },
+  clr: { col: '#ffe38a', sp: ['#ffffff', '#fff2b8', '#ffd98a'] },
+};
+function hitMon(dmgTxt, cls, big) {
+  const b = monBox();
+  mon.flash = big ? .14 : .08;
+  mon.knock = big ? 6 : 3;
+  const c = CLS_HIT[S.cls || 'war'];
+  burst(b.cx - 4, b.cy, big ? 14 : 6, c.sp, big ? 80 : 55, 160, big ? 2.2 : 1.6, .45);
+  if (dmgTxt) popText(dmgTxt, b.cx + rnd(-8, 10), b.cy - rnd(8, 18), cls);
+}
+
+let swingT = .5;
+function heroSwing() {
+  const cls = S.cls || 'war';
+  const crit = Math.random() * 100 < st.crit;
+  const dmg = st.atk * (crit ? st.critMult : 1) * rnd(.9, 1.1);
+  const b = monBox();
+  hero.lunge = cls === 'mag' ? 3 : 9;
+  const impact = () => {
+    const c = CLS_HIT[cls];
+    if (cls === 'war') slash(b.cx - 2, b.cy, { r: crit ? 16 : 12, color: c.col, w: crit ? 3.5 : 2.5, a0: -2.4, a1: .9 });
+    else if (cls === 'rog') { slash(b.cx - 3, b.cy - 3, { r: 10, color: c.col, w: 1.6, a0: -2.8, a1: -.2, dur: .12 }); later(.06, () => slash(b.cx + 1, b.cy + 3, { r: 10, color: c.col, w: 1.6, a0: .4, a1: 2.9, dur: .12 })); }
+    else if (cls === 'clr') { fxs('b_yellow', b.cx - 2, b.cy, { s0: .3, s1: crit ? 1 : .7, dur: .22 }); slash(b.cx, b.cy, { r: 9, color: c.col, w: 2 }); }
+    hitMon(fmt(dmg), crit ? 'crit' : '', crit);
+    if (crit) { doShake(2.5, .18); fxs('b_smoke', b.cx, b.cy, { s0: .4, s1: 1.1, dur: .25 }); }
+    if (crit && st.mech.thunder && Math.random() < .2) {
+      for (let i = 0; i < 3; i++) later(i * .05, () => bolt(b.cx + rnd(-6, 6), -4, b.cx + rnd(-2, 2), b.cy, { dur: .3, color: '#ffe38a' }));
+      later(.1, () => { flash('#fff6c0', .35, .2); doShake(4, .25); popText(t('ui.l.thunder'), b.cx, b.cy - 26, 'proc'); hitMon(fmt(st.atk * 4), 'skill', true); });
+    }
+    if (st.mech.double && Math.random() < .15) { hero.ghosts.push({ x: HERO_X + 12, a: 1 }); later(.12, () => { slash(b.cx, b.cy, { r: 13, color: '#ffffff', w: 2.5, a0: .8, a1: -2.3 }); hitMon(fmt(dmg), '', false); }); }
+    rollPassives(dmg);
+  };
+  if (cls === 'mag') {
+    const hc = heroC();
+    proj('dart', hc.x + 10, hc.y - 6, b.cx - 4, b.cy, .18, { add: true, scale: crit ? 1.2 : .8, trail: ['#e2c9ff', '#b58cff'], onHit: impact });
+  } else later(.07, impact);
+}
+
+function rollPassives(baseDmg) {
+  const cls = S.cls || 'war';
+  const b = monBox(), hc = heroC();
+  for (const sd of classSkills(cls, 'passive')) {
+    const lv = S.skills[sd.id] || 0;
+    if (!lv) continue;
+    if (Math.random() * 100 >= passiveChance(sd, lv)) continue;
+    const m = passiveMult(sd, lv);
+    const el = document.querySelector(`.pas[data-id="${sd.id}"]`);
+    if (el) { el.classList.remove('on'); void el.offsetWidth; el.classList.add('on'); }
+    const col = CLASSES[cls].color;
+    popText(sd.name, hc.x, hc.y - 20, 'proc');
+    const extra = () => hitMon(fmt(baseDmg * m), 'crit', true);
+    switch (sd.fx) {
+      case 'slash2': later(.1, () => { slash(b.cx, b.cy, { r: 14, color: '#ff8a5c', w: 3, a0: .6, a1: -2.6 }); extra(); }); break;
+      case 'crush': later(.12, () => { fxs('b_smoke', b.cx, GROUND - 6, { s0: .6, s1: 2, dur: .35 }); doShake(4, .3); burst(b.cx, GROUND - 2, 16, ['#9a8466', '#5c4d3a', '#cfc0a0'], 70, 220, 2.4); extra(); }); break;
+      case 'blood': fxs('blood', b.cx, b.cy, { s0: .4, s1: 1, dur: .35 }); proj(null, b.cx, b.cy, hc.x, hc.y, .35, { color: '#ff4a5a', trail: ['#ff4a5a', '#a01020'], onHit: () => { rise(hc.x, hc.y + 8, 8, ['#ff6a7a', '#ffb0b8']); if (S.boss) popText('+' + fmt(st.hp * m / 100), hc.x, hc.y - 10, 'heal'); } }); break;
+      case 'dagger2': proj('dagger', hc.x + 6, hc.y - 2, b.cx, b.cy, .12, { onHit: extra }); break;
+      case 'poison': proj('poison', hc.x + 6, hc.y - 2, b.cx, b.cy, .16, { onHit: () => { fxs('pcloud', b.cx, b.cy, { s0: .5, s1: 1.4, dur: .6, add: false, a0: .8 }); extra(); } }); break;
+      case 'double': hero.ghosts.push({ x: HERO_X + 14, a: 1 }); later(.1, () => { slash(b.cx, b.cy, { r: 12, color: '#9dffb0', w: 2.5 }); extra(); }); break;
+      case 'dart': proj('dart', hc.x + 10, hc.y - 10, b.cx, b.cy - 4, .2, { add: true, trail: ['#ff9dff', '#b58cff'], arc: 10, onHit: extra }); break;
+      case 'surge': rise(hc.x, hc.y + 8, 14, ['#8fb8ff', '#ffffff', '#6f7cff']); fxs('b_blue', hc.x, hc.y, { s0: .4, s1: 1.3, dur: .4 }); popText(t('ui.l.cdr', { m: m.toFixed(1) }), hc.x, hc.y - 8, 'proc'); break;
+      case 'mystic': later(.08, () => { fxs('mystic', b.cx, b.cy, { s0: .3, s1: 2.2, dur: .45, spin: 6 }); flash('#b58cff', .35, .25); doShake(3, .25); extra(); }); break;
+      case 'light': proj('beam', hc.x + 8, hc.y - 4, b.cx, b.cy, .16, { add: true, onHit: () => { fxs('holy', b.cx, b.cy, { s0: .3, s1: 1, dur: .3 }); extra(); rise(hc.x, hc.y + 8, 5, ['#fff2b8', '#7ee08a']); } }); break;
+      case 'shield': fxs('holy', hc.x, hc.y, { s0: .6, s1: 1.4, dur: .5 }); rise(hc.x, hc.y + 8, 8, ['#ffe38a', '#ffffff']); break;
+      case 'gold': burst(b.cx, b.cy, 10, ['#ffcc57', '#fff2b8', '#c8962a'], 70, 200, 2); flyTo('assets/ui/gold.png', b.cx, b.cy, $('#goldBox'), 3); break;
+      case 'counter': fxs('b_smoke', hc.x + 8, hc.y, { s0: .3, s1: 1.2, dur: .25 }); later(.08, () => { slash(b.cx, b.cy, { r: 15, color: '#ffffff', w: 3, a0: 1.2, a1: -2.2 }); extra(); }); break;
+      case 'xp': rise(hc.x, hc.y + 8, 12, ['#8ee6ff', '#ffffff']); popText('EXP ×' + m.toFixed(1), hc.x, hc.y - 8, 'proc'); break;
+      case 'exploit': later(.06, () => { fxs('shadow', b.cx, b.cy, { s0: .3, s1: 1.4, dur: .35, add: false, a0: .9 }); slash(b.cx, b.cy, { r: 8, color: '#ff5a7a', w: 2, a0: -1, a1: 2.2 }); flash('#ff2a4a', .25, .2); doShake(4, .25); extra(); }); break;
+      case 'reson': fxs(pick(['b_fire', 'b_blue', 'b_yellow']), b.cx, b.cy, { s0: .4, s1: 1.6, dur: .35 }); burst(b.cx, b.cy, 10, ['#ff8a3c', '#8fb8ff', '#ffe38a'], 80, 60, 1.8); extra(); break;
+      case 'prayer': rise(hc.x, hc.y + 8, 14, ['#7ee08a', '#fff2b8']); fxs('holy', hc.x, hc.y, { s0: .4, s1: 1, dur: .35 }); if (S.boss) popText('+' + fmt(st.hp * m / 100), hc.x, hc.y - 10, 'heal'); break;
+      case 'grace': for (const cid of S.team) { const cs = compState[cid]; if (cs) cs.t = 0; } rise(20, GROUND - 14, 12, ['#ffd98a', '#ffffff'], 20); popText(t('ui.l.compx', { m: m.toFixed(1) }), 22, GROUND - 30, 'proc'); break;
+    }
+    return;   // 한 번 공격에 하나만 표시
+  }
+}
+
+function compAttack(id, dps) {
+  const c = COMP_BY_ID[id]; if (!c) return;
+  const k = S.team.indexOf(id);
+  const cs = compState[id];
+  const b = monBox();
+  const x0 = 2 + k * 15 + 20, y0 = GROUND - 16 - (k % 2) * 3;
+  const dmg = dps * 1.6 * rnd(.85, 1.15);
+  const col = C_RARITY[c.r].color;
+  const done = () => { mon.flash = .06; mon.knock = 2; burst(b.cx, b.cy, 4, [col, '#ffffff'], 40, 120, 1.4, .35); popText(fmt(dmg), b.cx + rnd(-12, 12), b.cy + rnd(-4, 10), 'comp'); };
+  cs.lunge = 5;
+  if (c.cls === 'war') { later(.1, () => { slash(b.cx - 6, b.cy + 4, { r: 9, color: col, w: 1.6 }); done(); }); }
+  else if (c.cls === 'rog') proj('arrow', x0, y0, b.cx - 4, b.cy, .22, { arc: 10, onHit: done });
+  else if (c.cls === 'mag') proj(pick(['dart', 'flame', 'frost']), x0, y0 - 6, b.cx - 4, b.cy, .26, { add: true, scale: .7, trail: ['#e2c9ff', '#8fb8ff'], onHit: done });
+  else proj('beam', x0, y0 - 4, b.cx - 4, b.cy, .2, { add: true, scale: .6, onHit: done });
+}
+
+// 액티브 스킬 시전 연출 (엔진에서 실제 시전된 것만)
+function castFx(c) {
+  const sd = SKILL_BY_ID[c.id]; if (!sd) return;
+  cutin(sd);
+  const el = document.querySelector(`.cdi[data-id="${sd.id}"]`);
+  if (el) { el.classList.remove('cast'); void el.offsetWidth; el.classList.add('cast'); }
+  const b = monBox(), hc = heroC();
+  const num = c.dmg ? fmt(c.dmg * (S.boss ? st.bossMult : 1)) : null;
+  switch (sd.fx) {
+    case 'slash':
+      hero.dash = 22; hero.lunge = 10;
+      later(.12, () => {
+        slash(b.cx, b.cy, { r: 22, color: '#ffb070', w: 5, a0: -2.8, a1: 1.2, dur: .25 });
+        slash(b.cx, b.cy, { r: 16, color: '#ffffff', w: 2, a0: -2.6, a1: 1, dur: .2 });
+        fxs('b_fire', b.cx, b.cy, { s0: .5, s1: 2, dur: .35 });
+        burst(b.cx, b.cy, 26, ['#fff', '#ffcf8a', '#ff8a5c'], 110, 200, 2.4);
+        doShake(6, .35); flash('#ffffff', .45, .2);
+        hitMon(num, 'skill', true);
+      });
+      break;
+    case 'aura':
+      pillar = { x: hc.x, w: 26, t: 0, d: .7, color: sd.color };
+      rise(hc.x, hc.y + 10, 24, [sd.color, '#ffffff']);
+      fxs('b_smoke', hc.x, GROUND - 4, { s0: .5, s1: 2.4, dur: .5 });
+      flash(sd.color, .25, .35);
+      break;
+    case 'shield':
+      fxs('holy', hc.x, hc.y, { s0: .4, s1: 2, dur: .55 });
+      rise(hc.x, hc.y + 10, 18, ['#c9d6ff', '#ffffff']);
+      doShake(2, .2);
+      if (S.boss) popText('+' + fmt(st.hp * .15), hc.x, hc.y - 14, 'heal');
+      break;
+    case 'dagger':
+      for (let i = 0; i < 3; i++) later(i * .07, () => proj('dagger', hc.x + 6, hc.y - 6 + i * 5, b.cx, b.cy - 2 + i * 3, .14));
+      hero.ghosts.push({ x: HERO_X + 30, a: 1 }, { x: HERO_X + 60, a: .8 });
+      later(.3, () => {
+        fxs('shadow', b.cx, b.cy, { s0: .4, s1: 1.8, dur: .4, add: false, a0: .9 });
+        slash(b.cx, b.cy, { r: 16, color: '#9dffb0', w: 3, a0: -2.6, a1: .4 });
+        slash(b.cx, b.cy, { r: 16, color: '#9dffb0', w: 3, a0: .6, a1: 3.4 });
+        doShake(5, .3); hitMon(num, 'skill', true);
+      });
+      break;
+    case 'gold':
+      fxs('b_yellow', b.cx, b.cy, { s0: .5, s1: 1.6, dur: .4 });
+      burst(b.cx, b.cy, 20, ['#ffcc57', '#fff2b8', '#c8962a'], 90, 220, 2.2);
+      flyTo('assets/ui/gold.png', b.cx, b.cy, $('#goldBox'), 6);
+      if (c.gold) popText('+' + fmt(c.gold) + 'G', b.cx, b.cy - 16, 'gold');
+      break;
+    case 'fireball':
+      proj('flame', hc.x + 10, hc.y - 8, b.cx, b.cy, .32, {
+        scale: 1.8, add: true, arc: 8, trail: ['#ffcf8a', '#ff8a3c', '#ff4a2a'], onHit: () => {
+          fxs('b_fire', b.cx, b.cy, { s0: .6, s1: 2.6, dur: .45 });
+          fxs('firestorm', b.cx, b.cy, { s0: .4, s1: 1.8, dur: .6, add: true, a0: .8 });
+          burst(b.cx, b.cy, 30, ['#fff', '#ffcf8a', '#ff8a3c', '#ff4a2a'], 110, 120, 2.4);
+          doShake(6, .35); flash('#ff8a3c', .35, .3);
+          hitMon(num, 'skill', true);
+        },
+      });
+      break;
+    case 'lightning':
+      flash('#bfe4ff', .5, .25);
+      for (let i = 0; i < 4; i++) later(i * .06, () => bolt(b.cx + rnd(-8, 8), -4, b.cx + rnd(-3, 3), b.cy, { dur: .3 }));
+      later(.02, () => bolt(hc.x + 8, hc.y - 6, b.cx, b.cy, { dur: .35 }));
+      later(.12, () => {
+        fxs('eblast', b.cx, b.cy, { s0: .6, s1: 2, dur: .4 });
+        fxs('arc', b.cx, b.cy, { s0: .8, s1: 1.6, dur: .5, spin: 3 });
+        burst(b.cx, b.cy, 22, ['#fff', '#bfe4ff', '#6fb7ff'], 100, 60, 1.8);
+        doShake(5, .3); hitMon(num, 'skill', true);
+      });
+      break;
+    case 'ice':
+      for (let i = 0; i < 6; i++) later(i * .05, () => proj('icicle', b.cx + rnd(-18, 18), -10, b.cx + rnd(-6, 6), b.cy + rnd(-4, 6), .22, { rot: Math.PI / 2, onHit: () => burst(b.cx, b.cy, 4, ['#fff', '#bfe4ff'], 50, 100, 1.5) }));
+      later(.34, () => {
+        fxs('iceblast', b.cx, b.cy, { s0: .6, s1: 2.2, dur: .5 });
+        flash('#bfe4ff', .35, .35); doShake(5, .3); hitMon(num, 'skill', true);
+      });
+      break;
+    case 'holy':
+      pillar = { x: b.cx, w: 20, t: 0, d: .6, color: 'rgba(255,240,170,1)' };
+      flash('#fff6d0', .55, .3);
+      later(.1, () => {
+        fxs('holy', b.cx, b.cy, { s0: .5, s1: 2.4, dur: .5 });
+        burst(b.cx, b.cy, 24, ['#fff', '#fff2b8', '#ffd98a'], 90, -40, 2);
+        doShake(5, .3); hitMon(num, 'skill', true);
+      });
+      break;
+    case 'whirl':
+      hero.dash = 30;
+      for (let i = 0; i < 5; i++) later(.08 + i * .09, () => {
+        const a0 = rnd(-3.1, 3.1);
+        slash(b.cx, b.cy, { r: rnd(12, 20), color: pick(['#ffb070', '#ffffff', '#ff8a5c']), w: 3.5, a0, a1: a0 + 3.4, dur: .18 });
+        burst(b.cx, b.cy, 8, ['#fff', '#ffcf8a'], 90, 160, 1.8);
+        hitMon(i === 4 ? num : null, 'skill', true); doShake(3, .12);
+      });
+      break;
+    case 'unbreak':
+      pillar = { x: hc.x, w: 30, t: 0, d: 1, color: 'rgba(255,170,90,1)' };
+      fxs('holy', hc.x, hc.y, { s0: .5, s1: 2.4, dur: .6 });
+      rise(hc.x, hc.y + 10, 26, ['#ffb070', '#ffe38a', '#ffffff']);
+      flash('#ff9a4a', .35, .4); doShake(3, .3);
+      if (c.time) popText('+' + c.time.toFixed(1) + 's', 90, 20, 'skill');
+      break;
+    case 'smoke':
+      for (let i = 0; i < 6; i++) fxs('smoke', hc.x + rnd(-18, 18), GROUND - rnd(4, 22), { s0: .6, s1: 1.8, dur: .9, add: false, a0: .75 });
+      hero.ghosts.push({ x: HERO_X - 6, a: 1 }, { x: HERO_X + 6, a: .8 });
+      break;
+    case 'flurry':
+      for (let i = 0; i < 10; i++) later(i * .04, () => proj('dagger', hc.x + 6, hc.y - 10 + rnd(-8, 8), b.cx + rnd(-6, 6), b.cy + rnd(-8, 8), .12, { onHit: () => { burst(b.cx, b.cy, 3, ['#fff', '#9dffb0'], 60, 100, 1.4); mon.flash = .05; mon.knock = 3; } }));
+      later(.5, () => { slash(b.cx, b.cy, { r: 18, color: '#9dffb0', w: 3, a0: -2.8, a1: 1 }); doShake(5, .3); hitMon(num, 'skill', true); });
+      break;
+    case 'meteor':
+      flash('#ff5a2a', .25, .5);
+      proj('flame', b.cx + 40, -30, b.cx, b.cy, .5, {
+        scale: 3, add: true, trail: ['#ffcf8a', '#ff8a3c', '#ff4a2a', '#ffffff'], onHit: () => {
+          fxs('meteor', b.cx, b.cy, { s0: 1, s1: 3.5, dur: .7 });
+          fxs('b_fire', b.cx, GROUND - 6, { s0: 1, s1: 3.5, dur: .5 });
+          burst(b.cx, GROUND - 4, 60, ['#fff', '#ffcf8a', '#ff8a3c', '#ff4a2a', '#6b3a2a'], 160, 240, 2.8, .9);
+          doShake(9, .6); flash('#ffffff', .7, .35);
+          hitMon(num, 'skill', true);
+        },
+      });
+      break;
+    case 'warp':
+      fxs('warp', 90, 40, { s0: .5, s1: 5, dur: .8, spin: 4 });
+      fxs('b_pink', hc.x, hc.y, { s0: .5, s1: 2, dur: .6 });
+      flash('#c78dff', .45, .6);
+      for (let i = 0; i < 20; i++) part({ x: rnd(0, W), y: rnd(0, GROUND), vx: 0, vy: 0, size: 1.5, color: pick(['#c78dff', '#ffffff']), life: rnd(.4, .9), drag: 0 });
+      if (c.time) popText('+' + c.time.toFixed(1) + 's', 90, 20, 'skill');
+      break;
+    case 'sanct':
+      fxs('sanct', hc.x, hc.y, { s0: .8, s1: 2.2, dur: .8 });
+      pillar = { x: hc.x, w: 34, t: 0, d: 1, color: 'rgba(255,242,184,1)' };
+      rise(hc.x, hc.y + 10, 24, ['#fff2b8', '#ffffff']);
+      break;
+    case 'judge':
+      flash('#fff6d0', .6, .4);
+      pillar = { x: b.cx, w: 30, t: 0, d: .9, color: 'rgba(255,245,200,1)' };
+      for (let i = 0; i < 3; i++) later(i * .08, () => fxs('holy', b.cx, b.cy - i * 10, { s0: .5, s1: 2.8, dur: .5 }));
+      later(.2, () => { burst(b.cx, b.cy, 40, ['#fff', '#fff2b8', '#ffd98a'], 130, -60, 2.2); doShake(7, .45); hitMon(num, 'skill', true); });
+      break;
+    case 'heal':
+      pillar = { x: hc.x, w: 24, t: 0, d: .8, color: 'rgba(126,224,138,1)' };
+      rise(hc.x, hc.y + 10, 26, ['#7ee08a', '#b8ffcf', '#ffffff']);
+      if (c.heal) popText('+' + fmt(c.heal), hc.x, hc.y - 14, 'heal');
+      break;
+  }
+}
+
+// ================= 메인 루프 =================
+let last = performance.now(), lastFrame = 0;
+function frame(now) {
+  let real = Math.max(0, (now - last) / 1000);
+  if (real > 5) { const t0 = performance.now(); advance(S); S.pending = null; real = 0; (window.__dmLog || (() => {}))('catch-up ' + Math.round(performance.now() - t0) + 'ms'); }
+  const dt = Math.min(.25, real);
+  last = now; lastFrame = now;
+  for (let i = timers.length - 1; i >= 0; i--) { timers[i].t -= dt; if (timers[i].t <= 0) { const f = timers[i].fn; timers.splice(i, 1); f(); } }
+
+  const prevBoss = !!S.boss;
+  const ev = {};
+  // 게임 시간은 실제 경과 시간 그대로 (프레임이 느려도 손실 없음)
+  let rem = Math.min(real, 2);
+  while (rem > 0) { step(S, Math.min(.25, rem), ev); rem -= .25; }
+  S.lastTick = Date.now();          // 팝업에서 진행한 시간이 오프라인에 중복 적립되지 않도록
+  st = stats(S);
+
+  if (S.cls && !(trans && trans.t < .35)) {
+    swingT -= dt;
+    if (swingT <= 0) { swingT = Math.max(.14, 1 / st.aps); if (mon.drop <= .3) heroSwing(); }
+    for (const h of st.compHits) {
+      const cs = compState[h.id] || (compState[h.id] = { t: rnd(.4, 1.4), lunge: 0 });
+      cs.t -= dt; cs.lunge += (0 - cs.lunge) * Math.min(1, dt * 10);
+      if (cs.t <= 0) { cs.t = 1.6 * rnd(.9, 1.1); compAttack(h.id, h.dps); }
+    }
+  }
+
+  handleEvents(ev, prevBoss);
+  drawScene(dt);
+  render();
+}
+function rafLoop(t) { frame(performance.now()); requestAnimationFrame(rafLoop); }
+// rAF가 멈추는 환경(창이 가려짐 등)에서도 계속 돌도록 보조 루프
+setInterval(() => { if (S && performance.now() - lastFrame > 60) frame(performance.now()); }, 33);
+
+function compSkillFx(e) {
+  const c = COMP_BY_ID[e.id]; if (!c) return;
+  const k = S.team.indexOf(e.id); if (k < 0) return;
+  const x = 2 + k * 15 + 13, y = GROUND - 30 - (k % 2) * 3;
+  const col = C_RARITY[c.r].color, cs = compState[e.id];
+  if (cs) cs.lunge = 9;
+  popText(compSkillName(compActive(c)), x + 6, y - 6, 'proc');
+  rise(x, GROUND - 6, 10, [col, '#ffffff'], 16);
+  const b = monBox(), hc = heroC();
+  if (e.eff === 'burst') {
+    later(.18, () => { flash(col, .3, .2); doShake(3, .2); mon.flash = .1; mon.knock = 4; burst(b.cx, b.cy, 16, [col, '#ffffff', '#ffe38a'], 70, 120, 2, .5); popText(fmt(e.dmg), b.cx, b.cy - 14, 'skill'); });
+  } else if (e.eff === 'heal') {
+    rise(hc.x, hc.y + 10, 16, ['#7ee08a', '#ffffff'], 18); popText('+' + fmt(e.heal), hc.x, hc.y - 20, 'heal');
+  } else {
+    rise(hc.x, hc.y + 10, 14, [col, '#ffffff'], 18);
+  }
+}
+function handleEvents(ev, prevBoss) {
+  if (ev.casts) for (const c of ev.casts.slice(-3)) castFx(c);
+  if (ev.compCasts) for (const e of ev.compCasts.slice(-3)) compSkillFx(e);
+  if (ev.echo) { for (const id of S.team || []) { const cs = compState[id]; if (cs) cs.t = Math.min(cs.t, .05); } popText(t('ui.l.echo'), 24, GROUND - 32, 'proc'); }
+  if (ev.revive) { const hc = heroC(); banner(t('ui.l.revive'), 'clear', 1400); pillar = { x: hc.x, w: 28, t: 0, d: 1, color: 'rgba(255,150,80,1)' }; rise(hc.x, hc.y + 10, 30, ['#ff8a3c', '#ffe38a', '#ffffff']); addLog(t('ui.l.reviveLog')); }
+  if (ev.bonusSp) addLog(`<span class="hi">${t('ui.l.bonusSp', { n: ev.bonusSp })}</span>`);
+  if (ev.bossWait && !handleEvents._waitLogged) { handleEvents._waitLogged = true; addLog(t('ui.l.bossWait')); }
+  if (ev.kills && !ev.bossWin && !trans) {
+    const b = monBox();
+    if (mon.die <= 0 && mon.spawn <= 0) {
+      mon.die = .18;
+      burst(b.cx, b.cy, 12, ['#b33a4a', '#6b1f2a', '#9a93b8'], 60, 200, 2);
+      if (Math.random() < .5) burst(b.cx, b.cy, 4, ['#ffcc57', '#fff2b8'], 50, 200, 1.6);
+    }
+  }
+  if (ev.bossStart) {
+    later(performance.now() - lastFloorBanner < 1200 ? .9 : 0, () => banner('BOSS', 'boss'));
+    flash('#ff2a3a', .45, .6);
+    doShake(4, .6);
+    mon.drop = 1; mon.spawn = 0; mon.die = 0;
+    handleEvents._waitLogged = false;
+    addLog(t('ui.l.bossStart', { t: BOSS_TIME }));
+    if (st.mech.invuln) { const hc = heroC(); later(.6, () => popText(t('ui.l.invuln'), hc.x, hc.y - 22, 'heal')); fxs('holy', hc.x, hc.y, { s0: .5, s1: 1.8, dur: .6 }); }
+  }
+  if (ev.bossWin) {
+    const b = monBox();
+    banner('BOSS CLEAR<small>' + t('ui.l.stones', { n: ev.stones || 0 }) + '</small>', 'clear', 1800);
+    for (let i = 0; i < 4; i++) later(i * .1, () => fxs(pick(['b_fire', 'b_yellow', 'eblast']), b.cx + rnd(-14, 14), b.cy + rnd(-14, 10), { s0: .5, s1: 2.2, dur: .45 }));
+    burst(b.cx, b.cy, 50, ['#fff', '#ffe27a', '#ffcc57', '#ff8a5c'], 140, 160, 2.6, .9);
+    flash('#fff6d0', .7, .5); doShake(7, .5);
+    flyTo('assets/ui/gold.png', b.cx, b.cy, $('#goldBox'), 6);
+    flyTo('assets/ui/stone.png', b.cx, b.cy, $('#stoneBox'), 3);
+    addLog('<b>' + t('ui.l.bossWin', { n: ev.stones || 0 }) + '</b>');
+  }
+  if (ev.bossLose) {
+    banner(t('ui.l.retreat'), 'lose', 1400);
+    flash('#000000', .6, .6);
+    hero.dash = -18;
+    addLog(t('ui.l.bossLose'));
+  }
+  if (ev.floorUp && !ev.bossLose) {
+    trans = { t: 0, d: .8, scroll: 0 };
+    hero.dash = 10;
+    mon.die = 0; mon.spawn = 1;
+    const sub = ev.newDepth ? `<small>${t('ui.l.first')}</small>` : '';
+    lastFloorBanner = performance.now();
+    later(ev.bossWin ? .9 : 0, () => banner(t('ui.l.floorBanner', { n: ev.floorUp }) + sub, 'floor', 1100));
+    for (let i = 0; i < 16; i++) part({ x: rnd(0, W), y: rnd(0, GROUND), vx: -rnd(120, 200), vy: 0, size: 1, color: '#ffffff', life: .5, drag: 0 });
+    if (ev.newDepth) { addLog(t('ui.l.firstLog', { n: ev.newDepth })); flyTo('assets/ui/stone.png', HERO_X + 16, 30, $('#stoneBox'), 2); }
+    else addLog(t('ui.l.floorLog', { n: ev.floorUp }));
+  }
+  if (ev.levelUp) {
+    const hc = heroC();
+    pillar = { x: hc.x, w: 22, t: 0, d: 1, color: 'rgba(143,230,255,1)' };
+    rise(hc.x, hc.y + 10, 30, ['#8ee6ff', '#ffffff', '#ffd98a']);
+    banner('LEVEL UP!', 'lvl', 1400);
+    addLog(`<span class="hi">${t('ui.l.levelUp', { n: ev.levelUp })}</span>`);
+  }
+  if (ev.drops) {
+    const b = monBox();
+    for (const it of ev.drops.slice(0, 3)) {
+      addLog(t('ui.l.got', { i: `<span style="color:${RARITIES[it.r].color}">[${RARITIES[it.r].name}] ${itemName(it, S.cls)}</span>` }));
+      flyTo(itemIcon(it, S.cls), b.cx, b.cy, $('#tabGear'), 1);
+      if (it.r >= 3) { pillar = { x: b.cx, w: 14, t: 0, d: .9, color: RARITIES[it.r].color }; }
+    }
+    if (ev.bagKeys) for (const k of ev.bagKeys) recentKeys.add(k);
+    if (!$('[data-tab="gear"]').classList.contains('hidden')) { buildSlots(); buildBag(); }
+  }
+}
+
+let logLines = [], lastFloorBanner = 0;
+function addLog(html) {
+  logLines.push(html);
+  if (logLines.length > 30) logLines.shift();
+  $('#log').innerHTML = logLines.slice().reverse().map(l => `<div>${l}</div>`).join('');
+}
+
+// ================= 전투 HUD (쿨타임 / 버프 / 패시브) =================
+let hudSig = '';
+function buildBattleHud() {
+  const cls = S.cls || 'war';
+  const acts = classSkills(cls, 'active').filter(sd => (S.skills[sd.id] || 0) > 0);
+  const pas = classSkills(cls, 'passive').filter(sd => (S.skills[sd.id] || 0) > 0);
+  const sig = cls + acts.map(s => s.id).join() + '|' + pas.map(s => s.id).join();
+  if (sig === hudSig) return;
+  hudSig = sig;
+  $('#cdrow').innerHTML = acts.map(sd => `<div class="cdi" data-id="${sd.id}" title="${sd.name}"><img class="px" src="${skillSrc(sd.id)}"><div class="mask"></div><div class="n"></div></div>`).join('');
+  $('#pasrow').innerHTML = pas.map(sd => `<img class="pas px" data-id="${sd.id}" src="${skillSrc(sd.id)}" title="${sd.name}">`).join('');
+}
+function updateBattleHud() {
+  buildBattleHud();
+  for (const el of document.querySelectorAll('.cdi')) {
+    const sd = SKILL_BY_ID[el.dataset.id];
+    const lv = S.skills[sd.id] || 0;
+    const rem = Math.max(0, S.cd[sd.id] ?? 0) / st.cdRate;           // 실제 남은 시간(초)
+    const tot = sd.cd / st.cdRate;
+    const waiting = rem <= 0 && sd.eff === 'heal';
+    el.style.setProperty('--p', Math.min(1, rem / tot).toFixed(3));
+    el.classList.toggle('ready', rem <= 0 && !waiting);
+    el.classList.toggle('wait', waiting);
+    el.querySelector('.n').textContent = waiting ? t('ui.wait') : rem > 0 ? (rem >= 10 ? Math.ceil(rem) : rem.toFixed(1)) : '';
+    el.title = `${sd.name} Lv.${lv} · ${skillDesc(sd, lv)}`;
+  }
+  const bsig = (S.buffs || []).map(b => b.id).join();
+  const row = $('#buffrow');
+  if (row.dataset.sig !== bsig) {
+    row.dataset.sig = bsig;
+    row.innerHTML = (S.buffs || []).map(b => `<div class="bf" data-id="${b.id}"><img class="px" src="${b.id.startsWith('c:') ? compSrc(b.id.slice(2)) : skillSrc(b.id)}"><div class="b"></div><div class="t"></div></div>`).join('');
+  }
+  for (const el of row.children) {
+    const b = S.buffs.find(x => x.id === el.dataset.id); if (!b) continue;
+    el.querySelector('.t').textContent = b.t.toFixed(1);
+    el.querySelector('.b').style.width = (20 * b.t / b.max) + 'px';
+  }
+}
+
+// ================= 렌더 =================
+function render() {
+  const cl = CLASSES[S.cls || 'war'];
+  const tag = $('#clsTag');
+  tag.textContent = S.cls ? cl.name : '-'; tag.style.background = S.cls ? cl.color : '#666';
+  $('#lv').textContent = S.level;
+  $('#spTag').textContent = 'SP ' + S.sp;
+  $('#spTag').classList.toggle('hidden', S.sp <= 0);
+  $('#xpbar').style.width = Math.min(100, (S.xp / xpNeed(S.level)) * 100) + '%';
+  $('#gold').textContent = fmt(S.gold);
+  $('#stones').textContent = S.stones;
+  $('#dps').textContent = fmt(st.dps);
+  $('#floor').textContent = S.floor;
+  $('#maxfloor').textContent = S.maxFloor;
+  $('#fname').textContent = FLOOR_NAMES[monsterIndex(S.floor)] || t('ui.abyss');
+  const mi = monsterIndex(S.floor);
+  if (S.boss) {
+    $('#mname').textContent = t('ui.lord', { m: MONSTERS[mi] });
+    $('#mcount').textContent = t('ui.boss');
+    $('#mbar').style.width = Math.max(0, (S.boss.hp / S.boss.max) * 100) + '%';
+    $('#heroWrap').classList.remove('hidden');
+    $('#hbar').style.width = Math.max(0, (S.hp / st.hp) * 100) + '%';
+    $('#hlabel').textContent = `${fmt(Math.max(0, S.hp))} / ${fmt(st.hp)}`;
+    $('#bossTimer').classList.remove('hidden');
+    $('#btime').textContent = Math.max(0, S.boss.timer).toFixed(1);
+  } else {
+    $('#mname').textContent = MONSTERS[mi];
+    $('#mcount').textContent = canChallenge(S) ? t('ui.bossWaitShort') : `${S.kills} / ${killsNeeded(S.floor)}`;
+    $('#mbar').style.width = Math.max(0, 100 - S.prog * 100) + '%';
+    $('#heroWrap').classList.add('hidden');
+    $('#bossTimer').classList.add('hidden');
+  }
+  const cb = $('#bossBtn');
+  if (canChallenge(S)) { cb.classList.remove('hidden'); cb.querySelector('b').textContent = 'B' + (S.floor + 1) + 'F'; }
+  else cb.classList.add('hidden');
+  $('#s_atk').textContent = fmt(st.atk);
+  $('#s_hp').textContent = fmt(st.hp);
+  $('#s_crit').textContent = st.crit.toFixed(1) + '%';
+  $('#s_comp').textContent = fmt(st.compDps);
+  updateBattleHud();
+
+  for (const u of UPGRADES) {
+    const row = document.querySelector(`.up[data-id="${u.id}"]`); if (!row) continue;
+    const n = S.up[u.id] || 0, c = upgradeCostN(u, n, buyMul);
+    row.classList.toggle('no', S.gold < c);
+    row.querySelector('.cost b').textContent = fmt(c);
+    row.querySelector('.lvl').textContent = buyMul > 1 ? `Lv.${n} → ${n + buyMul}` : 'Lv.' + n;
+  }
+  $('#shopDot').classList.toggle('hidden', !UPGRADES.some(u => S.gold >= upgradeCost(u, S.up[u.id] || 0)));
+  $('#skillDot').classList.toggle('hidden', S.sp <= 0);
+  $('#compDot').classList.toggle('hidden', S.stones < PULL_COST);
+  if (!render._gd || performance.now() - render._gd > 1000) {
+    render._gd = performance.now();
+    $('#gearDot').classList.toggle('hidden', !S.bag.some(it => !S.equip[it.s] || itemScore(it) > itemScore(S.equip[it.s])));
+  }
+  $('#spLeft').textContent = S.sp;
+  $('#stoneCost').textContent = fmt(stonePrice(S));
+  $('#pull1').disabled = S.stones < PULL_COST;
+  $('#pull10').disabled = S.stones < PULL10_COST;
+  $('#pity').textContent = t('ui.pity', { a: S.pity || 0, b: PITY });
+  const dsc = Math.round(stoneDiscount(S) * 100);
+  $('#stoneDisc').textContent = dsc ? ' ' + t('ui.stoneDisc', { p: dsc }) : '';
+  $('#respecBtn').disabled = !Object.keys(S.skills || {}).length;
+
+  const hg = honorGain(S);
+  $('#rbGain').textContent = hg;
+  $('#honor').textContent = S.honor;
+  $('#rebirths').textContent = S.rebirths;
+  $('#kills').textContent = fmt(S.totalKills);
+  $('#rbBtn').disabled = hg <= 0;
+  $('#rbBar').style.width = Math.min(100, (S.maxFloor / REBIRTH_FLOOR) * 100) + '%';
+  $('#rbHint').textContent = hg > 0 ? t('ui.rbGain', { h: hg, p: hg * 5 }) : t('ui.rbNeed', { n: REBIRTH_FLOOR, m: S.maxFloor });
+  $('#rbDot').classList.toggle('hidden', hg <= 0);
+  $('#bagInfo').textContent = t('ui.bag', { n: fmt(bagCount(S)), k: S.bag.length });
+}
+
+// ================= 장비 탭 =================
+const dcv = $('#dollcv'), dcx = dcv.getContext('2d');
+function drawDoll() {
+  dcx.imageSmoothingEnabled = false;
+  dcx.clearRect(0, 0, 48, 48);
+  const tile = A['floor/f' + (FLOOR_TILES[monsterIndex(S.floor)] ?? 0)];
+  if (tile) { dcx.globalAlpha = .45; dcx.drawImage(tile, 8, 24); dcx.globalAlpha = 1; }
+  drawHero(dcx, 8, 6, S.cls);
+}
+function slotStat(sl, v) {
+  const [n, u] = SLOT_STAT_NAME[sl.stat];
+  return `${n} +${fmt(v)}${u}`;
+}
+function buildSlots() {
+  const box = $('#slots');
+  box.innerHTML = '';
+  for (const sl of SLOTS) {
+    const it = S.equip[sl.id];
+    const d = document.createElement('div');
+    d.className = 'slot' + (it ? '' : ' empty');
+    if (it) {
+      d.style.borderColor = RARITIES[it.r].color;
+      d.innerHTML = `<div class="ic"><img class="px" src="${itemIcon(it, S.cls)}"></div><div class="tx"><div class="nm" style="color:${RARITIES[it.r].color}">${itemName(it, S.cls)}</div><div class="vl">${slotStat(sl, itemValue(it))}${it.a ? ' · ' + t('ui.affixes', { n: it.a.length }) : ''}${it.u ? ' · ' + t('ui.uniqueTag') : ''}</div></div>`;
+      d.onmouseenter = e => showTip(e, it); d.onmouseleave = hideTip;
+    } else d.innerHTML = `<div class="ic"></div><div class="tx"><div class="nm">${sl.name}</div><div class="vl">${SLOT_STAT_NAME[sl.stat][0]}</div></div>`;
+    box.appendChild(d);
+  }
+  drawDoll();
+  const r = st.raw;
+  const rows = [
+    [t('stat.atk'), fmt(st.atk)], [t('stat.hp'), fmt(st.hp)], [t('stat.crit'), st.crit.toFixed(1) + '%'],
+    [t('stat.critDmg'), '×' + st.critMult.toFixed(2)], [t('stat.spd'), Math.round(st.spd)], [t('stat.def'), st.def.toFixed(1) + '%'],
+    [t('stat.cdr'), st.cdr.toFixed(1) + '%'], [t('stat.skillP'), '+' + Math.round(r.skillP) + '%'], [t('stat.compP'), '+' + Math.round(r.compP) + '%'],
+    [t('stat.bossP'), '+' + Math.round(r.bossP) + '%'], [t('stat.goldP'), '×' + st.goldMult.toFixed(2)], [t('stat.regen'), st.regen.toFixed(1) + '%/s'], [t('stat.xpP'), '×' + st.xpMult.toFixed(2)],
+  ];
+  $('#statsum').innerHTML = rows.map(([a, b]) => `<div>${a}<b>${b}</b></div>`).join('');
+}
+const recentKeys = new Set();
+let bagFilter = 'all', bagSort = 'value';
+function buildBag() {
+  // 부위 필터 칩
+  const bf = $('#bagFilt');
+  if (!bf.childElementCount) {
+    bf.innerHTML = [['all', t('ui.all')], ...SLOTS.map(s => [s.id, s.name]), ['up', t('ui.better')]].map(([k, n]) => `<button class="mini" data-k="${k}">${n}</button>`).join('');
+    for (const b of bf.children) b.onclick = () => { bagFilter = b.dataset.k; buildBag(); };
+    $('#bagSort').onchange = e => { bagSort = e.target.value; buildBag(); };
+  }
+  for (const b of bf.children) b.classList.toggle('on', b.dataset.k === bagFilter);
+  const box = $('#bag');
+  box.innerHTML = '';
+  const better = it => { const cur = S.equip[it.s]; return !cur || itemScore(it) > itemScore(cur); };
+  let list = S.bag.map((it, i) => ({ it, i })).filter(({ it }) => bagFilter === 'all' || (bagFilter === 'up' ? better(it) : it.s === bagFilter));
+  const sorters = {
+    value: (a, b) => itemScore(b.it) - itemScore(a.it),
+    rarity: (a, b) => (b.it.r - a.it.r) || (b.it.t - a.it.t),
+    slot: (a, b) => SLOTS.findIndex(s => s.id === a.it.s) - SLOTS.findIndex(s => s.id === b.it.s) || (b.it.t - a.it.t) || (b.it.r - a.it.r),
+    count: (a, b) => (b.it.n || 1) - (a.it.n || 1),
+  };
+  list.sort(sorters[bagSort] || sorters.value);
+  const LIMIT = 240;
+  for (const { it, i } of list.slice(0, LIMIT)) {
+    const c = document.createElement('div');
+    const k = itemKey(it);
+    c.className = 'cell has' + (recentKeys.has(k) ? ' new' : '');
+    c.innerHTML = `<img class="px" src="${itemIcon(it, S.cls)}"><span class="r" style="border-color:${RARITIES[it.r].color}"></span>${better(it) ? '<span class="up">▲</span>' : ''}${(it.n || 1) > 1 ? `<span class="cnt">${it.n}</span>` : ''}`;
+    c.onclick = () => { equipFromBag(S, i); save(S); buildSlots(); buildBag(); hideTip(); };
+    c.oncontextmenu = e => { e.preventDefault(); const p = sellFromBag(S, i, !e.shiftKey); addLog(t('ui.sold', { g: `<b>${fmt(p)}</b>` })); save(S); buildBag(); hideTip(); };
+    c.onmouseenter = e => showTip(e, it); c.onmouseleave = hideTip;
+    box.appendChild(c);
+  }
+  if (!list.length) box.innerHTML = `<div class="bagempty">${t('ui.empty')}</div>`;
+  if (list.length > LIMIT) box.insertAdjacentHTML('beforeend', `<div class="bagempty">${t('ui.more', { n: list.length - LIMIT })}</div>`);
+  recentKeys.clear();
+  $('#bagInfo').textContent = t('ui.bag', { n: fmt(bagCount(S)), k: S.bag.length });
+  $('#bagInfo').textContent = t('ui.bag', { n: fmt(bagCount(S)), k: S.bag.length });
+}
+function showTip(e, it) {
+  const sl = SLOT_BY_ID[it.s], cur = S.equip[it.s], v = itemValue(it);
+  let diff = '';
+  if (cur && cur !== it) { const d = itemScore(it) / itemScore(cur) - 1; diff = `<div class="td ${d < 0 ? 'dn' : ''}">${t('ui.vsEquipped', { d: (d >= 0 ? '+' : '') + Math.round(d * 100) })}</div>`; }
+  const tip = $('#tip');
+  const affHtml = (it.a || []).map(([k, v]) => `<div class="ta">+ ${statText(k, v)}</div>`).join('');
+  const uq = it.u && UNIQUES[it.u];
+  const uqHtml = uq ? `<div class="tu">【${uq.name}】 ${uq.desc}</div>` : '';
+  tip.innerHTML = `<div class="tn" style="color:${RARITIES[it.r].color}">${itemName(it, S.cls)}</div><div class="ts">${RARITIES[it.r].name} · ${sl.name}</div><div class="tv">${slotStat(sl, v)}</div>${affHtml}${uqHtml}${diff}<div class="ts">${t('ui.sellPrice', { p: fmt(sellPrice(it)) })}${(it.n || 1) > 1 ? ` × ${it.n}` : ''} · ${t('ui.rclick')}</div>`;
+  tip.classList.remove('hidden');
+  const r = e.currentTarget.getBoundingClientRect();
+  tip.style.left = Math.min(384 - 220, Math.max(4, r.left - 60)) + 'px';
+  tip.style.top = Math.max(4, r.top - tip.offsetHeight - 6) + 'px';
+}
+function hideTip() { $('#tip').classList.add('hidden'); }
+
+// ================= 스킬 탭 =================
+function miniHero(canvas, cls, scale = 1) {
+  const c = canvas.getContext('2d');
+  c.imageSmoothingEnabled = false;
+  c.clearRect(0, 0, canvas.width, canvas.height);
+  const L = ['cls/' + cls, `gear/body_${cls}1_d`, `gear/head_${cls}0_d`, `wpn/${cls}1_d`];
+  for (const k of L) if (A[k]) c.drawImage(A[k], 0, 0, 32 * scale, 32 * scale);
+}
+function buildSkills() {
+  const cls = S.cls || 'war';
+  const cl = CLASSES[cls];
+  $('#clsbox').innerHTML = `<canvas width="32" height="32"></canvas><div class="t"><b style="color:${cl.color}">${cl.name}</b><div>${cl.desc}</div></div><button class="mini" id="chgCls">${t('ui.changeClass')}</button>`;
+  miniHero($('#clsbox canvas'), cls);
+  $('#chgCls').onclick = () => openClassModal(true);
+  for (const [box, type] of [['#skA', 'active'], ['#skP', 'passive']]) {
+    const el = $(box);
+    el.innerHTML = '';
+    for (const sd of classSkills(cls, type)) {
+      const d = document.createElement('div');
+      d.className = 'sk'; d.dataset.id = sd.id;
+      d.innerHTML = `<img class="px" src="${skillSrc(sd.id)}"><div class="t"><b>${sd.name}</b><i></i><div class="ds"></div><div class="nx"></div></div><div class="lvl"></div>`;
+      d.onclick = () => {
+        if (learnSkill(S, sd.id)) {
+          save(S); addLog(`<span class="hi">${sd.name}</span> Lv.${S.skills[sd.id]}`);
+          d.classList.remove('lvup'); void d.offsetWidth; d.classList.add('lvup');
+          refreshSkills();
+        }
+      };
+      el.appendChild(d);
+    }
+  }
+  refreshSkills();
+}
+function refreshSkills() {
+  for (const d of document.querySelectorAll('.sk')) {
+    const sd = SKILL_BY_ID[d.dataset.id];
+    const lv = S.skills[sd.id] || 0;
+    const un = skillUnlocked(S, sd);
+    d.classList.toggle('lock', !un);
+    d.classList.toggle('nosp', un && (S.sp < 1 || lv >= SKILL_MAX));
+    d.querySelector('i').textContent = sd.type === 'active' ? t('ui.cd', { n: sd.cd }) : t('ui.passive');
+    d.querySelector('.ds').textContent = un ? (lv ? skillDesc(sd, lv) : t('ui.notLearned') + ' · ' + skillDesc(sd, 1)) : t('ui.unlockAt', { n: sd.unlock });
+    d.querySelector('.nx').textContent = un && lv > 0 && lv < SKILL_MAX ? t('ui.next') + ': ' + skillDesc(sd, lv + 1) : '';
+    const l = d.querySelector('.lvl');
+    l.textContent = lv + '/' + SKILL_MAX; l.classList.toggle('max', lv >= SKILL_MAX);
+  }
+  $('#spLeft').textContent = S.sp;
+}
+
+// ================= 직업 선택 =================
+function openClassModal(isChange) {
+  $('#clsTitle').textContent = isChange ? t('ui.changeClass') : t('ui.chooseClass');
+  $('#clsSub').innerHTML = isChange
+    ? t('ui.classChangeNote')
+    : '';
+  const g = $('#clsGrid');
+  g.innerHTML = '';
+  for (const c of CLASS_IDS) {
+    const cl = CLASSES[c];
+    const d = document.createElement('div');
+    d.className = 'clsc' + (S.cls === c ? ' cur' : '');
+    d.innerHTML = `<canvas width="64" height="64"></canvas><b style="color:${cl.color}">${cl.name}</b><div class="d">${cl.desc}</div><div class="sks">${classSkills(c).map(sd => `<img class="px" src="${skillSrc(sd.id)}" title="${sd.name}">`).join('')}</div>`;
+    d.onclick = () => {
+      if (S.cls === c) { $('#clsModal').classList.add('hidden'); return; }
+      if (S.cls) backup(S, 'class');
+      changeClass(S, c); save(S, 'force');
+      hudSig = '';
+      $('#clsModal').classList.add('hidden');
+      addLog(t('ui.classSet', { c: `<b>${cl.name}</b>` }));
+      buildSkills(); buildSlots(); buildComps();
+      const hc = heroC();
+      pillar = { x: hc.x, w: 26, t: 0, d: 1, color: cl.color };
+      rise(hc.x, hc.y + 10, 30, [cl.color, '#ffffff']);
+      flash(cl.color, .4, .5);
+    };
+    g.appendChild(d);
+    miniHero(d.querySelector('canvas'), c, 2);
+  }
+  $('#clsCancel').classList.toggle('hidden', !isChange);
+  $('#clsModal').classList.remove('hidden');
+}
+
+// ================= 동료 탭 =================
+const CF = { cls: 'all', r: 'all', eff: 'all', own: 'all', sort: 'rarity' };
+function effTxt(k, v) { return statText(k, v); }
+function buildComps() {
+  // 픽업 배너
+  const bs = $('#bannerSel');
+  bs.innerHTML = [['all', t('ui.all')], ...CLASS_IDS.map(c => [c, t('ui.pickup', { c: CLASSES[c].name })])].map(([k, n]) => `<button class="mini ${S.banner === k ? 'on' : ''}" data-b="${k}">${n}</button>`).join('');
+  for (const b of bs.children) b.onclick = () => { S.banner = b.dataset.b; save(S); buildComps(); };
+  // 보유 효과 합계
+  const os = ownSummary(S);
+  const owned = Object.keys(S.comp).length;
+  $('#ownsum').innerHTML = `<div>${t('ui.ownEffects', { a: owned, b: COMPANIONS.length })}</div>` +
+    (owned ? Object.entries(os).map(([k, v]) => `<b>${effTxt(k, v)}</b>`).join(' · ') : `<span>${t('ui.none')}</span>`);
+  // 파티
+  const tm = $('#team');
+  tm.innerHTML = '';
+  for (let i = 0; i < TEAM_MAX; i++) {
+    const id = S.team[i];
+    const d = document.createElement('div');
+    if (id && COMP_BY_ID[id]) {
+      const c = COMP_BY_ID[id], cs = S.comp[id];
+      d.className = 'tslot on';
+      d.style.borderColor = C_RARITY[c.r].color;
+      d.innerHTML = `<img class="px" src="${compSrc(id)}"><div class="n">${c.name}</div><div class="e">${effTxt(c.team.k, teamValue(S, c, cs.aw))}</div>${c.cls === S.cls ? `<div class="syn">${t('ui.synOn')}</div>` : ''}`;
+      d.onclick = () => openComp(id);
+    } else { d.className = 'tslot'; d.textContent = t('ui.emptySlot'); }
+    tm.appendChild(d);
+  }
+  // 프리셋
+  const pr = $('#presets');
+  pr.innerHTML = '';
+  for (let i = 0; i < PRESET_MAX; i++) {
+    const p = (S.presets || [])[i];
+    const d = document.createElement('div');
+    d.className = 'preset' + (p && JSON.stringify(p.team) === JSON.stringify(S.team) ? ' on' : '');
+    d.innerHTML = `<div class="pn">${p && p.name ? p.name : t('ui.preset', { n: i + 1 })}</div>
+      <div class="pm">${p && p.team.length ? p.team.map(id => `<img class="px" src="${compSrc(id)}" title="${COMP_BY_ID[id]?.name || ''}">`).join('') : `<span>${t('ui.empty')}</span>`}</div>
+      <div class="pb"><button class="mini" data-a="load" ${p ? '' : 'disabled'}>${t('ui.load')}</button><button class="mini" data-a="save">${t('ui.saveParty')}</button></div>`;
+    d.querySelector('[data-a="load"]').onclick = () => { if (applyPreset(S, i)) { save(S); addLog(t('ui.presetLoaded', { p: `<b>${S.presets[i].name || t('ui.preset', { n: i + 1 })}</b>` })); buildComps(); } };
+    d.querySelector('[data-a="save"]').onclick = () => { savePreset(S, i); save(S); addLog(t('ui.presetSaved', { p: `<b>${S.presets[i].name || t('ui.preset', { n: i + 1 })}</b>` })); buildComps(); };
+    pr.appendChild(d);
+  }
+  // 필터: 직업 / 등급 / 효과(특성) / 보유 / 정렬
+  const chip = (group, k, n, extra = '') => `<button class="mini ${CF[group] === k ? 'on' : ''}" data-g="${group}" data-k="${k}" ${extra}>${n}</button>`;
+  const effKeys = [...new Set(COMPANIONS.flatMap(c => [c.team.k, c.own.k]))];
+  $('#filt').innerHTML =
+    `<div class="frow"><span>${t('ui.f.class')}</span>${chip('cls', 'all', t('ui.all'))}${CLASS_IDS.map(c => chip('cls', c, CLASSES[c].name, `style="--cc:${CLASSES[c].color}"`)).join('')}</div>` +
+    `<div class="frow"><span>${t('ui.f.rarity')}</span>${chip('r', 'all', t('ui.all'))}${C_RARITY.map((r, i) => chip('r', String(i), r.name, `style="--cc:${r.color}"`)).join('')}</div>` +
+    `<div class="frow"><span>${t('ui.f.own')}</span>${chip('own', 'all', t('ui.all'))}${chip('own', 'yes', t('ui.f.yes'))}${chip('own', 'no', t('ui.f.no'))}${chip('own', 'team', t('ui.f.team'))}</div>` +
+    `<div class="frow"><span>${t('ui.f.trait')}</span><select id="cfEff"><option value="all">${t('ui.f.allTraits')}</option>${effKeys.map(k => `<option value="${k}" ${CF.eff === k ? 'selected' : ''}>${STAT_LABEL[k][0]}</option>`).join('')}</select>
+      <select id="cfSort"><option value="rarity">${t('ui.s.rarity')}</option><option value="aw">${t('ui.s.aw')}</option><option value="power">${t('ui.s.power')}</option><option value="name">${t('ui.s.name')}</option></select></div>`;
+  $('#cfSort').value = CF.sort;
+  for (const b of $('#filt').querySelectorAll('button')) b.onclick = () => { CF[b.dataset.g] = b.dataset.k; buildComps(); };
+  $('#cfEff').onchange = e => { CF.eff = e.target.value; buildComps(); };
+  $('#cfSort').onchange = e => { CF.sort = e.target.value; buildComps(); };
+  // 카드
+  const box = $('#comps');
+  box.innerHTML = '';
+  const sorters = {
+    rarity: (a, b) => (!!S.comp[b.id] - !!S.comp[a.id]) || b.r - a.r,
+    aw: (a, b) => ((S.comp[b.id]?.aw ?? -1) - (S.comp[a.id]?.aw ?? -1)) || b.r - a.r,
+    power: (a, b) => teamValue(S, b, S.comp[b.id]?.aw || 0) / b.team.v * b.r - teamValue(S, a, S.comp[a.id]?.aw || 0) / a.team.v * a.r || b.r - a.r,
+    name: (a, b) => a.name.localeCompare(b.name, 'ko'),
+  };
+  const list = COMPANIONS.filter(c =>
+    (CF.cls === 'all' || c.cls === CF.cls) &&
+    (CF.r === 'all' || c.r === +CF.r) &&
+    (CF.eff === 'all' || c.team.k === CF.eff || c.own.k === CF.eff) &&
+    (CF.own === 'all' || (CF.own === 'yes' ? !!S.comp[c.id] : CF.own === 'no' ? !S.comp[c.id] : S.team.includes(c.id)))
+  ).sort(sorters[CF.sort] || sorters.rarity);
+  $('#compCount').textContent = t('ui.shown', { n: list.length, o: list.filter(c => S.comp[c.id]).length });
+  if (!list.length) box.innerHTML = `<div class="bagempty" style="grid-column:1/-1">${t('ui.noMatch')}</div>`;
+  for (const c of list) {
+    const own = S.comp[c.id];
+    const rr = C_RARITY[c.r], cl = CLASSES[c.cls];
+    const d = document.createElement('div');
+    d.className = 'cc' + (own ? '' : ' none') + (S.team.includes(c.id) ? ' inteam' : '');
+    d.style.borderColor = own ? rr.color + '88' : '';
+    d.innerHTML = `<span class="cr" style="background:${rr.color}">${rr.name}</span>${own && own.aw ? `<span class="aw">+${own.aw}</span>` : ''}
+      <img class="px" src="${compSrc(c.id)}"><span class="cl" style="background:${cl.color}">${cl.name}</span><div class="cn">${own ? c.name : '???'}</div><div class="ce">${STAT_LABEL[c.team.k][0]}</div>`;
+    d.onclick = () => openComp(c.id);
+    box.appendChild(d);
+  }
+}
+function openComp(id) {
+  const c = COMP_BY_ID[id], own = S.comp[id], rr = C_RARITY[c.r], cl = CLASSES[c.cls];
+  const aw = own ? own.aw : 0;
+  const inTeam = S.team.includes(id);
+  const known = !!own;
+  const el = $('#compDetail');
+  el.innerHTML = `
+    <div class="cd-top"><div class="pic" style="border-color:${rr.color}"><img class="px" src="${compSrc(id)}" style="${known ? '' : 'filter:brightness(0) opacity(.5)'}"></div>
+      <div><div class="nm" style="color:${rr.color}">${known ? c.name : t('ui.unknown')}</div>
+        <div class="cd-tags"><span style="background:${rr.color}">${rr.name}</span><span style="background:${cl.color}">${cl.name}</span></div>
+        <div style="font-size:10px;color:var(--muted)">${t('ui.awaken', { a: aw, b: AWAKEN_MAX, n: own ? own.n : 0 })}</div>
+        <div class="awbar">${Array.from({ length: AWAKEN_MAX }, (_, i) => `<i class="${i < aw ? 'on' : ''}"></i>`).join('')}</div></div></div>
+    <div class="cd-row ${inTeam ? 'act' : ''}"><div class="h">${t('ui.teamEff')}</div><b>${effTxt(c.team.k, teamValue(S, c, aw))}</b>
+      <div class="x">${c.cls === S.cls ? t('ui.synOn') : t('ui.synOff', { c: cl.name })}</div>
+      <div class="h" style="margin-top:3px">${t('ui.attack', { p: Math.round(compCoef(c, aw) * 100), d: fmt(compCoef(c, aw) * st.atk * (1 + st.raw.compP / 100)) })}</div></div>
+    <div class="cd-row ${known ? 'act' : ''}"><div class="h">${t('ui.ownEff')}</div><b>${effTxt(c.own.k, ownValue(c, aw))}</b></div>
+    ${[[compPassive(c), CSK_AW_P, 'ui.cPassive'], [compActive(c), CSK_AW_A, 'ui.cActive']].map(([sk, need, lab]) => { const open = known && aw >= need; return `<div class="cd-row csk ${open && inTeam ? 'act' : ''} ${open ? '' : 'lock'}"><div class="h">${t(lab, { n: need })}</div><b>${compSkillName(sk)}</b><div class="x">${compSkillDesc(sk)}</div><div class="x">${open ? (inTeam ? t('ui.cOn') : t('ui.cOff')) : t('ui.cLocked', { n: need })}</div></div>`; }).join('')}
+        <div class="grow" style="width:100%">
+      ${known ? `<button class="big sm" id="cdTeam">${inTeam ? t('ui.teamOut') : (S.team.length >= TEAM_MAX ? t('ui.teamFull') : t('ui.teamAdd'))}</button>` : ''}
+      <button class="mini wide" id="cdClose">${t('ui.close')}</button></div>`;
+  $('#compModal').classList.remove('hidden');
+  $('#cdClose').onclick = () => $('#compModal').classList.add('hidden');
+  const tb = $('#cdTeam');
+  if (tb) {
+    if (!inTeam && S.team.length >= TEAM_MAX) tb.disabled = true;
+    tb.onclick = () => { toggleTeam(S, id); save(S); buildComps(); openComp(id); };
+  }
+}
+function showGacha(results) {
+  $('#gTitle').textContent = results.length > 1 ? t('ui.summon10Result') : t('ui.summonResult');
+  const best = Math.max(...results.map(r => r.c.r));
+  $('#gResult').innerHTML = results.map((r, k) => {
+    const rr = C_RARITY[r.c.r];
+    const tag = r.isNew ? '<span class="gnew">NEW</span>' : r.refund ? `<span class="gnew" style="background:#8fe6ff">${t('ui.refund')}</span>` : `<span class="gnew" style="background:#ffc35c">${t('ui.awk', { n: r.aw })}</span>`;
+    return `<div class="g ${r.c.r >= 2 ? 'hi' : ''}" style="border-color:${rr.color};--gc:${rr.color};animation-delay:${k * 90}ms"><span class="gr" style="background:${rr.color}">${rr.name}</span>${tag}<img class="px" src="${compSrc(r.c.id)}"><div class="gn">${r.c.name}</div></div>`;
+  }).join('');
+  $('#gachaModal').classList.remove('hidden');
+  if (best >= 2) setTimeout(() => flash(C_RARITY[best].color, .5, .6), results.length * 90);
+}
+function doPull(ten) {
+  const res = pull(S, ten);
+  if (!res) { addLog(t('ui.noStones')); return; }
+  save(S); buildComps(); showGacha(res);
+  for (const r of res) if (r.c.r >= 2) addLog(t('ui.joined', { n: `<span style="color:${C_RARITY[r.c.r].color}">[${C_RARITY[r.c.r].name}] ${r.c.name}</span>` }));
+}
+
+// ================= 강화 탭 =================
+let buyMul = 1;
+function buildShop() {
+  const box = $('#shop');
+  box.innerHTML = `<div class="mulbar"><span>${t('ui.atOnce')}</span>${[1, 10, 50, 100].map(m => `<button class="mini ${m === buyMul ? 'on' : ''}" data-m="${m}">×${m}</button>`).join('')}</div>`;
+  for (const b of box.querySelectorAll('.mulbar button')) b.onclick = () => { buyMul = +b.dataset.m; buildShop(); render(); };
+  for (const u of UPGRADES) {
+    const d = document.createElement('div');
+    d.className = 'up'; d.dataset.id = u.id;
+    d.innerHTML = `<div class="n"><b>${u.name}</b><span>${u.desc}</span></div><div class="lvl">Lv.0</div><div class="cost"><img src="assets/ui/gold.png" class="px i14"><b>0</b></div>`;
+    d.onclick = () => {
+      if (buyUpgrade(S, u.id, buyMul)) {
+        save(S); addLog(t('ui.upgraded', { u: `<b>${u.name}</b>`, n: buyMul, l: S.up[u.id] }));
+        d.classList.remove('bought'); void d.offsetWidth; d.classList.add('bought');
+      }
+    };
+    box.appendChild(d);
+  }
+}
+
+// ================= 바인딩 =================
+function bindUI() {
+  document.querySelectorAll('.tabs button').forEach(b => {
+    b.onclick = () => {
+      document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b));
+      document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.dataset.tab !== b.dataset.go));
+      if (b.dataset.go === 'gear') { buildSlots(); buildBag(); }
+      if (b.dataset.go === 'skill') buildSkills();
+      if (b.dataset.go === 'comp') buildComps();
+      if (b.dataset.go === 'rebirth') refreshSave();
+      hideTip();
+    };
+  });
+  const chk = $('#autoEq');
+  chk.checked = S.autoEquip;
+  chk.onchange = () => { S.autoEquip = chk.checked; save(S); };
+  $('#sellWorse').onclick = () => { const g = sellAllWorse(S); addLog(g ? t('ui.soldWorse', { g: `<b>${fmt(g)}</b>` }) : t('ui.nothing')); save(S); buildBag(); };
+  $('#sellLow').onclick = () => { const r = +$('#sellR').value; const g = sellByRarity(S, r); addLog(g ? t('ui.soldBelow', { r: RARITIES[r].name, g: `<b>${fmt(g)}</b>` }) : t('ui.nothing')); save(S); buildBag(); };
+  $('#wOk').onclick = () => $('#welcome').classList.add('hidden');
+  $('#langSel').onchange = e => changeLang(e.target.value);
+  $('#setBtn').onclick = () => { hideTip(); refreshSave(); refreshSyncLine(); $('#setModal').classList.remove('hidden'); };
+  $('#setClose').onclick = () => $('#setModal').classList.add('hidden');
+  const diagText = async () => {
+    const o = await chrome.storage.local.get(['dm.diag.sw']);
+    let pop = []; try { pop = JSON.parse(localStorage.getItem('dm.diag') || '[]'); } catch (e) {}
+    const all = [...pop, ...(o['dm.diag.sw'] || [])].sort((a, b) => a.at - b.at);
+    const pad = n => String(n).padStart(2, '0');
+    return all.slice(-120).map(e => { const d = new Date(e.at); return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} [${e.ctx} +${e.ms}ms] ${e.m}`; }).join('\n') || '(empty)';
+  };
+  $('#diagShow').onclick = async () => { const ta = $('#diagTxt'); ta.classList.remove('hidden'); ta.value = await diagText(); ta.scrollTop = ta.scrollHeight; };
+  $('#diagCopy').onclick = async () => { const txt = 'Deskgeon ' + chrome.runtime.getManifest().version + '\n' + await diagText(); try { await navigator.clipboard.writeText(txt); toast(t('ui.copiedDiag')); } catch (e) { const ta = $('#diagTxt'); ta.classList.remove('hidden'); ta.value = txt; ta.select(); } };
+  $('#diagClear').onclick = async () => { await chrome.storage.local.remove(['dm.diag', 'dm.diag.sw']); try { localStorage.removeItem('dm.diag'); } catch (e) {} $('#diagTxt').value = ''; toast(t('ui.cleared')); };
+  $('#setModal').onclick = e => { if (e.target.id === 'setModal') $('#setModal').classList.add('hidden'); };
+  {
+    let armedR = false, tmR;
+    $('#respecBtn').onclick = async () => {
+      const b = $('#respecBtn');
+      if (!armedR) { armedR = true; b.textContent = t('ui.respecAgain'); b.classList.add('armed'); clearTimeout(tmR); tmR = setTimeout(() => { armedR = false; b.textContent = t('ui.respec'); b.classList.remove('armed'); }, 3000); return; }
+      clearTimeout(tmR); armedR = false; b.textContent = t('ui.respec'); b.classList.remove('armed');
+      await backup(S, 'respec');
+      const n = resetSkills(S); save(S, 'force'); st = stats(S);
+      addLog(`<span class="hi">${t('ui.respecDone', { n })}</span>`);
+      buildSkills(); render();
+    };
+  }
+  $('#bossBtn').onclick = () => { if (challengeBoss(S)) { save(S); handleEvents._waitLogged = false; addLog(`<b>${t('ui.bossGo')}</b>`); } };
+  const as = $('#autoSell');
+  as.value = String(S.autoSell ?? -1);
+  as.onchange = () => { S.autoSell = +as.value; save(S); addLog(S.autoSell < 0 ? t('ui.autoSellOff') : t('ui.autoSellOn', { r: RARITIES[S.autoSell].name })); };
+  $('#oddsBtn').onclick = () => {
+    const o = rarityOdds(S.maxFloor), ob = rarityOdds(S.maxFloor, true);
+    $('#tip').innerHTML = `<div class="tn">${t('ui.oddsTitle', { n: S.maxFloor })}</div>` + RARITIES.map((r, i) => `<div>${t('ui.oddsRow', { r: `<span style="color:${r.color}">${r.name}</span>`, p: (o[i] * 100).toFixed(1), b: (ob[i] * 100).toFixed(1), n: [0, 1, 2, 3, 3][i] })}${i === 4 ? t('ui.plusUnique') : ''}</div>`).join('');
+    const tip = $('#tip'); tip.classList.remove('hidden'); tip.style.left = '12px'; tip.style.top = '120px';
+    setTimeout(hideTip, 5000);
+  };
+  $('#gOk').onclick = () => $('#gachaModal').classList.add('hidden');
+  $('#clsCancel').onclick = () => $('#clsModal').classList.add('hidden');
+  $('#compModal').onclick = e => { if (e.target.id === 'compModal') $('#compModal').classList.add('hidden'); };
+  $('#pull1').onclick = () => doPull(false);
+  $('#pull10').onclick = () => doPull(true);
+  $('#buyStone').onclick = () => { if (buyStone(S)) { save(S); addLog(t('ui.stonesPlus')); } else addLog(t('ui.noGold')); };
+
+  let armed = false, tm = null;
+  $('#rbBtn').onclick = async () => {
+    if (!honorGain(S)) return;
+    if (!armed) {
+      armed = true; $('#rbBtn').textContent = t('ui.rbAgain'); $('#rbBtn').classList.add('armed');
+      clearTimeout(tm); tm = setTimeout(() => { armed = false; $('#rbBtn').textContent = t('ui.doRebirth'); $('#rbBtn').classList.remove('armed'); }, 4000);
+      return;
+    }
+    clearTimeout(tm); armed = false; $('#rbBtn').textContent = t('ui.doRebirth'); $('#rbBtn').classList.remove('armed');
+    await backup(S, 'rebirth');
+    const g = rebirth(S);
+    save(S, 'force'); logLines = []; hudSig = '';
+    addLog(`<b>${t('ui.rebirthLog', { n: g })}</b>`);
+    flash('#c78dff', .7, .8);
+    buildSlots(); buildBag(); buildSkills(); buildComps();
+  };
+}
+
+// ================= 세이브 관리 =================
+function toast(msg, color) {
+  const el = document.createElement('div');
+  el.className = 'toast'; el.textContent = msg;
+  if (color) el.style.borderColor = color;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2300);
+}
+const ago = ms => { const s = Math.floor((Date.now() - ms) / 1000); return s < 60 ? t('ui.agoS', { n: s }) : s < 3600 ? t('ui.agoM', { n: Math.floor(s / 60) }) : t('ui.agoH', { n: Math.floor(s / 3600) }); };
+function refreshSyncLine() {
+  const dd = $('#drvDot'), dt = $('#drvTxt'), db = $('#drvBtn');
+  if (dd) {
+    dd.className = 'sdot';
+    if (!driveState.supported) { dd.classList.add('off'); dt.textContent = t('ui.drvUnsupported'); db.disabled = true; }
+    else if (!driveState.linked) { dt.textContent = t('ui.drvOff'); db.textContent = t('ui.driveLink'); db.disabled = false; }
+    else if (driveState.ok === false) { dd.classList.add('bad'); dt.textContent = t('ui.drvErr', { e: driveState.err }); db.textContent = t('ui.driveUnlink'); }
+    else { dd.classList.add('ok'); dt.textContent = driveState.at ? t('ui.drvOk', { ago: ago(driveState.at) }) : t('ui.drvLinked'); db.textContent = t('ui.driveUnlink'); }
+  }
+  const dot = $('#syncDot'), txt = $('#syncTxt');
+  if (!dot) return;
+  dot.className = 'sdot';
+  if (syncState.ok === false) { dot.classList.add('bad'); txt.textContent = t('ui.syncFail', { e: syncState.err }); }
+  else if (syncState.ok) { dot.classList.add('ok'); txt.textContent = t('ui.syncOk', { ago: ago(syncState.at) }); }
+  else { dot.classList.add('off'); txt.textContent = t('ui.syncWait'); }
+}
+async function refreshSave() {
+  refreshSyncLine();
+  const list = await listBackups();
+  const box = $('#baks');
+  box.innerHTML = list.length ? '' : `<div class="sbhint">${t('ui.noBackup')}</div>`;
+  list.forEach((b, i) => {
+    const s = b.s || {};
+    const d = document.createElement('div');
+    d.className = 'bak';
+    d.innerHTML = `<span>${ago(b.at)} · ${reasonText(b.reason)}</span><b>${s.cls ? CLASSES[s.cls].name : '-'} Lv.${s.level} B${s.maxFloor}F</b><button class="mini">${t('ui.restore')}</button>`;
+    let armed = false;
+    d.querySelector('button').onclick = async e => {
+      const btn = e.currentTarget;
+      if (!armed) { armed = true; btn.textContent = t('ui.again'); setTimeout(() => { armed = false; btn.textContent = t('ui.restore'); }, 3000); return; }
+      await applySave(b.s, 'restore');
+    };
+    box.appendChild(d);
+  });
+}
+async function applySave(raw, why) {
+  await backup(S, 'before:' + why);
+  const n = importCode(exportCode(raw));    // normalize + lastTick 갱신
+  Object.keys(S).forEach(k => delete S[k]);
+  Object.assign(S, n);
+  await save(S, 'force');
+  hudSig = ''; logLines = [];
+  st = stats(S);
+  buildSlots(); buildBag(); buildSkills(); buildComps();
+  if (!S.cls) openClassModal(false);
+  addLog(`<b>${t('ui.done', { w: reasonText(why) })}</b> · Lv.${S.level} B${S.floor}F`);
+  toast(t('ui.done', { w: reasonText(why) }));
+  refreshSave();
+}
+function bindSave() {
+  driveStatus().then(refreshSyncLine);
+  let drvArmed = false;
+  $('#drvBtn').onclick = async () => {
+    if (driveState.linked) {
+      if (!drvArmed) { drvArmed = true; $('#drvBtn').textContent = t('ui.unlinkAgain'); setTimeout(() => { drvArmed = false; refreshSyncLine(); }, 3000); return; }
+      await driveUnlink(); toast(t('ui.unlinked')); refreshSyncLine(); return;
+    }
+    try {
+      await driveLink();
+      const r = await driveSync(S, { interactive: true, push: false });
+      if (r.action === 'pull') await applySave(r.save, 'drive');
+      else { await driveSync(S, { push: true }); toast(t('ui.driveDone')); }
+    } catch (e) { toast(t('ui.linkFail', { e: e.message || e }), '#ff6b7a'); }
+    refreshSyncLine();
+  };
+  $('#syncNow').onclick = async () => { await save(S, 'force'); refreshSyncLine(); toast(syncState.ok ? t('ui.savedAcc') : t('ui.syncFail', { e: syncState.err || '' }), syncState.ok ? null : '#ff6b7a'); };
+  $('#expBtn').onclick = async () => {
+    const code = exportCode(S);
+    try { await navigator.clipboard.writeText(code); toast(t('ui.copied', { n: code.length })); }
+    catch (e) { $('#impTxt').value = code; $('#impTxt').select(); toast(t('ui.copyManual'), '#ffc35c'); }
+  };
+  let armed = false;
+  $('#impBtn').onclick = async () => {
+    const code = $('#impTxt').value.trim();
+    let n;
+    try { n = importCode(code); } catch (e) { toast(e.message, '#ff6b7a'); return; }
+    if (!armed) {
+      armed = true;
+      $('#impBtn').textContent = t('ui.overwrite', { l: n.level, f: n.maxFloor });
+      setTimeout(() => { armed = false; $('#impBtn').textContent = t('ui.loadCode'); }, 4000);
+      return;
+    }
+    armed = false; $('#impBtn').textContent = t('ui.loadCode'); $('#impTxt').value = '';
+    await applySave(n, 'import');
+  };
+}
+
+function showReport(res) {
+  $('#wBody').innerHTML =
+    t('ui.rep.time', { t: fmtDur(res.seconds) }) + '<br>' +
+    t('ui.rep.kills', { k: `<b>${fmt(res.kills)}</b>`, g: `<b>${fmt(res.gold)}</b>` }) + (res.stones > 0 ? t('ui.rep.stones', { s: `<b>${res.stones}</b>` }) : '') + '<br>' +
+    (res.floors > 0 ? t('ui.rep.floors', { f: `<b>${res.floors}</b>`, n: S.floor }) + '<br>' : '') +
+    (res.levels > 0 ? t('ui.rep.lv', { l: `<b>${res.levels}</b>` }) + '<br>' : '');
+  const best = res.drops.slice().sort((a, b) => (b.r * 10 + b.t) - (a.r * 10 + a.t)).slice(0, 8);
+  $('#wDrops').innerHTML = best.map(it => `<div style="border-color:${RARITIES[it.r].color}"><img class="px" src="${itemIcon(it, S.cls)}"></div>`).join('');
+  $('#welcome').classList.remove('hidden');
+}
+
+// ================= 시작 =================
+async function init() {
+  window.__dmStep = 'preload';
+  await preload();
+  window.__dmStep = 'load';
+  S = await load();
+  window.__dmStep = 'advance';
+  { const off = Math.round((Date.now() - (S.lastTick || Date.now())) / 1000); (window.__dmLog || (() => {}))('save lv' + S.level + ' B' + S.floor + ' bag' + S.bag.length + ' comp' + Object.keys(S.comp || {}).length + ' from=' + S._from + ' offline=' + off + 's'); }
+  const _adv0 = performance.now();
+  setLang(S.lang || 'en');
+  applyI18n();
+  advance(S);
+  if (S.pending && S.pending.seconds > 60 && (S.pending.kills > 0 || S.pending.gold > 0)) { showReport(S.pending); S.pending = null; }
+  await save(S);
+  st = stats(S);
+  (window.__dmLog || (() => {}))('advance done ' + Math.round(performance.now() - _adv0) + 'ms');
+  window.__dmStep = 'build';
+  buildSlots(); buildBag(); buildShop(); buildSkills(); buildComps(); bindUI();
+  window.__dmStep = 'render';
+  render();
+  if (!S.cls) openClassModal(false);
+  else addLog(`<b>${t('ui.resume', { n: S.floor })}</b>` + (S._from === 'sync' ? ` · <span class="hi">${t('ui.fromSync')}</span>` : ''));
+  requestAnimationFrame(rafLoop);
+  setInterval(() => save(S), 4000);
+  // 창이 닫힐 때: visibilitychange 와 pagehide 가 연달아 오므로 한 번만 처리.
+  // 팝업은 로컬에만 저장하고, 계정 동기화·드라이브는 서비스 워커가 맡는다 (닫히는 페이지에서 무거운 작업 X)
+  let flushedAt = 0;
+  const flush = () => {
+    if (Date.now() - flushedAt < 1500) return;
+    flushedAt = Date.now();
+    (window.__dmLog || (() => {}))('flush');
+    try { const c = serialize(S); chrome.runtime.sendMessage({ type: 'flush', save: c }).catch(() => {}); } catch (e) {}
+    save(S, 'local').catch(() => {});
+  };
+  window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
+  bindSave(); refreshSave();
+  window.__dmReady = true; window.__dmStep = 'ready';
+  setInterval(refreshSyncLine, 1000);
+  // 드라이브에 다른 기기의 더 최신 세이브가 있으면 켜자마자 가져온다
+  const openedAt = Date.now();
+  driveSync(S, { push: false }).then(r => {
+    refreshSyncLine();
+    if (r.action === 'pull' && Date.now() - openedAt < 15000) applySave(r.save, 'drive');
+  });
+  setInterval(() => { driveSync(S, { push: true }).then(refreshSyncLine); }, 120000);
+}
+init().catch(e => { console.error(e); if (window.__dmFail) window.__dmFail(e); });
