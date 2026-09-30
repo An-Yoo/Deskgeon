@@ -17,6 +17,7 @@ CC0라 표기 의무는 없지만, 멋진 그림을 만들어준 DCSS 아티스�
 - 툴바 아이콘(icons/*.png): 직접 그린 도트
 - 반지 아이콘 gear/ring0~5.png: 위 CC0 반지 타일의 색상 변형
 - 게임 코드 전체
+- 전투 화면의 횃불·조명·부유 입자·안개: 코드로 직접 그린 도트 (이미지 파일 없음)
 
 ## 파일별 원본 경로 (assets/ 기준 ← releases/Nov-2015/ 기준)
 ```
@@ -444,4 +445,45 @@ wpn/war6_d.png  ←  player/hand1/heavy_sword.png
 wpn/war7.png  ←  item/weapon/artefact/spwpn_sword_of_power.png
 wpn/war7_d.png  ←  player/hand1/artefact/sword_of_power.png
 gear/ring0..5.png  ←  item/ring/tourmaline.png, item/ring/ruby.png, item/ring/artefact/urand_shadows.png (색상 변형)
+wall/w0_0.png  ←  dngn/wall/brick_brown0.png
+wall/w0_1.png  ←  dngn/wall/brick_brown1.png
+wall/w1_0.png  ←  dngn/wall/shoals_wall1.png
+wall/w1_1.png  ←  dngn/wall/shoals_wall2.png
+wall/w2_0.png  ←  dngn/wall/stone2_brown0.png
+wall/w2_1.png  ←  dngn/wall/stone2_brown1.png
+wall/w3_0.png  ←  dngn/wall/stone_dark0.png
+wall/w3_1.png  ←  dngn/wall/stone_dark1.png
+wall/w4_0.png  ←  dngn/wall/orc0.png
+wall/w4_1.png  ←  dngn/wall/orc1.png
+wall/w5_0.png  ←  dngn/wall/sandstone_wall0.png
+wall/w5_1.png  ←  dngn/wall/sandstone_wall1.png
+wall/w6_0.png  ←  dngn/wall/catacombs0.png
+wall/w6_1.png  ←  dngn/wall/catacombs1.png
+wall/w7_0.png  ←  dngn/wall/stone2_gray0.png
+wall/w7_1.png  ←  dngn/wall/stone2_gray1.png
+wall/w8_0.png  ←  dngn/wall/lair0.png
+wall/w8_1.png  ←  dngn/wall/lair1.png
+wall/w9_0.png  ←  dngn/wall/lab-stone0.png
+wall/w9_1.png  ←  dngn/wall/lab-stone1.png
+wall/w10_0.png  ←  dngn/wall/undead0.png
+wall/w10_1.png  ←  dngn/wall/undead1.png
+wall/w11_0.png  ←  dngn/wall/hell01.png
+wall/w11_1.png  ←  dngn/wall/hell02.png
+wall/w12_0.png  ←  dngn/wall/volcanic_wall0.png
+wall/w12_1.png  ←  dngn/wall/volcanic_wall1.png
+wall/w13_0.png  ←  dngn/wall/tomb0.png
+wall/w13_1.png  ←  dngn/wall/tomb1.png
+wall/w14_0.png  ←  dngn/wall/stone_black_marked0.png
+wall/w14_1.png  ←  dngn/wall/stone_black_marked1.png
+wall/w15_0.png  ←  dngn/wall/marble_wall1.png
+wall/w15_1.png  ←  dngn/wall/marble_wall2.png
+deco/col1.png  ←  dngn/statues/crumbled_column_1.png
+deco/col2.png  ←  dngn/statues/crumbled_column_2.png
+deco/col3.png  ←  dngn/statues/crumbled_column_3.png
+deco/idol.png  ←  dngn/statues/orcish_idol.png
+deco/wraith.png  ←  dngn/statues/statue_wraith.png
+deco/demon.png  ←  dngn/statues/statue_demonic_bust.png
+deco/evil.png  ←  dngn/statues/statue_ancient_evil.png
+deco/dragon.png  ←  dngn/statues/statue_dragon.png
+deco/iron.png  ←  dngn/statues/statue_iron.png
 ```

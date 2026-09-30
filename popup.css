@@ -331,3 +331,27 @@ button.mini.armed { background: linear-gradient(#ffd0a8, #ff9f6b); color: #2a1a1
 /* 동료 각성 스킬 */
 .cd-row.csk.lock { opacity: .45; }
 .cd-row.csk b { color: #ffd98a; }
+
+/* 꾹 누르기 연속 실행: 길게 눌러도 텍스트 선택/롱프레스 메뉴가 뜨지 않게 */
+.sk, .up, #buyStone, #cdLv { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+.sk.holding, .up.holding, #buyStone.holding, #cdLv.holding { filter: brightness(1.18); box-shadow: inset 0 0 0 2px #8ee6ff; }
+
+/* 유물 (환생 탭) */
+.relics { display: flex; flex-direction: column; gap: 5px; }
+.relh { display: flex; align-items: baseline; justify-content: space-between; padding: 6px 8px 0; }
+.relh b { font-size: 13px; color: #c78dff; } .relh span { font-size: 11px; font-weight: 800; color: #e3ccff; }
+.relnote { font-size: 9.5px; color: var(--muted); padding: 0 8px 2px; line-height: 1.5; }
+#relicList { display: flex; flex-direction: column; gap: 5px; }
+.up.rel .cost { color: #d9b8ff; } .up.rel.no .cost { color: #ff8b9a; }
+/* 강화 돌파 표시 */
+.up .n em.brk { display: block; font-style: normal; font-size: 9.5px; color: #ffc35c; }
+
+/* 동료 조각 / 동료 레벨 */
+.shardline { font-size: 10px; color: var(--muted); text-align: center; line-height: 1.5; }
+.shardline b { color: #8fe6ff; font-size: 11px; }
+.cc .clv { position: absolute; bottom: 16px; right: 2px; font-size: 8.5px; font-weight: 800; color: #0b1a22; background: #8fe6ff; padding: 0 3px; }
+.clvrow .clvbar { height: 5px; background: #0e0c1a; border: 1px solid #2e2947; margin: 4px 0 3px; }
+.clvrow .clvbar i { display: block; height: 100%; background: linear-gradient(90deg, #5fc8ff, #8fe6ff); }
+.clvrow .mini.wide { margin-top: 5px; }
+.clvrow .mini b { color: #8fe6ff; }
+.mini.no { opacity: .5; }

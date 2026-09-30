@@ -138,6 +138,48 @@ export const UPGRADES = [
   { id: 'comp',  name: '지휘술',      desc: '동료 피해 +5%',   c0: 180, cg: 1.25 },
 ];
 export function upgradeCost(u, n) { return Math.ceil(u.c0 * Math.pow(u.cg, n)); }
+// 돌파: 검술 훈련·체력 단련은 25레벨마다 이후 레벨당 효과 ×1.5 (골드/스킬/동료까지 넣으면 성장이 폭주해서 두 개만)
+export const BREAK_EVERY = 25;
+export const BREAK_X = 1.5;
+export const BREAK_IDS = ['atk', 'hp'];
+export function breakMult(id, lv) { return BREAK_IDS.includes(id) ? Math.pow(BREAK_X, Math.floor((lv || 0) / BREAK_EVERY)) : 1; }
+// 강화 효과 합: 25레벨 구간마다 그 구간 레벨의 효과가 ×1.5씩 커진다
+export function upEff(id, lv) {
+  lv = lv || 0;
+  if (!BREAK_IDS.includes(id)) return lv;
+  let sum = 0;
+  for (let k = 0; k * BREAK_EVERY < lv; k++) sum += Math.min(BREAK_EVERY, lv - k * BREAK_EVERY) * Math.pow(BREAK_X, k);
+  return sum;
+}
+
+// ---------- 유물 (명예로 구매, 환생해도 유지) ----------
+// 명예 보너스(+5%/명예)는 '누적 명예' 기준이라 유물을 사도 줄지 않는다.
+export const RELICS = [
+  { id: 'horn',   c0: 1, cg: 1.32, v: 25,              k: 'atk' },     // 공격력 +25%/Lv (별도 곱연산)
+  { id: 'grail',  c0: 1, cg: 1.32, v: 25,              k: 'hp' },      // 체력 +25%/Lv
+  { id: 'crown',  c0: 2, cg: 1.36, v: 30,              k: 'gold' },    // 골드 +30%/Lv
+  { id: 'fang',   c0: 3, cg: 1.38, v: 20,              k: 'boss' },    // 보스 피해 +20%/Lv
+  { id: 'glass',  c0: 4, cg: 1.7,  v: 2,   max: 10,    k: 'btime' },   // 보스 제한시간 +2초/Lv
+  { id: 'scroll', c0: 1, cg: 1.34, v: 25,              k: 'xp' },      // 경험치 +25%/Lv
+  { id: 'sand',   c0: 5, cg: 1.8,  v: 4,   max: 10,    k: 'offline' }, // 오프라인 효율 +4%p/Lv (60% → 100%)
+  { id: 'tome',   c0: 6, cg: 2.0,  v: 1,   max: 5,     k: 'stone' },   // 새 층 도달 소환석 +1/Lv
+];
+export const RELIC_BY_ID = Object.fromEntries(RELICS.map(r => [r.id, r]));
+export function relicLv(s, id) { return (s.relic && s.relic[id]) || 0; }
+export function relicCost(r, lv) { return Math.ceil(r.c0 * Math.pow(r.cg, lv)); }
+export function relicVal(s, k) { const r = RELICS.find(x => x.k === k); return r ? r.v * relicLv(s, r.id) : 0; }
+export function buyRelic(s, id) {
+  const r = RELIC_BY_ID[id]; if (!r) return false;
+  const lv = relicLv(s, id);
+  if (r.max && lv >= r.max) return false;
+  const c = relicCost(r, lv);
+  if ((s.honorPts || 0) < c) return false;
+  s.honorPts -= c; (s.relic ||= {})[id] = lv + 1;
+  return true;
+}
+export function bossTime(s) { return BOSS_TIME + relicVal(s, 'btime'); }
+export function offlineRate(s) { return Math.min(1, OFFLINE_RATE + relicVal(s, 'offline') / 100); }
+
 // n레벨부터 k번 연속 구매 총액 (등비수열 합)
 export function upgradeCostN(u, n, k) { let c = 0; for (let i = 0; i < k; i++) c += upgradeCost(u, n + i); return c; }
 
@@ -333,12 +375,30 @@ export const PULL_COST = 10;
 export const PULL10_COST = 90;
 export const AWAKEN_MAX = 5;
 export const PITY = 50;
-export function teamValue(s, c, aw) {
-  const syn = s.cls === c.cls ? 1.5 : 1;
-  return c.team.v * (1 + 0.2 * (aw || 0)) * syn;
+// ---- 동료 조각: 5각성 이후 중복은 등급별 조각으로 바뀌고, 조각으로 동료 레벨을 올린다
+export const SHARD_GAIN = [1, 2, 5, 15, 40];        // R · SR · SSR · UR · LR
+export const CLV_MAX = 20;
+export const CLV_STEP = 0.1;                       // 레벨당 동행·보유 효과·공격력 +10% (곱연산)
+const CLV_C0 = [3, 5, 8, 12, 18];
+export function compLvCost(c, lv) { return Math.ceil(CLV_C0[c.r] * Math.pow(1.22, lv || 0)); }
+export function compLvMult(lv) { return 1 + CLV_STEP * (lv || 0); }
+export function compLevelUp(s, id) {
+  const c = COMP_BY_ID[id], st = (s.comp || {})[id];
+  if (!c || !st) return false;
+  const lv = st.lv || 0;
+  if (lv >= CLV_MAX) return false;
+  const cost = compLvCost(c, lv);
+  if ((s.shards || 0) < cost) return false;
+  s.shards -= cost; st.lv = lv + 1; COMP_VER++;
+  return true;
 }
-export function ownValue(c, aw) { return c.own.v * (1 + 0.25 * (aw || 0)); }
-export function compCoef(c, aw) { return C_RARITY[c.r].coef * (1 + 0.2 * (aw || 0)); }
+const _lv = (s, c) => (((s && s.comp) || {})[c.id] || {}).lv || 0;
+export function teamValue(s, c, aw, lv) {
+  const syn = s.cls === c.cls ? 1.5 : 1;
+  return c.team.v * (1 + 0.2 * (aw || 0)) * syn * compLvMult(lv ?? _lv(s, c));
+}
+export function ownValue(c, aw, lv) { return c.own.v * (1 + 0.25 * (aw || 0)) * compLvMult(lv); }
+export function compCoef(c, aw, lv) { return C_RARITY[c.r].coef * (1 + 0.2 * (aw || 0)) * compLvMult(lv); }
 export function stoneDiscount(s) { return Math.min(0.5, 0.05 * (s.rebirths || 0)); }
 export function stonePrice(s) { return Math.ceil(600 * Math.pow(1.28, s.stoneBuys || 0) * (1 - stoneDiscount(s))); }
 
@@ -364,7 +424,7 @@ function ownSumCached(s) {
   const comp = s.comp || {};
   if (OWN_CACHE.ref === comp && OWN_CACHE.ver === COMP_VER) return OWN_CACHE.list;
   const acc = {};
-  for (const [id, st] of Object.entries(comp)) { const c = COMP_BY_ID[id]; if (c) acc[c.own.k] = (acc[c.own.k] || 0) + ownValue(c, st.aw); }
+  for (const [id, st] of Object.entries(comp)) { const c = COMP_BY_ID[id]; if (c) acc[c.own.k] = (acc[c.own.k] || 0) + ownValue(c, st.aw, st.lv); }
   OWN_CACHE = { ref: comp, ver: COMP_VER, list: Object.entries(acc) };
   return OWN_CACHE.list;
 }
@@ -378,8 +438,9 @@ export function gainCompanion(s, c) {
   }
   cur.n++;
   if (cur.aw < AWAKEN_MAX) { cur.aw++; return { c, isNew: false, aw: cur.aw }; }
-  s.stones += 3;
-  return { c, isNew: false, aw: cur.aw, refund: 3 };
+  const sh = SHARD_GAIN[c.r];
+  s.shards = (s.shards || 0) + sh;
+  return { c, isNew: false, aw: cur.aw, shards: sh };
 }
 export function pull(s, ten) {
   const cost = ten ? PULL10_COST : PULL_COST;
@@ -423,7 +484,7 @@ export function ownSummary(s) {
   for (const [id, st] of Object.entries(s.comp || {})) {
     const c = COMP_BY_ID[id];
     if (!c) continue;
-    acc[c.own.k] = (acc[c.own.k] || 0) + ownValue(c, st.aw);
+    acc[c.own.k] = (acc[c.own.k] || 0) + ownValue(c, st.aw, st.lv);
   }
   return acc;
 }
@@ -440,8 +501,8 @@ export function newSave() {
     bag: [], up: {},
     skills: {}, cd: {}, buffs: [],
     comp: {}, team: [], banner: 'all', presets: [], bossLock: false, autoSell: -1, lang: 'en',
-    stones: 30, pulls: 0, pity: 0, stoneBuys: 0,
-    honor: 0, rebirths: 0,
+    stones: 30, pulls: 0, pity: 0, stoneBuys: 0, shards: 0,
+    honor: 0, honorPts: 0, relic: {}, bestFloor: 0, rebirths: 0,
     autoEquip: true, pending: null,
     lastTick: Date.now(), createdAt: Date.now(),
   };
@@ -473,10 +534,19 @@ export function normalize(s) {
     o._trimmed = trimBag(o);
   }
   o.up = { ...(s.up || {}) };
+  o.relic = { ...(s.relic || {}) };
+  if (s.honorPts == null) o.honorPts = o.honor || 0;   // v4.6 이전 세이브: 지금까지 모은 명예를 유물 구매용으로 지급
+  o.bestFloor = Math.max(o.bestFloor || 0, o.maxFloor || 0);
   o.skills = { ...(s.skills || {}) };
   o.cd = { ...(s.cd || {}) };
   o.buffs = Array.isArray(s.buffs) ? s.buffs : [];
-  o.comp = { ...(s.comp || {}) };
+  o.comp = {};
+  for (const [id, v] of Object.entries(s.comp || {})) o.comp[id] = { ...v };
+  if (s.shards == null) {   // v4.8 이전: 지금까지 5각성 이후로 뽑힌 중복을 조각으로 소급 지급
+    let sh = 0;
+    for (const [id, v] of Object.entries(o.comp)) { const c = COMP_BY_ID[id]; if (c && v.aw >= AWAKEN_MAX) sh += Math.max(0, (v.n || 0) - 1 - AWAKEN_MAX) * SHARD_GAIN[c.r]; }
+    o.shards = sh;
+  }
   o.team = Array.isArray(s.team) ? s.team.slice(0, TEAM_MAX) : [];
   o.presets = Array.isArray(s.presets) ? s.presets.slice(0, 3) : [];
   if ((s.v || 0) >= 4 && (s.v || 0) < 6 && !s.lang) o.lang = 'ko';   // 기존 한국어 플레이어는 한국어 유지
@@ -616,15 +686,16 @@ export function stats(s) {
   const cl = CLASSES[s.cls || 'war'];
   for (const [k, v] of Object.entries(cl.mods)) add(k, v);
 
-  let atk = 5 + (s.level - 1) * 3 + (up.atk || 0) * 2;
-  let hp = 60 + (s.level - 1) * 14 + (up.hp || 0) * 12;
-  add('atkP', (up.atk || 0) * 4);
-  add('hpP', (up.hp || 0) * 4);
+  const eAtk = upEff('atk', up.atk), eHp = upEff('hp', up.hp);
+  let atk = 5 + (s.level - 1) * 3 + eAtk * 2;
+  let hp = 60 + (s.level - 1) * 14 + eHp * 12;
+  add('atkP', eAtk * 4);
+  add('hpP', eHp * 4);
   add('crit', (up.crit || 0) * 0.5);
   add('spd', (up.spd || 0) * 3);
-  add('goldP', (up.gold || 0) * 5);
-  add('skillP', (up.skill || 0) * 4);
-  add('compP', (up.comp || 0) * 5);
+  add('goldP', upEff('gold', up.gold) * 5);
+  add('skillP', upEff('skill', up.skill) * 4);
+  add('compP', upEff('comp', up.comp) * 5);
 
   for (const sl of SLOTS) {
     const it = s.equip[sl.id];
@@ -645,8 +716,8 @@ export function stats(s) {
   for (const id of s.team || []) {
     const c = COMP_BY_ID[id], st = (s.comp || {})[id];
     if (!c || !st) continue;
-    add(c.team.k, teamValue(s, c, st.aw));
-    team.push({ c, aw: st.aw });
+    add(c.team.k, teamValue(s, c, st.aw, st.lv));
+    team.push({ c, aw: st.aw, lv: st.lv || 0 });
     if (st.aw >= CSK_AW_P) {
       const p = compPassive(c);
       if (p.eff === 'stat') add(p.k, p.val);
@@ -677,14 +748,15 @@ export function stats(s) {
   if (mech.double) extra += 0.15;
   const crit = Math.min(90, 5 + a.crit);
   const critMult = 2.5 + a.critDmg / 100;
-  const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult;
-  const hpF = hp * Math.max(0.2, 1 + a.hpP / 100);
+  const rAtk = 1 + relicVal(s, 'atk') / 100, rHp = 1 + relicVal(s, 'hp') / 100;
+  const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult * rAtk;
+  const hpF = hp * Math.max(0.2, 1 + a.hpP / 100) * rHp;
   const hit = atkF * (1 + (crit / 100) * (critMult - 1));
   const thunder = mech.thunder ? (crit / 100) * 0.2 * 4 : 0;
   const heroDps = hit * aps * (1 + extra) + atkF * aps * thunder;
   const compMult = (1 + a.compP / 100) * (1 + pComp) * (1 + pAll);
   let compDps = 0;
-  const compHits = team.map(({ c, aw }) => { const d = compCoef(c, aw) * atkF * compMult * (selfX[c.id] || 1); compDps += d; return { id: c.id, dps: d }; });
+  const compHits = team.map(({ c, aw, lv }) => { const d = compCoef(c, aw, lv) * atkF * compMult * (selfX[c.id] || 1); compDps += d; return { id: c.id, dps: d }; });
   const compActs = team.filter(x => x.aw >= CSK_AW_A).map(x => x.c);
   const cdr = Math.min(50, a.cdr);
   return {
@@ -693,11 +765,11 @@ export function stats(s) {
     def: Math.min(75, a.def + pShield), cdr,
     cdRate: 1 / (1 - cdr / 100) + pCdr,
     regen: a.regen + pHeal,
-    goldMult: (1 + a.goldP / 100 + pGold) * honorMult,
-    bossMult: 1 + a.bossP / 100,
+    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100),
+    bossMult: (1 + a.bossP / 100) * (1 + relicVal(s, 'boss') / 100),
     skillMult: 1 + a.skillP / 100,
     weak: Math.min(80, a.weak),
-    xpMult: (1 + pXp) * (1 + a.xpP / 100),
+    xpMult: (1 + pXp) * (1 + a.xpP / 100) * (1 + relicVal(s, 'xp') / 100),
     mech,
     extra, honorMult, raw: a,
   };
@@ -727,7 +799,7 @@ function cast(s, st, sd, lv, ev) {
     return 0;
   }
   if (sd.eff === 'timer') {
-    if (!s.boss || s.boss.timer > BOSS_TIME * 0.5) return -1;   // 보스전 후반까지 대기
+    if (!s.boss || s.boss.timer > (s.boss.tmax || BOSS_TIME) * 0.5) return -1;   // 보스전 후반까지 대기
     s.boss.timer += v;
     if (sd.heal && s.hp != null) s.hp = Math.min(st.hp, s.hp + st.hp * sd.heal / 100);
     if (sd.cdAll) for (const k of Object.keys(s.cd)) if (k !== sd.id) s.cd[k] = Math.max(0, s.cd[k] - sd.cdAll);
@@ -805,7 +877,7 @@ export function step(s, dt, ev) {
     s.boss.hp -= (st.dps * dt + burst) * st.bossMult;
     let h = (s.hp == null ? st.hp : s.hp);
     h += st.hp * (st.regen / 100) * dt;
-    const invuln = st.mech.invuln && s.boss.timer > BOSS_TIME - 5;
+    const invuln = st.mech.invuln && s.boss.timer > (s.boss.tmax || BOSS_TIME) - 5;
     if (!invuln) h -= bossDps(s.floor) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;
     if (h <= 0 && st.mech.revive && !s.boss.revived) { s.boss.revived = true; h = st.hp * 0.3; ev.revive = true; }
     s.hp = Math.min(st.hp, h);
@@ -829,7 +901,8 @@ export function step(s, dt, ev) {
 
   if (isBossFloor(s.floor)) {
     const bh = bossHp(s.floor);
-    s.boss = { hp: bh, max: bh, timer: BOSS_TIME };
+    const tmax = bossTime(s);
+    s.boss = { hp: bh, max: bh, timer: tmax, tmax };
     s.hp = st.hp;
     ev.bossStart = true;
     return ev;
@@ -899,8 +972,9 @@ function advanceFloor(s, ev) {
   s.kills = 0; s.prog = 0;
   if (s.floor > s.maxFloor) {
     s.maxFloor = s.floor;
-    s.stones += 2;
-    ev.stones = (ev.stones || 0) + 2;
+    const ns = 2 + relicVal(s, 'stone');
+    s.stones += ns;
+    ev.stones = (ev.stones || 0) + ns;
     ev.newDepth = s.floor;
   }
   ev.floorUp = s.floor;
@@ -1030,15 +1104,16 @@ export function buyStone(s) {
 export const REBIRTH_FLOOR = 30;
 export function honorGain(s) {
   if (s.maxFloor < REBIRTH_FLOOR) return 0;
-  return Math.max(1, Math.floor(2.2 * Math.pow(s.maxFloor / REBIRTH_FLOOR, 1.9)));
+  // 층이 깊을수록 기하급수로 증가: B30 3 · B35 4 · B40 7 · B45 12 · B50 20 · B60 52 · B70 135
+  return Math.max(1, Math.floor(3 * Math.pow(1.10, s.maxFloor - REBIRTH_FLOOR)));
 }
 export function rebirth(s) {
   const g = honorGain(s);
   if (!g) return 0;
   const keep = {
-    honor: s.honor + g, rebirths: s.rebirths + 1, autoEquip: s.autoEquip, createdAt: s.createdAt,
+    honor: s.honor + g, honorPts: (s.honorPts || 0) + g, relic: { ...(s.relic || {}) }, bestFloor: Math.max(s.bestFloor || 0, s.maxFloor), rebirths: s.rebirths + 1, autoEquip: s.autoEquip, createdAt: s.createdAt,
     cls: s.cls, banner: s.banner,
-    comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, pulls: s.pulls, pity: s.pity, stoneBuys: 0, lang: s.lang,
+    comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, shards: s.shards || 0, pulls: s.pulls, pity: s.pity, stoneBuys: 0, lang: s.lang,
   };
   Object.assign(s, newSave(), keep);
   s.lastTick = Date.now();
@@ -1052,7 +1127,7 @@ export function advance(s, now = Date.now()) {
   s.lastTick = now;
   if (realSec < 1 || !s.cls) return { offline: false, seconds: 0 };
   const offline = realSec > 30;
-  const sec = offline ? Math.min(realSec, OFFLINE_CAP_H * 3600) * OFFLINE_RATE : realSec;
+  const sec = offline ? Math.min(realSec, OFFLINE_CAP_H * 3600) * offlineRate(s) : realSec;
   const before = { gold: s.gold, floor: s.floor, kills: s.totalKills, level: s.level, stones: s.stones };
   const ev = {};
   // 긴 오프라인은 큰 간격으로 묶어서 계산 (12시간이어도 약 9천 번 → 1초 안팎)
