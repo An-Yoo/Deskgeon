@@ -4,7 +4,7 @@ import {
   PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL,
   load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed,
   itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse,
-  buyUpgrade, upgradeCost, upgradeCostN, buyStone, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc,
+  buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc,
   passiveChance, passiveMult, classSkills, changeClass,
   teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur,
   syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS,
@@ -14,9 +14,12 @@ import {
   compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A,
   RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult,
   SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp,
+  MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll,
   ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate,
   DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost,
   AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart,
+  TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX,
+  RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore,
   ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
@@ -37,6 +40,7 @@ function applyI18n() {
   for (const el of document.querySelectorAll('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle);
   $('#pull1Cost').textContent = t('ui.stones', { n: PULL_COST });
   $('#pull10Cost').textContent = t('ui.stones', { n: PULL10_COST }) + ' · ' + t('ui.srPlus');
+  $('#pull100Cost').textContent = t('ui.stones', { n: PULL10_COST * 10 });
   $('#rateLine').textContent = C_RARITY.map(r => r.name + ' ' + +(r.rate * 100).toFixed(1) + '%').join(' · ');
   const ls = $('#langSel');
   ls.innerHTML = Object.entries(LANGS).map(([k, n]) => `<option value="${k}" ${k === getLang() ? 'selected' : ''}>${n}</option>`).join('');
@@ -300,7 +304,9 @@ function drawBackdrop(dt, now, zi) {
   cx.restore();
 }
 const inTower = () => !!(S && S.boss && S.boss.tower);
-const sceneZone = () => inTower() ? towerMon(S.boss.tf) : monsterIndex(S.floor);
+const inRift = () => !!(S && S.boss && S.boss.tower === 'rift');
+const towerId = () => (S.boss && TOWERS.some(x => x.id === S.boss.tower)) ? S.boss.tower : 'inf';
+const sceneZone = () => inRift() ? monsterIndex(riftFloor(S.boss.L)) : inTower() ? towerMon(S.boss.tf) : monsterIndex(S.floor);
 // 캐릭터를 그린 뒤: 용사 주변 빛 · 보스 기운 · 가장자리 어둠
 function drawLighting(now) {
   const hc = heroC();
@@ -413,7 +419,7 @@ function drawScene(dt) {
     if (mon.flash > 0 && mon.spawn < .3 && mon.die <= 0) whiteFlash(cx, mim, mx, my, b.w, b.w, Math.min(.5, mon.flash * 5), true);
     if (S.boss) {
       cx.fillStyle = '#ff5a5a'; cx.font = 'bold 7px monospace'; cx.textAlign = 'center';
-      cx.fillText(inTower() ? S.boss.tf + 'F' : 'BOSS', b.cx, my - 2);
+      cx.fillText(inRift() ? S.boss.tf + '/' + RIFT_WAVES : inTower() ? S.boss.tf + 'F' : 'BOSS', b.cx, my - 2);
     }
   }
   drawLighting(now);
@@ -545,8 +551,9 @@ function hitMon(dmgTxt, cls, big) {
 let swingT = .5;
 function heroSwing() {
   const cls = S.cls || 'war';
-  const crit = Math.random() * 100 < st.crit;
-  const dmg = st.atk * (crit ? st.critMult : 1) * rnd(.9, 1.1);
+  // 치명타 단계: 100%마다 1단계 확정 + 나머지 확률로 한 단계 더 (1 노랑 · 2 주황 · 3+ 빨강)
+  const cc = st.crit / 100, tier = Math.floor(cc) + (Math.random() < cc % 1 ? 1 : 0), crit = tier > 0;
+  const dmg = st.atk * (1 + tier * (st.critMult - 1)) * rnd(.9, 1.1);
   const b = monBox();
   hero.lunge = cls === 'mag' ? 3 : 9;
   const impact = () => {
@@ -554,7 +561,7 @@ function heroSwing() {
     if (cls === 'war') slash(b.cx - 2, b.cy, { r: crit ? 16 : 12, color: c.col, w: crit ? 3.5 : 2.5, a0: -2.4, a1: .9 });
     else if (cls === 'rog') { slash(b.cx - 3, b.cy - 3, { r: 10, color: c.col, w: 1.6, a0: -2.8, a1: -.2, dur: .12 }); later(.06, () => slash(b.cx + 1, b.cy + 3, { r: 10, color: c.col, w: 1.6, a0: .4, a1: 2.9, dur: .12 })); }
     else if (cls === 'clr') { fxs('b_yellow', b.cx - 2, b.cy, { s0: .3, s1: crit ? 1 : .7, dur: .22 }); slash(b.cx, b.cy, { r: 9, color: c.col, w: 2 }); }
-    hitMon(fmt(dmg), crit ? 'crit' : '', crit);
+    hitMon(fmt(dmg), tier >= 3 ? 'crit crit3' : tier === 2 ? 'crit crit2' : crit ? 'crit' : '', crit);
     if (crit) { doShake(2.5, .18); fxs('b_smoke', b.cx, b.cy, { s0: .4, s1: 1.1, dur: .25 }); }
     if (crit && st.mech.thunder && Math.random() < .2) {
       for (let i = 0; i < 3; i++) later(i * .05, () => bolt(b.cx + rnd(-6, 6), -4, b.cx + rnd(-2, 2), b.cy, { dur: .3, color: '#ffe38a' }));
@@ -827,11 +834,18 @@ function handleEvents(ev, prevBoss) {
   if (ev.compCasts) for (const e of ev.compCasts.slice(-3)) compSkillFx(e);
   if (ev.echo) { for (const id of S.team || []) { const cs = compState[id]; if (cs) cs.t = Math.min(cs.t, .05); } popText(t('ui.l.echo'), 24, GROUND - 32, 'proc'); }
   if (ev.revive) { const hc = heroC(); banner(t('ui.l.revive'), 'clear', 1400); pillar = { x: hc.x, w: 28, t: 0, d: 1, color: 'rgba(255,150,80,1)' }; rise(hc.x, hc.y + 10, 30, ['#ff8a3c', '#ffe38a', '#ffffff']); addLog(t('ui.l.reviveLog')); }
-  if (ev.towerClear && performance.now() - (handleEvents._tc || 0) > 450) { handleEvents._tc = performance.now(); banner(t('ui.towerClear', { n: ev.towerClear }), 'floor', 650); mon.die = 0; mon.drop = 1; }
+  if (ev.towerClear && !ev.riftEnd && performance.now() - (handleEvents._tc || 0) > 450) { handleEvents._tc = performance.now(); banner(inRift() ? t('rift.waveClear', { n: ev.towerClear }) : t('ui.towerClear', { n: ev.towerClear }), 'floor', 650); mon.die = 0; mon.drop = 1; }
+  if (ev.riftEnd) {
+    const e = ev.riftEnd;
+    banner(e.win ? t('rift.win', { n: e.L }) : t('rift.lose', { n: e.waves, m: RIFT_WAVES }), e.win ? 'floor' : 'lose', 1800);
+    addLog('<b>' + (e.win ? t('rift.winLog', { n: e.L }) : t('rift.loseLog', { n: e.L, w: e.waves })) + '</b> ' + [t('rune.dustN', { n: e.dust }), ...e.runes.map(runeName)].join(' · '));
+    if (e.win && e.runes.length) showReward(t('rift.win', { n: e.L }), e.runes.map(ru => [runeName(ru), null]).concat([[t('rune.dustN', { n: e.dust }), null]]));
+    if (S.floor) st = stats(S);
+  }
   if (ev.towerEnd) {
     const e = ev.towerEnd;
     banner(t('ui.towerEnd', { n: e.floor }), 'lose', 1600);
-    addLog('<b>' + t('ui.towerEndLog', { n: e.floor, b: e.best }) + '</b> ' + rewardText({ ess: e.ess, stones: e.stones, shards: e.shards }));
+    addLog('<b>' + t('tw.' + (e.id || 'inf')) + ' · ' + t('ui.towerEndLog', { n: e.floor, b: e.best }) + '</b> ' + rewardText({ ess: e.ess, stones: e.stones, shards: e.shards, keys: e.keys }));
     save(S);
   }
   if (ev.autoRebirth) {
@@ -969,10 +983,14 @@ function render() {
   $('#maxfloor').textContent = S.maxFloor;
   { const lp = loopOf(S.floor); $('#fname').textContent = (FLOOR_NAMES[monsterIndex(S.floor)] || t('ui.abyss')) + (lp ? ' · ' + t('ui.loop', { n: lp + 1 }) : ''); }
   const mi = sceneZone();
-  if (inTower()) {
-    $('#fname').textContent = t('ui.towerName');
+  if (inRift()) {
+    $('#fname').textContent = t('rift.title') + ' · ' + t('rift.lv', { n: S.boss.L });
+    $('#mname').textContent = t('rift.wave', { n: S.boss.tf, m: RIFT_WAVES }) + ' · ' + MONSTERS[mi];
+    $('#mcount').textContent = t('rift.keysN', { n: riftState(S).keys });
+  } else if (inTower()) {
+    $('#fname').textContent = t('tw.' + towerId());
     $('#mname').textContent = t('ui.towerFloor', { n: S.boss.tf }) + ' · ' + MONSTERS[mi];
-    $('#mcount').textContent = t('ui.towerBest', { n: S.tower.best || 0 });
+    $('#mcount').textContent = t('ui.towerBest', { n: towerState(S, towerId()).best || 0 });
   }
   if (S.boss) {
     if (!inTower()) { $('#mname').textContent = t('ui.lord', { m: MONSTERS[mi] }); $('#mcount').textContent = t('ui.boss'); }
@@ -1016,8 +1034,11 @@ function render() {
   }
   $('#spLeft').textContent = S.sp;
   $('#stoneCost').textContent = fmt(stonePrice(S));
+  { const n = stoneMaxCount(S); $('#buyAllN').textContent = n ? t('ui.buyAllN', { n: fmtN(n * 10) }) : ''; $('#buyStoneAll').disabled = !n; }
   $('#pull1').disabled = S.stones < PULL_COST;
   $('#pull10').disabled = S.stones < PULL10_COST;
+  $('#pull100').disabled = S.stones < PULL10_COST * 10;
+
   $('#pity').textContent = t('ui.pity', { a: S.pity || 0, b: PITY });
   const dsc = Math.round(stoneDiscount(S) * 100);
   $('#stoneDisc').textContent = dsc ? ' ' + t('ui.stoneDisc', { p: dsc }) : '';
@@ -1078,8 +1099,8 @@ function buildSlots() {
   const r = st.raw;
   const rows = [
     [t('stat.atk'), fmt(st.atk)], [t('stat.hp'), fmt(st.hp)], [t('stat.crit'), st.crit.toFixed(1) + '%'],
-    [t('stat.critDmg'), '×' + st.critMult.toFixed(2)], [t('stat.spd'), Math.round(st.spd)], [t('stat.def'), st.def.toFixed(1) + '%'],
-    [t('stat.cdr'), st.cdr.toFixed(1) + '%'], [t('stat.skillP'), '+' + Math.round(r.skillP) + '%'], [t('stat.compP'), '+' + Math.round(r.compP) + '%'],
+    [t('stat.critDmg'), '×' + st.critMult.toFixed(2)], [t('stat.spd'), Math.round(st.spd)], [t('stat.def'), Math.round(st.armor || 0) + ' (' + t('ui.cdEff', { n: Math.round(st.def) }) + ')'],
+    [t('stat.cdr'), Math.round(st.cdr) + ' (' + t('ui.cdEff', { n: Math.round(100 - 100 / (1 + st.cdr / 100)) }) + ')'], [t('stat.skillP'), '+' + Math.round(r.skillP) + '%'], [t('stat.compP'), '+' + Math.round(r.compP) + '%'],
     [t('stat.bossP'), '+' + Math.round(r.bossP) + '%'], [t('stat.goldP'), '×' + st.goldMult.toFixed(2)], [t('stat.regen'), st.regen.toFixed(1) + '%/s'], [t('stat.xpP'), '×' + st.xpMult.toFixed(2)],
   ];
   $('#statsum').innerHTML = rows.map(([a, b]) => `<div>${a}<b>${b}</b></div>`).join('');
@@ -1170,7 +1191,36 @@ function buildSkills() {
       el.appendChild(d);
     }
   }
+  buildMastery();
   refreshSkills();
+}
+function buildMastery() {
+  const box = $('#msList'); if (!box) return;
+  box.innerHTML = '';
+  for (const m of MASTERY) {
+    const d = document.createElement('div');
+    d.className = 'up ms'; d.dataset.ms = m.id;
+    d.innerHTML = `<div class="n"><b>${t('ms.' + m.id)}</b><span class="md"></span></div><div class="lvl"></div><div class="cost"><b>1 SP</b></div>`;
+    holdRepeat(d, () => {
+      if (!buyMastery(S, m.id)) return false;
+      d.classList.remove('bought'); void d.offsetWidth; d.classList.add('bought');
+      st = stats(S); refreshSkills(); render();
+      return true;
+    }, n => { if (n) addLog(t('ui.msLog', { m: `<b>${t('ms.' + m.id)}</b>`, l: masteryLv(S, m.id) })); });
+    box.appendChild(d);
+  }
+}
+function refreshMastery() {
+  const head = $('#msHead'); if (!head) return;
+  const un = masteryUnlocked(S), total = classSkills(S.cls || 'war').length;
+  head.textContent = un ? t('ui.msLeft', { n: S.sp }) : t('ui.msLock', { a: skillsMaxed(S), b: total });
+  $('#msBox').classList.toggle('lock', !un);
+  for (const d of document.querySelectorAll('.ms')) {
+    const m = MASTERY.find(x => x.id === d.dataset.ms), lv = masteryLv(S, m.id);
+    d.classList.toggle('no', !un || S.sp < 1);
+    d.querySelector('.md').textContent = t('ms.' + m.id + '.d', { v: m.v * lv }) + ' → +' + (m.v * (lv + 1)) + '%';
+    d.querySelector('.lvl').textContent = 'Lv.' + lv;
+  }
 }
 function refreshSkills() {
   for (const d of document.querySelectorAll('.sk')) {
@@ -1186,6 +1236,7 @@ function refreshSkills() {
     l.textContent = lv + '/' + SKILL_MAX; l.classList.toggle('max', lv >= SKILL_MAX);
   }
   $('#spLeft').textContent = S.sp;
+  refreshMastery();
 }
 
 // ================= 직업 선택 =================
@@ -1232,6 +1283,7 @@ function buildComps() {
   for (const b of bs.children) b.onclick = () => { S.banner = b.dataset.b; save(S); buildComps(); };
   // 동료 조각
   $('#shardLine').innerHTML = t('ui.shardLine', { n: `<b>${fmt(S.shards || 0)}</b>`, g: SHARD_GAIN.map((v, i) => C_RARITY[i].name + ' ' + v).join(' · ') });
+  { const canUp = Object.entries(S.comp || {}).some(([id, o]) => COMP_BY_ID[id] && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(COMP_BY_ID[id], o.lv || 0)); $('#lvAll').disabled = !canUp; }
   // 보유 효과 합계
   const os = ownSummary(S);
   const owned = Object.keys(S.comp).length;
@@ -1359,6 +1411,7 @@ function showGacha(results) {
     const tag = r.isNew ? '<span class="gnew">NEW</span>' : r.shards ? `<span class="gnew" style="background:#8fe6ff">${t('ui.shardGain', { n: r.shards })}</span>` : `<span class="gnew" style="background:#ffc35c">${t('ui.awk', { n: r.aw })}</span>`;
     return `<div class="g ${r.c.r >= 2 ? 'hi' : ''}" style="border-color:${rr.color};--gc:${rr.color};animation-delay:${k * 90}ms"><span class="gr" style="background:${rr.color}">${rr.name}</span>${tag}<img class="px" src="${compSrc(r.c.id)}"><div class="gn">${r.c.name}</div></div>`;
   }).join('');
+  $('#gAuto').classList.toggle('hidden', results.length < 10);
   $('#gachaModal').classList.remove('hidden');
   if (best >= 2) setTimeout(() => flash(C_RARITY[best].color, .5, .6), results.length * 90);
 }
@@ -1367,6 +1420,91 @@ function doPull(ten) {
   if (!res) { addLog(t('ui.noStones')); return; }
   save(S); buildComps(); showGacha(res);
   for (const r of res) if (r.c.r >= 2) addLog(t('ui.joined', { n: `<span style="color:${C_RARITY[r.c.r].color}">[${C_RARITY[r.c.r].name}] ${r.c.name}</span>` }));
+}
+
+// ================= 100회 · 연속 소환 =================
+let auto = null;               // 진행 중인 연속 소환 상태
+const AUTO_GAP = 500;
+function autoReset(mode) {
+  auto = { mode, n: 0, spent: 0, rar: [0, 0, 0, 0, 0], newc: 0, awk: 0, shards: 0, hi: [], running: false, reason: '', timer: null, bought: 0 };
+}
+function autoBatch() {
+  // 소환석이 모자라면 (옵션) 골드로 구매
+  const opt = S.gachaOpt || {};
+  if (S.stones < PULL10_COST && opt.autoBuy) {
+    for (let g = 0; g < 20 && S.stones < PULL10_COST; g++) { if (!buyStone(S)) break; auto.bought += 10; }
+  }
+  if (S.stones < PULL10_COST) { auto.reason = 'stones'; return false; }
+  const res = pull(S, true);
+  if (!res) { auto.reason = 'stones'; return false; }
+  auto.n += res.length; auto.spent += PULL10_COST;
+  let stop = '';
+  for (const r of res) {
+    auto.rar[r.c.r]++;
+    if (r.isNew) auto.newc++; else if (r.shards) auto.shards += r.shards; else auto.awk++;
+    if (r.isNew || r.c.r >= 2) auto.hi.push(r);
+    if (opt.stopUR && r.c.r >= 3) stop = 'ur';
+    else if (opt.stopNew && r.isNew && !stop) stop = 'new';
+  }
+  if (auto.hi.length > 60) auto.hi.splice(0, auto.hi.length - 60);
+  if (stop) { auto.reason = stop; return false; }
+  return true;
+}
+function autoRender() {
+  if (!auto) return;
+  $('#aTitle').textContent = auto.running ? t('ui.autoTitle') : t('ui.autoDone');
+  $('#aCount').innerHTML = t('ui.aCount', { n: `<b>${fmtN(auto.n)}</b>`, c: fmtN(auto.spent), s: `<b>${fmtN(S.stones)}</b>` }) + (auto.bought ? ' · ' + t('ui.aBought', { n: fmtN(auto.bought) }) : '');
+  $('#aRar').innerHTML = C_RARITY.map((r, i) => `<span style="border-color:${r.color};color:${r.color}">${r.name} <b>${auto.rar[i]}</b></span>`).join('');
+  $('#aSum').textContent = [t('ui.aNew', { n: auto.newc }), t('ui.aAwk', { n: auto.awk }), t('ui.aShard', { n: auto.shards })].join(' · ');
+  $('#aHi').innerHTML = auto.hi.slice().reverse().map(r => { const rr = C_RARITY[r.c.r]; return `<div class="g ${r.c.r >= 3 ? 'hi' : ''}" style="border-color:${rr.color};--gc:${rr.color}"><span class="gr" style="background:${rr.color}">${rr.name}</span>${r.isNew ? '<span class="gnew">NEW</span>' : ''}<img class="px" src="${compSrc(r.c.id)}" alt=""><div class="gn">${r.c.name}</div></div>`; }).join('') || `<div class="aempty">${t('ui.aNone')}</div>`;
+  $('#aReason').textContent = auto.running ? '' : t('ui.aReason.' + (auto.reason || 'stop'));
+  $('#aReason').classList.toggle('hi', auto.reason === 'ur' || auto.reason === 'new');
+  const b = $('#aStop'); b.textContent = auto.running ? t('ui.aStop') : t('ui.ok'); b.classList.toggle('armed', auto.running);
+  $('#aRestart').classList.toggle('hidden', auto.running || auto.mode !== 'auto');
+  $('#aOpt').classList.toggle('hidden', auto.mode !== 'auto');
+}
+function autoFinish() {
+  if (!auto) return;
+  clearTimeout(auto.timer); auto.running = false;
+  save(S); buildComps(); autoRender();
+  if (auto.n) addLog('<b>' + t('ui.autoLog', { n: fmtN(auto.n) }) + '</b> ' + C_RARITY.map((r, i) => auto.rar[i] ? `<span style="color:${r.color}">${r.name}×${auto.rar[i]}</span>` : '').filter(Boolean).join(' '));
+  const best = auto.hi.reduce((m, r) => Math.max(m, r.c.r), -1);
+  if (best >= 3) flash(C_RARITY[best].color, .5, .6);
+}
+function autoTickPull() {
+  if (!auto || !auto.running) return;
+  const go = autoBatch();
+  autoRender(); render();
+  if (auto.n % 50 === 0) save(S);
+  if (!go) { autoFinish(); return; }
+  auto.timer = setTimeout(autoTickPull, AUTO_GAP);
+}
+function startAuto() {
+  autoReset('auto'); auto.running = true;
+  $('#aBuy').checked = !!S.gachaOpt.autoBuy; $('#aUR').checked = !!S.gachaOpt.stopUR; $('#aNewc').checked = !!S.gachaOpt.stopNew;
+  $('#autoModal').classList.remove('hidden');
+  autoRender(); autoTickPull();
+}
+function pull100() {
+  if (S.stones < PULL10_COST * 10) { addLog(t('ui.noStones')); return; }
+  autoReset('100');
+  const keep = S.gachaOpt; S.gachaOpt = { ...keep, stopUR: false, stopNew: false, autoBuy: false };   // 100회는 끝까지
+  for (let k = 0; k < 10; k++) if (!autoBatch()) break;
+  S.gachaOpt = keep;
+  if (!auto.reason) auto.reason = 'done100';
+  $('#autoModal').classList.remove('hidden');
+  autoFinish();
+}
+function bindAutoPull() {
+  $('#pull100').onclick = pull100;
+  $('#gAuto').onclick = () => { $('#gachaModal').classList.add('hidden'); startAuto(); };
+  $('#aRestart').onclick = startAuto;
+  $('#aStop').onclick = () => { if (auto && auto.running) { auto.reason = 'stop'; autoFinish(); } else $('#autoModal').classList.add('hidden'); };
+  const setOpt = (k, el) => { S.gachaOpt = { ...(S.gachaOpt || {}), [k]: el.checked }; save(S); };
+  $('#aBuy').onchange = e => setOpt('autoBuy', e.target);
+  $('#aUR').onchange = e => setOpt('stopUR', e.target);
+  $('#aNewc').onchange = e => setOpt('stopNew', e.target);
+  window.addEventListener('pagehide', () => { if (auto && auto.running) { auto.running = false; save(S); } });
 }
 
 // ================= 꾹 누르기 연속 실행 (모바일식) =================
@@ -1430,6 +1568,7 @@ function rewardText(r) {
   if (r.shards) p.push(t('rw.shards', { n: r.shards }));
   if (r.ess) p.push(t('rw.ess', { n: r.ess }));
   if (r.boost) p.push(t('rw.boost', { n: r.boost }));
+  if (r.keys) p.push(t('rw.keys', { n: r.keys }));
   return p.join(' · ');
 }
 const fmtN = n => n < 100000 ? Math.floor(n).toLocaleString('en-US') : fmt(n);
@@ -1439,7 +1578,7 @@ const pips = (n, on) => '<span class="pips">' + Array.from({ length: n }, (_, i)
 
 // ================= 모험 탭 (미션 · 탑 · 업적 · 도감 · 자동) =================
 let qTab = 'mission';
-const QTABS = ['mission', 'tower', 'ach', 'book', 'auto'];
+const QTABS = ['mission', 'tower', 'rift', 'ach', 'book', 'auto'];
 function missionClaimable(kind) {
   const L = kind === 'd' ? DAILY : WEEKLY;
   if (L.some(m => { const ms = missionState(S, kind, m); return !ms.claimed && ms.v >= ms.need; })) return true;
@@ -1447,7 +1586,8 @@ function missionClaimable(kind) {
 }
 function qDot(k) {
   if (k === 'mission') return canAttend(S) || missionClaimable('d') || missionClaimable('w');
-  if (k === 'tower') return canTower(S);
+  if (k === 'tower') return TOWERS.some(x => canTower(S, x.id));
+  if (k === 'rift') return canRift(S);
   if (k === 'ach') return ACH.some(a => achClaimed(S, a.id) < achMet(S, a));
   return false;
 }
@@ -1465,6 +1605,13 @@ function claimCount() {
   return n;
 }
 // 한 번에 전부 받고, 받은 목록을 창으로 보여준다
+// 균열 보상 등 간단한 목록 창 (보상 창 재사용)
+function showReward(title, rows) {
+  $('#rwList').innerHTML = rows.map(([l], i) => `<div class="rwrow" style="--i:${i}"><span>${l}</span></div>`).join('');
+  $('#rwTotal').innerHTML = '';
+  $('#rwCount').textContent = title;
+  $('#rewardModal').classList.remove('hidden');
+}
 function claimAllQuest() {
   const got = [];
   const r0 = attend(S); if (r0) got.push([t('q.attendLog', { n: r0.day }), r0.r]);
@@ -1478,7 +1625,7 @@ function claimAllQuest() {
   const sum = {};
   for (const [, r] of got) for (const [k, v] of Object.entries(r)) sum[k] = (sum[k] || 0) + v;
   $('#rwList').innerHTML = got.map(([l, r], i) => `<div class="rwrow" style="--i:${i}"><span>${l}</span><b>${rewardText(r)}</b></div>`).join('');
-  $('#rwTotal').innerHTML = [['stones', 'assets/ui/stone.png'], ['shards', null], ['ess', 'assets/ui/rune.png'], ['boost', null]].filter(([k]) => sum[k]).map(([k, ic]) => `<div class="rwtot">${ic ? `<img src="${ic}" class="px i14" alt="">` : ''}<span>${t('rw.' + k, { n: fmt(sum[k]) })}</span></div>`).join('');
+  $('#rwTotal').innerHTML = [['stones', 'assets/ui/stone.png'], ['shards', null], ['ess', 'assets/ui/rune.png'], ['boost', null], ['keys', 'assets/ui/orb.png']].filter(([k]) => sum[k]).map(([k, ic]) => `<div class="rwtot">${ic ? `<img src="${ic}" class="px i14" alt="">` : ''}<span>${t('rw.' + k, { n: fmt(sum[k]) })}</span></div>`).join('');
   $('#rwCount').textContent = t('q.rwCount', { n: got.length });
   $('#rewardModal').classList.remove('hidden');
   addLog('<b>' + t('q.rwLog', { n: got.length }) + '</b> ' + rewardText(sum));
@@ -1503,15 +1650,43 @@ function qMission() {
     <div class="sech">${t('q.weekly')}<span>${t('q.weeklyReset')}</span></div>${missionRows('w')}`;
 }
 function qTower() {
-  const tw = S.tower || {}, tries = tw.tries ?? TOWER_TRIES;
   const busy = S.boss && !inTower();
-  return `<div class="qcard ctr"><img src="assets/ui/rune.png" class="px i48" alt=""><div class="qh c"><b>${t('q.towerTitle')}</b></div>
-    <div class="qx">${t('q.towerDesc', { t: TOWER_TIME })}</div>
-    <div class="rbstats"><div><span>${t('q.towerBest')}</span><b>${tw.best || 0}F</b></div><div><span>${t('q.towerTries')}</span><b>${tries}/${TOWER_TRIES}</b></div><div><span>${t('q.towerDaily')}</span><b>${fmtClock(untilMidnight())}</b></div></div>
-    ${inTower() ? `<div class="qx hi">${t('q.towerNow', { n: S.boss.tf, s: Math.max(0, S.boss.timer).toFixed(1) })}</div>` : ''}
+  const now = inTower() && !inRift() ? `<div class="qcard ctr"><div class="qx hi">${t('tw.' + towerId())} · ${t('q.towerNow', { n: S.boss.tf, s: Math.max(0, S.boss.timer).toFixed(1) })}</div></div>` : '';
+  const cards = TOWERS.map(T => {
+    const ts = towerState(S, T.id), tries = ts.tries ?? TOWER_TRIES;
+    return `<div class="qcard twc tw-${T.id}"><div class="qh"><b>${t('tw.' + T.id)}</b><span>${t('q.towerBest')} <b>${ts.best || 0}F</b> · ${t('q.towerTries')} <b>${tries}/${TOWER_TRIES}</b></span></div>
+      <div class="qx">${t('tw.d.' + T.id, { t: T.time })}</div>
+      <div class="qx rw">${t('tw.r.' + T.id)}</div>
+      <button class="big sm" data-act="tower" data-id="${T.id}" ${canTower(S, T.id) ? '' : 'disabled'}>${t('q.towerBtn')}</button></div>`;
+  }).join('');
+  return now + (busy ? `<div class="qx c">${t('q.towerBusy')}</div>` : '') + cards + `<div class="qx c">${t('tw.note', { c: fmtClock(untilMidnight()) })}</div>`;
+}
+// ---------- 차원 균열 · 룬 ----------
+const RUNE_COL = ['#b8b8c8', '#6bd66b', '#5aa9ff', '#c77dff', '#ffb347'];
+function runeStatTxt(ru) { return t('rune.k.' + ru.k) + ' +' + runeVal(ru) + '%' + (ru.k2 ? ' · ' + t('rune.k.' + ru.k2) + ' +' + runeVal(ru, ru.k2) + '%' : ''); }
+function runeName(ru) { return `<span style="color:${RUNE_COL[ru.r]}">[${t('rune.r' + ru.r)}] ${runeStatTxt(ru)}${ru.u ? ' (+' + ru.u + ')' : ''}</span>`; }
+function qRift() {
+  const r = riftState(S), R = runeState(S);
+  if (!riftUnlocked(S)) return `<div class="qcard ctr"><img src="assets/ui/orb.png" class="px i48" alt=""><div class="qh c"><b>${t('rift.title')}</b></div><div class="qx">${t('rift.desc', { w: RIFT_WAVES, t: RIFT_TIME })}</div><div class="qx hi">${t('rift.lock', { n: RIFT_UNLOCK })}</div></div>`;
+  const L = Math.max(1, Math.min(r.lvl || 1, (r.best || 0) + 1));
+  const busy = S.boss && !inRift();
+  const head = `<div class="qcard ctr"><img src="assets/ui/orb.png" class="px i48" alt=""><div class="qh c"><b>${t('rift.title')}</b></div>
+    <div class="qx">${t('rift.desc', { w: RIFT_WAVES, t: RIFT_TIME })}</div>
+    <div class="rbstats"><div><span>${t('rift.best')}</span><b>${t('rift.lv', { n: r.best || 0 })}</b></div><div><span>${t('rift.keys')}</span><b>${r.keys}</b></div><div><span>${t('rift.daily', { n: KEY_DAILY })}</span><b>${fmtClock(untilMidnight())}</b></div></div>
+    <div class="rlv"><button class="mini" data-act="rlv" data-d="-1" ${L <= 1 ? 'disabled' : ''}>-</button><div><b>${t('rift.lv', { n: L })}</b><span>${t('rift.lvSub', { f: riftFloor(L) })}</span></div><button class="mini" data-act="rlv" data-d="1" ${L > (r.best || 0) ? 'disabled' : ''}>+</button></div>
+    ${inRift() ? `<div class="qx hi">${t('rift.now', { n: S.boss.tf, m: RIFT_WAVES, s: Math.max(0, S.boss.timer).toFixed(1) })}</div>` : ''}
     ${busy ? `<div class="qx">${t('q.towerBusy')}</div>` : ''}
-    <button class="big" data-act="tower" ${canTower(S) ? '' : 'disabled'}>${t('q.towerBtn')}</button>
-    <div class="qx">${t('q.towerRule')}</div></div>`;
+    <button class="big" data-act="rift" ${canRift(S) ? '' : 'disabled'}>${t('rift.btn')}</button>
+    <div class="qx">${t('rift.rule')}</div></div>`;
+  const sum = runeSum(S), sumTxt = Object.keys(sum).map(k => t('rune.k.' + k) + ' +' + Math.round(sum[k] * 10) / 10 + '%').join(' · ') || t('rune.none');
+  const slots = R.eq.map((ru, i) => ru
+    ? `<div class="rslot"><div class="rn">${runeName(ru)}<i>${t('rift.lv', { n: ru.t })}</i></div><div class="rb"><button class="mini" data-act="rup" data-i="${i}" ${(ru.u || 0) >= RUNE_UP_MAX || R.dust < runeUpCost(ru) ? 'disabled' : ''}>${(ru.u || 0) >= RUNE_UP_MAX ? 'MAX' : t('rune.up', { n: fmtN(runeUpCost(ru)) })}</button><button class="mini" data-act="roff" data-i="${i}">${t('rune.off')}</button></div></div>`
+    : `<div class="rslot empty">${t('rune.empty')}</div>`).join('');
+  const bag = R.bag.map((ru, i) => [ru, i]).sort((a, b) => runeScore(b[0]) - runeScore(a[0]));
+  const bagHtml = bag.length ? bag.map(([ru, i]) => `<div class="rslot"><div class="rn">${runeName(ru)}<i>${t('rift.lv', { n: ru.t })}</i></div><div class="rb"><button class="mini" data-act="ron" data-i="${i}">${t('rune.on')}</button><button class="mini" data-act="rdis" data-i="${i}">${t('rune.dis', { n: runeDustOf(ru) })}</button></div></div>`).join('') : `<div class="qx c">${t('rune.bagEmpty')}</div>`;
+  const lowN = R.bag.filter(ru => ru.r <= 1).length;
+  return head + `<div class="qcard"><div class="qh"><b>${t('rune.eqTitle')}</b><span>${t('rune.dustN', { n: fmtN(R.dust) })}</span></div><div class="qx">${t('rune.keep')}</div><div class="qx hi">${sumTxt}</div>${slots}</div>
+    <div class="qcard"><div class="qh"><b>${t('rune.bag', { n: R.bag.length, m: RUNE_BAG })}</b><button class="mini" data-act="rdisLow" ${lowN ? '' : 'disabled'}>${t('rune.disLow', { n: lowN })}</button></div>${bagHtml}</div>`;
 }
 function qAch() {
   const P = achPoints(S);
@@ -1548,7 +1723,7 @@ function buildQuest() {
   const cc = claimCount(), qa = $('#qAll');
   qa.disabled = !cc; qa.textContent = cc ? t('q.claimAll', { n: cc }) : t('q.claimNone');
   morph($('#qNav'), QTABS.map(k => `<button class="mini ${qTab === k ? 'on' : ''}" data-q="${k}">${t('q.tab.' + k)}${qDot(k) ? '<i class="dot"></i>' : ''}</button>`).join(''));
-  morph(body, qTab === 'mission' ? qMission() : qTab === 'tower' ? qTower() : qTab === 'ach' ? qAch() : qTab === 'book' ? qBook() : qAuto());
+  morph(body, qTab === 'mission' ? qMission() : qTab === 'tower' ? qTower() : qTab === 'rift' ? qRift() : qTab === 'ach' ? qAch() : qTab === 'book' ? qBook() : qAuto());
 }
 // 바뀐 줄만 교체 (버튼이 매초 새로 만들어져 클릭이 씹히는 것 방지)
 function morph(el, html) {
@@ -1571,7 +1746,14 @@ function bindQuest() {
     else if (act === 'boost') { if (useBoost(S)) addLog('<b>' + t('q.boostLog', { m: BOOST_MIN, x: BOOST_X }) + '</b>'); }
     else if (act === 'claim') { const r = claimMission(S, b.dataset.k, b.dataset.id); if (r) addLog(t('q.claimLog') + ' · ' + rewardText(r)); }
     else if (act === 'ach') { const r = claimAch(S, b.dataset.id); if (r) addLog(t('q.achLog', { a: t('ach.' + b.dataset.id) }) + ' · ' + rewardText({ stones: r })); }
-    else if (act === 'tower') { if (towerStart(S)) { addLog('<b>' + t('q.towerLog') + '</b>'); document.querySelector('.tabs button[data-go="dungeon"]').click(); } }
+    else if (act === 'tower') { const id = b.dataset.id || 'inf'; if (towerStart(S, id)) { addLog('<b>' + t('tw.start', { t: t('tw.' + id) }) + '</b>'); document.querySelector('.tabs button[data-go="dungeon"]').click(); } }
+    else if (act === 'rift') { const L = riftState(S).lvl; if (riftStart(S, L)) { addLog('<b>' + t('rift.startLog', { n: S.boss.L }) + '</b>'); document.querySelector('.tabs button[data-go="dungeon"]').click(); } }
+    else if (act === 'rlv') { const r = riftState(S); r.lvl = Math.max(1, Math.min((r.best || 0) + 1, (r.lvl || 1) + (+b.dataset.d))); }
+    else if (act === 'ron') runeEquip(S, +b.dataset.i);
+    else if (act === 'roff') { if (!runeUnequip(S, +b.dataset.i)) toast(t('rune.bagFull')); }
+    else if (act === 'rup') runeUpgrade(S, +b.dataset.i);
+    else if (act === 'rdis') { const R = runeState(S), ru = R.bag[+b.dataset.i]; if (ru) runeDismantle(S, x => x === ru); }
+    else if (act === 'rdisLow') { const r = runeDismantle(S, x => x.r <= 1); if (r.n) addLog(t('rune.disLog', { n: r.n, d: r.dust })); }
     save(S); st = stats(S); buildQuest(); render();
   });
   $('#qBody').addEventListener('change', e => {
@@ -1767,8 +1949,18 @@ function bindUI() {
   $('#compModal').onclick = e => { if (e.target.id === 'compModal') $('#compModal').classList.add('hidden'); };
   $('#pull1').onclick = () => doPull(false);
   $('#pull10').onclick = () => doPull(true);
+  bindAutoPull();
+  $('#lvAll').onclick = () => {
+    const r = compLevelUpAll(S);
+    if (!r.n) return;
+    save(S); st = stats(S); buildComps(); render();
+    const names = Object.entries(r.ups).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([id, k]) => `${COMP_BY_ID[id].name} +${k}`).join(', ');
+    addLog('<b>' + t('ui.lvAllLog', { n: r.n, s: fmtN(r.spent) }) + '</b> ' + names + (Object.keys(r.ups).length > 3 ? ' …' : ''));
+    toast(t('ui.lvAllLog', { n: r.n, s: fmtN(r.spent) }));
+  };
   holdRepeat($('#buyStone'), () => { if (!buyStone(S)) return false; render(); return true; },
     n => addLog(n ? t('ui.stonesPlus', { n: n * 10 }) : t('ui.noGold')));
+  $('#buyStoneAll').onclick = () => { const r = buyStoneMax(S); if (!r.stones) { toast(t('ui.noGold')); return; } save(S); render(); addLog('<b>' + t('ui.stonesPlus', { n: fmtN(r.stones) }) + '</b> · ' + t('ui.goldSpent', { g: fmt(r.spent) })); toast(t('ui.stonesPlus', { n: fmtN(r.stones) })); };
 
   let armed = false, tm = null;
   $('#rbBtn').onclick = async () => {

@@ -94,6 +94,11 @@
       <div class="skills" id="skA"></div>
       <div class="sech" data-i18n="ui.passive">Passive</div>
       <div class="skills" id="skP"></div>
+      <div class="msbox" id="msBox">
+        <div class="sech"><span data-i18n="ui.mastery">Mastery</span><span id="msHead"></span></div>
+        <div class="relnote" data-i18n="ui.msNote"></div>
+        <div id="msList"></div>
+      </div>
     </section>
 
     <section class="page hidden" data-tab="comp">
@@ -103,9 +108,10 @@
         <div class="grow">
           <button class="big sm" id="pull1"><span data-i18n="ui.pull1">Summon x1</span><i id="pull1Cost"></i></button>
           <button class="big sm" id="pull10"><span data-i18n="ui.pull10">Summon x10</span><i id="pull10Cost"></i></button>
+          <button class="big sm alt" id="pull100"><span data-i18n="ui.pull100">Summon x100</span><i id="pull100Cost"></i></button>
         </div>
-        <button class="mini wide" id="buyStone"><span data-i18n="ui.buyStones">Buy 10 stones</span> <b id="stoneCost">0</b><i id="stoneDisc"></i></button>
-        <div class="shardline" id="shardLine"></div>
+        <div class="stonerow"><button class="mini" id="buyStone"><span data-i18n="ui.buyStones">Buy 10 stones</span> <b id="stoneCost">0</b><i id="stoneDisc"></i></button><button class="mini" id="buyStoneAll"><span data-i18n="ui.buyStonesAll">Buy max</span> <b id="buyAllN"></b></button></div>
+        <div class="shardrow"><div class="shardline" id="shardLine"></div><button class="mini" id="lvAll" data-i18n="ui.lvAll">Level up all</button></div>
         <div class="rates"><span id="rateLine"></span> · <b id="pity"></b></div>
       </div>
       <div class="ownsum" id="ownsum"></div>
@@ -196,7 +202,24 @@
     <div class="win gwin">
       <h2 id="gTitle" data-i18n="ui.summonResult">Summon</h2>
       <div class="gresult" id="gResult"></div>
-      <button class="big" id="gOk" data-i18n="ui.ok">OK</button>
+      <div class="grow gbtns"><button class="big sm alt hidden" id="gAuto" data-i18n="ui.pullAuto">Auto summon</button><button class="big sm" id="gOk" data-i18n="ui.ok">OK</button></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="autoModal">
+    <div class="win awin">
+      <h2 id="aTitle">Auto summon</h2>
+      <p id="aCount"></p>
+      <div class="arar" id="aRar"></div>
+      <div class="asum" id="aSum"></div>
+      <div class="gresult ahi" id="aHi"></div>
+      <div class="areason" id="aReason"></div>
+      <div class="aopt" id="aOpt">
+        <label class="chk"><input type="checkbox" id="aUR"><span data-i18n="ui.aOptUR">Stop on UR or better</span></label>
+        <label class="chk"><input type="checkbox" id="aNewc"><span data-i18n="ui.aOptNew">Stop on a new ally</span></label>
+        <label class="chk"><input type="checkbox" id="aBuy"><span data-i18n="ui.aOptBuy">Buy stones with gold when out</span></label>
+      </div>
+      <div class="grow"><button class="big sm alt hidden" id="aRestart" data-i18n="ui.aRestart">Start again</button><button class="big sm" id="aStop">Stop</button></div>
     </div>
   </div>
 

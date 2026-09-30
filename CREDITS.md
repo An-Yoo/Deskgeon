@@ -524,4 +524,20 @@ mon/m25.png  ←  mon/demons/hellion.png
 floor/f21.png  ←  dngn/floor/mosaic0.png
 wall/w25_0.png  ←  dngn/wall/zot_blue0.png
 wall/w25_1.png  ←  dngn/wall/zot_blue1.png
+comp/iron_giant.png  ←  mon/unique/iron_giant.png
+comp/chuck.png  ←  mon/unique/chuck.png
+comp/giaggostuono.png  ←  mon/unique/giaggostuono.png
+comp/jormungandr.png  ←  mon/unique/jormungandr.png
+comp/ijyb.png  ←  mon/unique/ijyb.png
+comp/natasha.png  ←  mon/unique/natasha.png
+comp/lamia.png  ←  mon/unique/lamia.png
+comp/tiamat_black.png  ←  mon/unique/tiamat_black.png
+comp/sigmund.png  ←  mon/unique/sigmund.png
+comp/murray.png  ←  mon/unique/murray.png
+comp/tiamat_red.png  ←  mon/unique/tiamat_red.png
+comp/geryon.png  ←  mon/unique/geryon.png
+comp/norris.png  ←  mon/unique/norris.png
+comp/dissolution.png  ←  mon/unique/dissolution.png
+comp/tiamat_white.png  ←  mon/unique/tiamat_white.png
+comp/tiamat_purple.png  ←  mon/unique/tiamat_purple.png
 ```

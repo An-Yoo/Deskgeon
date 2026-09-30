@@ -334,7 +334,7 @@ button.mini.armed { background: linear-gradient(#ffd0a8, #ff9f6b); color: #2a1a1
 .cd-row.csk b { color: #ffd98a; }
 
 /* 꾹 누르기 연속 실행: 길게 눌러도 텍스트 선택/롱프레스 메뉴가 뜨지 않게 */
-.sk, .up, #buyStone, #cdLv, .ench { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
+.sk, .up, #buyStone, #cdLv, .ench, .ms { user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; }
 .sk.holding, .up.holding, #buyStone.holding, #cdLv.holding { filter: brightness(1.18); box-shadow: inset 0 0 0 2px #8ee6ff; }
 
 /* 유물 (환생 탭) */
@@ -427,3 +427,42 @@ button.mini.armed { background: linear-gradient(#ffd0a8, #ff9f6b); color: #2a1a1
 .enchbox.open .foldh .chev { transform: rotate(90deg); }
 .enchbox .foldb { display: none; flex-direction: column; gap: 4px; }
 .enchbox.open .foldb { display: flex; }
+
+/* 마스터리 */
+.msbox { display: flex; flex-direction: column; gap: 4px; margin-top: 2px; }
+#msList { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+.up.ms { padding: 5px 7px; gap: 4px; flex-wrap: wrap; } .up.ms .n b { font-size: 11px; } .up.ms .n span { font-size: 9px; }
+.up.ms .lvl { min-width: 0; font-size: 10px; } .up.ms .cost b { color: #8ee6ff; font-size: 10.5px; }
+.msbox.lock #msList { opacity: .45; }
+
+/* 100회 · 연속 소환 */
+button.big.alt { background: linear-gradient(#c9e9ff, #8ec5f0); box-shadow: 0 3px 0 #3a5f7a; }
+.awin { width: 340px; }
+.arar { display: flex; gap: 4px; justify-content: center; flex-wrap: wrap; }
+.arar span { font-size: 10px; font-weight: 800; padding: 2px 6px; border: 2px solid; background: #0e0c1a; } .arar b { color: var(--text); }
+.asum { font-size: 10.5px; color: var(--muted); text-align: center; }
+.ahi { max-height: 190px; overflow-y: auto; }
+.ahi .g { animation: none; }
+.aempty { grid-column: 1 / -1; font-size: 10px; color: var(--muted); padding: 10px 0; }
+.areason { font-size: 11px; font-weight: 800; color: var(--muted); min-height: 14px; } .areason.hi { color: #ffc35c; }
+.aopt { display: flex; flex-direction: column; gap: 3px; text-align: left; font-size: 10.5px; }
+.aopt .chk { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+.awin .grow { width: 100%; } .awin .grow .big { flex: 1; white-space: nowrap; }
+.gwin .gbtns { width: 100%; } .gwin .gbtns .big { flex: 1; }
+.gacha .grow .big.sm { padding: 6px 2px; font-size: 11px; }
+.shardrow { display: flex; align-items: center; gap: 6px; } .shardrow .shardline { flex: 1; text-align: left; } .shardrow .mini { flex: none; } .shardrow .mini:disabled { opacity: .45; }
+/* v5.2 탑 3종 · 균열 · 룬 */
+.qcard.twc { border-left-width: 4px; } .tw-inf { border-left-color: #8a7cff; } .tw-storm { border-left-color: #4fc3ff; } .tw-iron { border-left-color: #b0b6c4; }
+.qcard .qx.rw { color: #ffd479; font-size: 10px; } .qcard .big.sm { padding: 6px; font-size: 12px; }
+.rlv { display: flex; align-items: center; gap: 8px; width: 100%; justify-content: center; }
+.rlv > div { display: flex; flex-direction: column; min-width: 110px; } .rlv span { font-size: 9.5px; color: var(--muted); } .rlv .mini { width: 32px; }
+.rslot { display: flex; align-items: center; gap: 6px; padding: 5px 6px; background: #0e0c1a; border: 2px solid #2e2947; font-size: 10.5px; }
+.rslot.empty { color: var(--muted); justify-content: center; }
+.rslot .rn { flex: 1; min-width: 0; line-height: 1.35; } .rslot .rn i { font-style: normal; color: var(--muted); margin-left: 4px; font-size: 9.5px; }
+.rslot .rb { display: flex; gap: 3px; flex: none; } .rslot .mini { padding: 3px 6px; font-size: 10px; }
+.qh .mini { flex: none; padding: 3px 6px; font-size: 10px; }
+.qnav .mini { font-size: 10.5px; }
+/* v5.3 다단 치명타 */
+#dmgs span.crit2 { color: #ff9a2e; font-size: 17px; text-shadow: 0 0 6px rgba(255,140,40,.7), 1px 1px 0 #000; }
+#dmgs span.crit3 { color: #ff3b3b; font-size: 19px; text-shadow: 0 0 8px rgba(255,50,50,.8), 1px 1px 0 #000; }
+.stonerow { display: flex; gap: 4px; width: 100%; } .stonerow .mini { flex: 1 1 0; min-width: 0; padding: 5px 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .stonerow .mini:disabled { opacity: .45; }
