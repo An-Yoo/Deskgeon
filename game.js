@@ -17,10 +17,10 @@ export const SKILL_MAX = 10;
 // ---------- 직업 ----------
 export const CLASS_IDS = ['war', 'rog', 'mag', 'clr'];
 export const CLASSES = {
-  war: { name: '전사',   color: '#ff8a5c', desc: '체력 +30% · 받는 피해 -10%',               mods: { hpP: 30, def: 10 } },
-  rog: { name: '도적',   color: '#7ee08a', desc: '치명타 +8% · 공격속도 +15 · 골드 +15%',     mods: { crit: 8, spd: 15, goldP: 15 } },
-  mag: { name: '마법사', color: '#8fb8ff', desc: '스킬 피해 +40% · 쿨타임 -10% · 체력 -15%', mods: { skillP: 40, cdr: 10, hpP: -15 } },
-  clr: { name: '성직자', color: '#ffd98a', desc: '체력 +15% · 보스 피해 +15% · 보스전 재생 1.5%/초 · 동료 피해 +40%', mods: { hpP: 15, bossP: 15, regen: 1.5, compP: 40 } },
+  war: { name: '전사',   color: '#ff8a5c', desc: '체력 +30% · 공격력 +30% · 받는 피해 -10%',               mods: { hpP: 30, def: 10, atkP: 30 } },
+  rog: { name: '도적',   color: '#7ee08a', desc: '치명타 +8% · 치명타 피해 +40% · 공격속도 +15 · 골드 +15%',     mods: { crit: 8, spd: 15, goldP: 15, critDmg: 40 } },
+  mag: { name: '마법사', color: '#8fb8ff', desc: '스킬 피해 +30% · 쿨타임 -10% · 체력 -15%', mods: { skillP: 30, cdr: 10, hpP: -15 } },
+  clr: { name: '성직자', color: '#ffd98a', desc: '체력 +15% · 보스 피해 +30% · 보스전 재생 1.5%/초 · 동료 피해 +90%', mods: { hpP: 15, bossP: 30, regen: 1.5, compP: 90 } },
 };
 
 // 스탯 키 표시명
@@ -115,10 +115,16 @@ export const RARITIES = [
 function _nameArr(prefix, n) {
   return new Proxy(Array.from({ length: n }, (_, i) => i), { get: (arr, k) => (typeof k === 'string' && /^\d+$/.test(k)) ? t(prefix + k) : arr[k] });
 }
-export const MONSTERS = _nameArr('mon.', 16);
-export const FLOOR_NAMES = _nameArr('floor.', 16);
-export const FLOOR_TILES = [1, 3, 1, 11, 2, 2, 0, 1, 10, 11, 4, 6, 6, 4, 9, 8];
-export function monsterIndex(f) { return Math.min(MONSTERS.length - 1, Math.floor((f - 1) / 3)); }
+export const ZONES = 26;
+export const MONSTERS = _nameArr('mon.', ZONES);
+export const FLOOR_NAMES = _nameArr('floor.', ZONES);
+export const FLOOR_TILES = [1, 3, 1, 11, 2, 2, 0, 1, 10, 11, 4, 6, 6, 4, 9, 8, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+// 한 바퀴 = B1~128: 3층마다 새 구역(B1~48, 16곳) · 8층마다(B49~120, 9곳) · 혼돈의 왕좌(B121~128)
+// B129부터는 같은 구역을 처음부터 다시 돌고, 적 능력치만 층수대로 계속 오른다
+export const LOOP_LEN = 128;
+export function loopOf(f) { return Math.floor((Math.max(1, f) - 1) / LOOP_LEN); }
+export function monsterIndex(f) { const g = ((Math.max(1, f) - 1) % LOOP_LEN) + 1; return g <= 48 ? Math.floor((g - 1) / 3) : Math.min(ZONES - 1, 16 + Math.floor((g - 49) / 8)); }
+export function zoneStart(z) { return z < 16 ? z * 3 + 1 : 49 + (z - 16) * 8; }
 export function isBossFloor(f) { return f % BOSS_EVERY === 0; }
 export function killsNeeded(f) { return Math.min(30, 10 + Math.floor((f - 1) / 10) * 3); }
 export function monHp(f) { return 14 * Math.pow(1.4, f - 1); }
@@ -147,9 +153,8 @@ export function breakMult(id, lv) { return BREAK_IDS.includes(id) ? Math.pow(BRE
 export function upEff(id, lv) {
   lv = lv || 0;
   if (!BREAK_IDS.includes(id)) return lv;
-  let sum = 0;
-  for (let k = 0; k * BREAK_EVERY < lv; k++) sum += Math.min(BREAK_EVERY, lv - k * BREAK_EVERY) * Math.pow(BREAK_X, k);
-  return sum;
+  const K = Math.floor(lv / BREAK_EVERY), rem = lv - K * BREAK_EVERY;           // 등비수열 합 (레벨이 커도 계산량 일정)
+  return BREAK_EVERY * (Math.pow(BREAK_X, K) - 1) / (BREAK_X - 1) + rem * Math.pow(BREAK_X, K);
 }
 
 // ---------- 유물 (명예로 구매, 환생해도 유지) ----------
@@ -376,11 +381,11 @@ export const PULL10_COST = 90;
 export const AWAKEN_MAX = 5;
 export const PITY = 50;
 // ---- 동료 조각: 5각성 이후 중복은 등급별 조각으로 바뀌고, 조각으로 동료 레벨을 올린다
-export const SHARD_GAIN = [1, 2, 5, 15, 40];        // R · SR · SSR · UR · LR
+export const SHARD_GAIN = [2, 4, 8, 20, 60];        // R · SR · SSR · UR · LR
 export const CLV_MAX = 20;
 export const CLV_STEP = 0.1;                       // 레벨당 동행·보유 효과·공격력 +10% (곱연산)
-const CLV_C0 = [3, 5, 8, 12, 18];
-export function compLvCost(c, lv) { return Math.ceil(CLV_C0[c.r] * Math.pow(1.22, lv || 0)); }
+const CLV_C0 = [3, 6, 12, 24, 40];                 // 높은 등급일수록 훨씬 비싸게 (UR·LR은 효과 원값이 커서)
+export function compLvCost(c, lv) { return Math.ceil(CLV_C0[c.r] * Math.pow(1.25, lv || 0)); }
 export function compLvMult(lv) { return 1 + CLV_STEP * (lv || 0); }
 export function compLevelUp(s, id) {
   const c = COMP_BY_ID[id], st = (s.comp || {})[id];
@@ -389,7 +394,7 @@ export function compLevelUp(s, id) {
   if (lv >= CLV_MAX) return false;
   const cost = compLvCost(c, lv);
   if ((s.shards || 0) < cost) return false;
-  s.shards -= cost; st.lv = lv + 1; COMP_VER++;
+  s.shards -= cost; st.lv = lv + 1; COMP_VER++; qAdd(s, 'clv', 1);
   return true;
 }
 const _lv = (s, c) => (((s && s.comp) || {})[c.id] || {}).lv || 0;
@@ -456,7 +461,7 @@ export function pull(s, ten) {
     s.pity = c.r >= 2 ? 0 : (s.pity || 0) + 1;
     out.push(gainCompanion(s, c));
   }
-  s.pulls += n;
+  s.pulls += n; qAdd(s, 'pull', n);
   return out;
 }
 export const PRESET_MAX = 3;
@@ -503,16 +508,87 @@ export function newSave() {
     comp: {}, team: [], banner: 'all', presets: [], bossLock: false, autoSell: -1, lang: 'en',
     stones: 30, pulls: 0, pity: 0, stoneBuys: 0, shards: 0,
     honor: 0, honorPts: 0, relic: {}, bestFloor: 0, rebirths: 0,
+    life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbFloor: 0 },
+    ench: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, bossFails: 0,
     autoEquip: true, pending: null,
     lastTick: Date.now(), createdAt: Date.now(),
   };
 }
 function clampItem(it) {
   if (it && typeof it === 'string') it = decItem(it);
-  if (!it || !SLOT_BY_ID[it.s]) return null;
-  const o = { ...it, t: Math.min(it.t, SLOT_BY_ID[it.s].tiers - 1), r: Math.min(it.r || 0, 4) };
-  if (o.u && !UNIQUES[o.u]) delete o.u;
-  if (o.a) o.a = o.a.filter(x => Array.isArray(x) && AFFIXES[x[0]]);
+  if (!it || typeof it !== 'object' || !SLOT_BY_ID[it.s]) return null;
+  const sl = SLOT_BY_ID[it.s];
+  const o = { s: it.s, t: int(it.t, 0, 0, sl.tiers - 1), r: int(it.r, 0, 0, 4), f: int(it.f, 0, 0, 100000) };
+  if (it.n != null) o.n = int(it.n, 1, 1, 1e9);
+  if (it.u && UNIQUES[it.u] && UNIQUES[it.u].slot === it.s && o.r === 4) o.u = it.u;
+  if (Array.isArray(it.a)) {
+    // 옵션 값은 그 등급·단계에서 나올 수 있는 최대치(기준값 × 1.3 × 등급 보정)까지만 인정
+    o.a = it.a.filter(x => Array.isArray(x) && AFFIXES[x[0]]).slice(0, AFFIX_COUNT[o.r]).map(([k, v]) => [k, Math.round(num(v, 0, 0, affixBase(k, o.t) * 1.3 * (1 + 0.15 * o.r)) * 10) / 10]);
+    if (!o.a.length) delete o.a;
+  }
+  return o;
+}
+// ---- 세이브 값 검증 도우미: 숫자가 아니거나 범위를 벗어나면 기본값/경계값으로
+function num(v, d = 0, lo = 0, hi = 1e300) { v = Number(v); return Number.isFinite(v) ? Math.min(hi, Math.max(lo, v)) : d; }
+function int(v, d = 0, lo = 0, hi = 1e15) { return Math.floor(num(v, d, lo, hi)); }
+const isDay = v => typeof v === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(v);
+function pickObj(src, keys, fn) { const o = {}; if (src && typeof src === 'object') for (const k of keys) if (Object.prototype.hasOwnProperty.call(src, k)) { const v = fn(src[k], k); if (v != null) o[k] = v; } return o; }
+// 불러온 세이브(로컬·동기화·드라이브·세이브 코드 공통)를 게임이 다룰 수 있는 값으로 정리한다
+function sanitize(o, now = Date.now()) {
+  o.cls = CLASSES[o.cls] ? o.cls : null;
+  o.banner = o.banner === 'all' || CLASSES[o.banner] ? o.banner : 'all';
+  o.lang = typeof o.lang === 'string' && /^[a-z]{2}$/.test(o.lang) ? o.lang : 'en';
+  o.gold = num(o.gold); o.xp = num(o.xp); o.honor = num(o.honor); o.honorPts = num(o.honorPts); o.totalKills = num(o.totalKills);
+  o.level = int(o.level, 1, 1, 1e6); o.sp = int(o.sp, 0, 0, 1e7);
+  o.floor = int(o.floor, 1, 1, 1e6); o.maxFloor = int(o.maxFloor, 1, o.floor, 1e6);
+  o.bestFloor = int(o.bestFloor, 0, o.maxFloor, 1e6); o.cycleBest = int(o.cycleBest, 0, o.maxFloor, o.bestFloor); o.savedAt = num(o.savedAt, 0, 0, now + 60000);
+  o.kills = int(o.kills, 0, 0, 1e6); o.prog = num(o.prog, 0, 0, 1);
+  o.stones = int(o.stones, 0, 0, 1e12); o.shards = int(o.shards, 0, 0, 1e15); o.ess = num(o.ess, 0, 0, 1e15);
+  o.pulls = int(o.pulls); o.pity = int(o.pity, 0, 0, PITY); o.stoneBuys = int(o.stoneBuys, 0, 0, 1e5);
+  o.rebirths = int(o.rebirths, 0, 0, 1e8); o.karma = int(o.karma, 0, 0, 1e9); o.reinc = int(o.reinc, 0, 0, 1e8);
+  o.stuckT = num(o.stuckT, 0, 0, 1e8); o.bossFails = int(o.bossFails, 0, 0, 1000); o.autoSell = int(o.autoSell, -1, -1, 2);
+  o.autoEquip = o.autoEquip !== false; o.bossLock = !!o.bossLock;
+  o.lastTick = num(o.lastTick, now, 0, now + 60000); o.createdAt = num(o.createdAt, now, 0, now);
+  // 장비 층 보정은 도달한 최고 층에서 나올 수 있는 값까지만
+  const fMax = Math.floor(o.bestFloor / 4) + 1;
+  for (const k of Object.keys(o.equip || {})) if (o.equip[k]) o.equip[k].f = Math.min(o.equip[k].f || 0, fMax);
+  for (const it of o.bag || []) it.f = Math.min(it.f || 0, fMax);
+  o.up = pickObj(o.up, UPGRADES.map(u => u.id), v => int(v, 0, 0, 20000));
+  o.relic = pickObj(o.relic, RELICS.map(r => r.id), (v, k) => int(v, 0, 0, RELIC_BY_ID[k].max || 1e5));
+  o.ench = pickObj(o.ench, SLOTS.map(s => s.id), v => int(v, 0, 0, ENCH_MAX));
+  o.ach = pickObj(o.ach, ACH.map(a => a.id), (v, k) => int(v, 0, 0, ACH.find(a => a.id === k).t.length));
+  o.skills = pickObj(o.skills, SKILLS.map(sd => sd.id), v => int(v, 0, 0, SKILL_MAX));
+  o.cd = pickObj(o.cd, SKILLS.map(sd => sd.id), v => num(v, 0, -100, 100));
+  o.ccd = pickObj(o.ccd, COMPANIONS.map(c => c.id), v => num(v, 0, -100, 100));
+  o.buffs = [];                                                           // 버프는 몇 초짜리라 불러올 때 비움 (조작된 버프 차단)
+  o.comp = pickObj(o.comp, COMPANIONS.map(c => c.id), v => v && typeof v === 'object' ? { n: int(v.n, 1, 1, 1e9), aw: int(v.aw, 0, 0, AWAKEN_MAX), lv: int(v.lv, 0, 0, CLV_MAX) } : null);
+  o.team = [...new Set((o.team || []).filter(id => typeof id === 'string' && o.comp[id]))].slice(0, TEAM_MAX);
+  o.presets = (o.presets || []).slice(0, PRESET_MAX).map(p => p && typeof p === 'object' ? { name: typeof p.name === 'string' ? p.name.replace(/[<>&"']/g, '').slice(0, 24) || null : null, team: (Array.isArray(p.team) ? p.team : []).filter(id => COMP_BY_ID[id]).slice(0, TEAM_MAX) } : null);
+  o.life = { kills: num(o.life && o.life.kills), bosses: num(o.life && o.life.bosses) };
+  o.bestiary = Array.from({ length: ZONES }, (_, i) => num((o.bestiary || [])[i]));
+  const q = o.quest && typeof o.quest === 'object' ? o.quest : {};
+  const cnt = src => pickObj(src, ['kill', 'boss', 'up', 'pull', 'tower', 'floor', 'rebirth', 'sell', 'clv', 'ench'], v => num(v));
+  const flags = (src, L) => pickObj(src, [...L.map(m => m.id), 'all'], v => (v ? true : null));
+  o.quest = { day: isDay(q.day) ? q.day : '', d: cnt(q.d), dc: flags(q.dc, DAILY), wk: isDay(q.wk) ? q.wk : '', w: cnt(q.w), wc: flags(q.wc, WEEKLY),
+    att: { last: q.att && isDay(q.att.last) ? q.att.last : '', n: int(q.att && q.att.n, 0, 0, 1e6) } };
+  o.boost = { charges: int(o.boost && o.boost.charges, 0, 0, 999), until: num(o.boost && o.boost.until, 0, 0, now + 24 * 3600e3) };
+  const tw = o.tower || {};
+  o.tower = { best: int(tw.best, 0, 0, 1e6), tries: int(tw.tries, TOWER_TRIES, 0, TOWER_TRIES), prev: tw.prev && typeof tw.prev === 'object' ? { floor: int(tw.prev.floor, o.floor, 1, 1e6), kills: int(tw.prev.kills), prog: num(tw.prev.prog, 0, 0, 1), bossLock: !!tw.prev.bossLock } : null };
+  const au = o.auto || {};
+  o.auto = { ...pickObj(au, AUTO.map(a => a.id), v => !!v), rbMode: au.rbMode === 'floor' ? 'floor' : 'stuck', rbStuck: int(au.rbStuck, 30, 5, 9999), rbFloor: int(au.rbFloor, 0, 0, 1e6) };
+  // 진행 중이던 보스/탑 상태
+  const bo = o.boss;
+  if (bo && typeof bo === 'object' && Number.isFinite(+bo.hp) && Number.isFinite(+bo.max)) {
+    const tmax = num(bo.tmax, BOSS_TIME, 1, BOSS_TIME + 60);
+    o.boss = { hp: num(bo.hp, 1, 0, +bo.max), max: num(bo.max, 1, 1), timer: num(bo.timer, tmax, 0, tmax), tmax };
+    if (bo.tower && o.tower.prev) { o.boss.tower = true; o.boss.tf = int(bo.tf, 1, 1, 1e6); o.boss.hp = Math.min(o.boss.hp, towerHp(o.boss.tf)); o.boss.max = towerHp(o.boss.tf); o.boss.gain = { ess: int(bo.gain && bo.gain.ess), stones: int(bo.gain && bo.gain.stones), shards: int(bo.gain && bo.gain.shards) }; }
+    else if (!isBossFloor(o.floor)) o.boss = null;
+    else { o.boss.max = bossHp(o.floor); o.boss.hp = Math.min(o.boss.hp, o.boss.max); }
+  } else o.boss = null;
+  o.hp = o.boss && o.hp != null ? num(o.hp, 0, 0) : null;
+  // 오프라인 보고서
+  const p = o.pending;
+  o.pending = p && typeof p === 'object' ? { seconds: num(p.seconds), gold: num(p.gold), floors: int(p.floors, 0, 0, 1e6), kills: num(p.kills), levels: int(p.levels, 0, 0, 1e6), stones: int(p.stones, 0, 0, 1e9), rebirths: int(p.rebirths), drops: (Array.isArray(p.drops) ? p.drops : []).map(clampItem).filter(Boolean).slice(0, 8) } : null;
   return o;
 }
 export function normalize(s) {
@@ -535,8 +611,17 @@ export function normalize(s) {
   }
   o.up = { ...(s.up || {}) };
   o.relic = { ...(s.relic || {}) };
+  o.life = { ...b.life, ...(s.life || {}) }; if (!s.life) o.life.kills = s.totalKills || 0;
+  o.quest = s.quest && typeof s.quest === 'object' ? s.quest : {};
+  o.boost = { ...b.boost, ...(s.boost || {}) };
+  o.tower = { ...b.tower, ...(s.tower || {}) };
+  o.auto = { ...b.auto, ...(s.auto || {}) };
+  o.ench = { ...(s.ench || {}) }; o.ach = { ...(s.ach || {}) };
+  o.bestiary = Array.isArray(s.bestiary) ? s.bestiary.slice(0, ZONES) : [];
+  // 탑 도중 저장된 세이브: 보스 상태는 그대로 이어서 진행
   if (s.honorPts == null) o.honorPts = o.honor || 0;   // v4.6 이전 세이브: 지금까지 모은 명예를 유물 구매용으로 지급
   o.bestFloor = Math.max(o.bestFloor || 0, o.maxFloor || 0);
+  if (s.cycleBest == null) o.cycleBest = o.bestFloor;
   o.skills = { ...(s.skills || {}) };
   o.cd = { ...(s.cd || {}) };
   o.buffs = Array.isArray(s.buffs) ? s.buffs : [];
@@ -569,7 +654,7 @@ export function normalize(s) {
     o.cls = null;
     o.v = SAVE_VER;
   }
-  return o;
+  return sanitize(o);
 }
 
 // ---------- 아이템 ----------
@@ -700,7 +785,7 @@ export function stats(s) {
   for (const sl of SLOTS) {
     const it = s.equip[sl.id];
     if (!it) continue;
-    const v = itemValue(it);
+    const v = itemValue(it) * enchMult(s, sl.id);
     if (sl.stat === 'atk') atk += v;
     else if (sl.stat === 'hp') hp += v;
     else add(sl.stat, v);
@@ -748,7 +833,8 @@ export function stats(s) {
   if (mech.double) extra += 0.15;
   const crit = Math.min(90, 5 + a.crit);
   const critMult = 2.5 + a.critDmg / 100;
-  const rAtk = 1 + relicVal(s, 'atk') / 100, rHp = 1 + relicVal(s, 'hp') / 100;
+  const sb = setBonus(s), ap = achPower(s), kx = 1 + KARMA_POW * (s.karma || 0);
+  const rAtk = (1 + relicVal(s, 'atk') / 100) * (1 + sb / 100) * ap.atk * kx, rHp = (1 + relicVal(s, 'hp') / 100) * (1 + sb / 100) * ap.hp * kx;
   const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult * rAtk;
   const hpF = hp * Math.max(0.2, 1 + a.hpP / 100) * rHp;
   const hit = atkF * (1 + (crit / 100) * (critMult - 1));
@@ -759,13 +845,15 @@ export function stats(s) {
   const compHits = team.map(({ c, aw, lv }) => { const d = compCoef(c, aw, lv) * atkF * compMult * (selfX[c.id] || 1); compDps += d; return { id: c.id, dps: d }; });
   const compActs = team.filter(x => x.aw >= CSK_AW_A).map(x => x.c);
   const cdr = Math.min(50, a.cdr);
+  // 숫자가 무한대로 터지면 이후 계산이 전부 NaN이 되므로 상한을 둔다
+  const cap = v => (Number.isFinite(v) ? Math.min(v, 1e300) : (v > 0 ? 1e300 : 0));
   return {
-    atk: atkF, hp: hpF, crit, critMult, spd, aps, hit,
-    heroDps, compDps, compHits, compActs, dps: heroDps + compDps,
+    atk: cap(atkF), hp: cap(hpF), crit, critMult, spd, aps, hit: cap(hit),
+    heroDps: cap(heroDps), compDps: cap(compDps), compHits, compActs, dps: cap(heroDps + compDps),
     def: Math.min(75, a.def + pShield), cdr,
-    cdRate: 1 / (1 - cdr / 100) + pCdr,
+    cdRate: 1 / (1 - cdr / 100) + Math.min(0.6, pCdr),
     regen: a.regen + pHeal,
-    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100),
+    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100) * ap.gold,
     bossMult: (1 + a.bossP / 100) * (1 + relicVal(s, 'boss') / 100),
     skillMult: 1 + a.skillP / 100,
     weak: Math.min(80, a.weak),
@@ -836,6 +924,8 @@ function pushBuff(s, id, t, stats) {
 export function step(s, dt, ev) {
   ev = ev || {};
   if (!s.cls) return ev;
+  autoTick(s, dt, ev);
+  if (!s.boss || !s.boss.tower) s.stuckT = (s.stuckT || 0) + dt;
   s.dropBank = Math.min(3, (s.dropBank || 0) + dt * DROP_PER_SEC);                    // 직업 선택 전에는 멈춤
   const st = stats(s);
 
@@ -872,6 +962,7 @@ export function step(s, dt, ev) {
     }
   }
 
+  if (s.boss && s.boss.tower) return towerStep(s, st, dt, burst, ev);
   if (s.boss) {
     s.boss.timer -= dt;
     s.boss.hp -= (st.dps * dt + burst) * st.bossMult;
@@ -887,14 +978,14 @@ export function step(s, dt, ev) {
       const bonus = 3 + Math.floor(s.floor / 5);
       s.stones += bonus;
       ev.stones = (ev.stones || 0) + bonus;
-      s.boss = null; s.hp = null;
+      s.boss = null; s.hp = null; s.bossFails = 0;
       advanceFloor(s, ev);
     } else if (s.boss.timer <= 0 || s.hp <= 0) {
       ev.bossLose = true;
       s.boss = null; s.hp = null;
       s.kills = 0; s.prog = 0;
       s.floor = Math.max(1, s.floor - 1);
-      s.bossLock = true;
+      s.bossLock = true; s.bossFails = (s.bossFails || 0) + 1; s.autoBossT = 0;
     }
     return ev;
   }
@@ -942,7 +1033,10 @@ function gainKill(s, st, boss, ev, n) {
   s.gold += g;
   s.xp += xpPerKill(f) * (boss ? 14 : 1) * n * (st.xpMult || 1);
   s.totalKills += n;
-  if (!boss) s.kills += n;
+  if (!boss) { s.kills += n; const mi = monsterIndex(f); (s.bestiary ||= [])[mi] = (s.bestiary[mi] || 0) + n; }
+  (s.life ||= {}).kills = (s.life.kills || 0) + n;
+  qAdd(s, 'kill', n);
+  if (boss) { s.life.bosses = (s.life.bosses || 0) + 1; qAdd(s, 'boss', 1); }
   ev.gold = (ev.gold || 0) + g;
   ev.kills = (ev.kills || 0) + n;
   let guard = 0;
@@ -971,7 +1065,9 @@ function advanceFloor(s, ev) {
   s.floor++;
   s.kills = 0; s.prog = 0;
   if (s.floor > s.maxFloor) {
-    s.maxFloor = s.floor;
+    s.maxFloor = s.floor; s.stuckT = 0; qAdd(s, 'floor', 1);
+    if (s.floor > (s.bestFloor || 0)) s.bestFloor = s.floor;
+    if (s.floor > (s.cycleBest || 0)) s.cycleBest = s.floor;
     const ns = 2 + relicVal(s, 'stone');
     s.stones += ns;
     ev.stones = (ev.stones || 0) + ns;
@@ -980,12 +1076,15 @@ function advanceFloor(s, ev) {
   ev.floorUp = s.floor;
 }
 
+// 희귀 이상 장비는 팔 때 강화 재료인 정수를 남긴다 (희귀 1 · 영웅 3 · 전설 10)
+export const ESS_BY_R = [0, 0, 1, 3, 10];
+function sellGain(s, it, cnt = 1) { const g = sellPrice(it) * cnt; s.gold += g; s.ess = (s.ess || 0) + ESS_BY_R[it.r] * cnt; qAdd(s, 'sell', cnt); return g; }
 export function pickup(s, it, ev) {
   ev = ev || {};
   const cur = s.equip[it.s];
   // 자동 판매: 설정한 등급 이하이고 착용 중보다 좋지 않으면 바로 판다
   if ((s.autoSell ?? -1) >= 0 && it.r <= s.autoSell && cur && itemScore(it) <= itemScore(cur)) {
-    s.gold += sellPrice(it); ev.autoSold = (ev.autoSold || 0) + 1; return;
+    sellGain(s, it); ev.autoSold = (ev.autoSold || 0) + 1; return;
   }
   if (s.autoEquip && (!cur || itemScore(it) > itemScore(cur))) {
     s.equip[it.s] = it;
@@ -1009,8 +1108,7 @@ export function trimBag(s) {
   if (s.bag.length <= BAG_SOFT_CAP) return 0;
   const drop = s.bag.map((b, i) => [itemScore(b), i]).sort((a, b) => a[0] - b[0]).slice(0, s.bag.length - BAG_SOFT_CAP);
   const rm = new Set(drop.map(x => x[1]));
-  let g = 0; s.bag = s.bag.filter((b, i) => { if (rm.has(i)) { g += sellPrice(b) * (b.n || 1); return false; } return true; });
-  s.gold += g;
+  s.bag = s.bag.filter((b, i) => { if (rm.has(i)) { sellGain(s, b, b.n || 1); return false; } return true; });
   return rm.size;
 }
 function addToBag(s, it, ev) {
@@ -1036,8 +1134,7 @@ export function sellFromBag(s, idx, all = true) {
   const it = s.bag[idx];
   if (!it) return 0;
   const cnt = all ? (it.n || 1) : 1;
-  const p = sellPrice(it) * cnt;
-  s.gold += p;
+  const p = sellGain(s, it, cnt);
   if (all || (it.n || 1) <= 1) s.bag.splice(idx, 1); else it.n--;
   return p;
 }
@@ -1045,19 +1142,17 @@ export function sellAllWorse(s) {
   let total = 0, cnt = 0;
   s.bag = s.bag.filter(it => {
     const cur = s.equip[it.s];
-    if (cur && itemScore(it) <= itemScore(cur)) { total += sellPrice(it) * (it.n || 1); cnt += it.n || 1; return false; }
+    if (cur && itemScore(it) <= itemScore(cur)) { total += sellGain(s, it, it.n || 1); cnt += it.n || 1; return false; }
     return true;
   });
-  s.gold += total;
   return total;
 }
 export function sellByRarity(s, maxR) {
   let total = 0;
   s.bag = s.bag.filter(it => {
-    if (it.r <= maxR) { total += sellPrice(it) * (it.n || 1); return false; }
+    if (it.r <= maxR) { total += sellGain(s, it, it.n || 1); return false; }
     return true;
   });
-  s.gold += total;
   return total;
 }
 
@@ -1090,7 +1185,7 @@ export function buyUpgrade(s, id, k = 1) {
   if (!u || k < 1) return false;
   const n = s.up[id] || 0, c = upgradeCostN(u, n, k);
   if (s.gold < c) return false;
-  s.gold -= c; s.up[id] = n + k;
+  s.gold -= c; s.up[id] = n + k; qAdd(s, 'up', k);
   return true;
 }
 export function buyStone(s) {
@@ -1105,7 +1200,7 @@ export const REBIRTH_FLOOR = 30;
 export function honorGain(s) {
   if (s.maxFloor < REBIRTH_FLOOR) return 0;
   // 층이 깊을수록 기하급수로 증가: B30 3 · B35 4 · B40 7 · B45 12 · B50 20 · B60 52 · B70 135
-  return Math.max(1, Math.floor(3 * Math.pow(1.10, s.maxFloor - REBIRTH_FLOOR)));
+  return Math.max(1, Math.floor(3 * Math.pow(1.10, s.maxFloor - REBIRTH_FLOOR) * (1 + KARMA_HONOR * (s.karma || 0))));
 }
 export function rebirth(s) {
   const g = honorGain(s);
@@ -1114,21 +1209,281 @@ export function rebirth(s) {
     honor: s.honor + g, honorPts: (s.honorPts || 0) + g, relic: { ...(s.relic || {}) }, bestFloor: Math.max(s.bestFloor || 0, s.maxFloor), rebirths: s.rebirths + 1, autoEquip: s.autoEquip, createdAt: s.createdAt,
     cls: s.cls, banner: s.banner,
     comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, shards: s.shards || 0, pulls: s.pulls, pity: s.pity, stoneBuys: 0, lang: s.lang,
+    ...persistKeep(s),
   };
+  keep.ess += gearEssence(s);
   Object.assign(s, newSave(), keep);
   s.lastTick = Date.now();
+  qAdd(s, 'rebirth', 1);
   return g;
 }
+// 환생·윤회에도 남는 것
+function persistKeep(s) {
+  return {
+    life: { ...(s.life || {}) }, quest: s.quest || {}, boost: { ...(s.boost || {}) }, tower: { ...(s.tower || {}), prev: null }, auto: { ...(s.auto || {}) },
+    ench: { ...(s.ench || {}) }, ess: s.ess || 0, ach: { ...(s.ach || {}) }, bestiary: (s.bestiary || []).slice(), karma: s.karma || 0, reinc: s.reinc || 0,
+    autoSell: s.autoSell, bestFloor: Math.max(s.bestFloor || 0, s.maxFloor || 0), cycleBest: Math.max(s.cycleBest || 0, s.maxFloor || 0),
+  };
+}
+// 환생·윤회 때 가방과 착용 장비는 사라지는 대신 정수로 분해된다
+export function gearEssence(s) {
+  let e = 0;
+  for (const it of s.bag || []) e += ESS_BY_R[it.r] * (it.n || 1);
+  for (const it of Object.values(s.equip || {})) if (it) e += ESS_BY_R[it.r];
+  return e;
+}
+
+// ---------- 윤회 (2차 환생) ----------
+// 누적 최고 B100 이후 해금. 명예·유물·환생 보상을 모두 내려놓고 업보를 얻는다.
+export const REINC_FLOOR = 100;
+export const KARMA_HONOR = 0.3;   // 업보 1당 명예 획득 +30%
+export const KARMA_POW = 0.15;    // 업보 1당 공격력·체력 +15% (곱연산)
+// 이번 윤회 주기에서 도달한 최고 층 기준: B100 1 · B110 4 · B120 9 · B130 16 · B150 36
+export function karmaGain(s) { const c = s.cycleBest || 0; return c < REINC_FLOOR ? 0 : Math.floor(Math.pow((c - 90) / 10, 2)); }
+export function canReinc(s) { return karmaGain(s) > 0; }
+export function reincarnate(s) {
+  if (!canReinc(s)) return 0;
+  const k = karmaGain(s);
+  const keep = {
+    cls: s.cls, banner: s.banner, autoEquip: s.autoEquip, createdAt: s.createdAt, lang: s.lang,
+    comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, shards: s.shards || 0, pulls: s.pulls, pity: s.pity,
+    rebirths: s.rebirths, ...persistKeep(s),
+  };
+  keep.karma = (s.karma || 0) + k; keep.reinc = (s.reinc || 0) + 1; keep.cycleBest = 0;
+  keep.ess = (keep.ess || 0) + gearEssence(s);
+  Object.assign(s, newSave(), keep);
+  s.lastTick = Date.now();
+  return k;
+}
+
+// ---------- 미션 · 출석 · 부스트 ----------
+const pad2 = n => String(n).padStart(2, '0');
+export function localDay(now = Date.now()) { const d = new Date(now); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+export function weekKey(now = Date.now()) { const d = new Date(now); const back = (d.getDay() + 6) % 7; return localDay(new Date(d.getFullYear(), d.getMonth(), d.getDate() - back).getTime()); }
+export function qAdd(s, k, n) { const q = s.quest; if (!q) return; if (q.d) q.d[k] = (q.d[k] || 0) + n; if (q.w) q.w[k] = (q.w[k] || 0) + n; }
+export const DAILY = [
+  { id: 'kill', need: 3000, r: { stones: 20 } },
+  { id: 'boss', need: 5, r: { stones: 20 } },
+  { id: 'up', need: 50, r: { stones: 15 } },
+  { id: 'pull', need: 20, r: { shards: 10 } },
+  { id: 'tower', need: 1, r: { ess: 10 } },
+];
+export const WEEKLY = [
+  { id: 'kill', need: 50000, r: { stones: 100 } },
+  { id: 'boss', need: 50, r: { stones: 100 } },
+  { id: 'pull', need: 200, r: { shards: 60 } },
+  { id: 'floor', need: 30, r: { boost: 1 } },
+  { id: 'rebirth', need: 3, r: { stones: 80 } },
+  { id: 'tower', need: 7, r: { ess: 60 } },
+];
+export const DAILY_ALL = { boost: 1, stones: 30 };
+export const WEEKLY_ALL = { boost: 2, stones: 150, shards: 40 };
+export const ATTEND = [{ stones: 30 }, { stones: 40 }, { shards: 20 }, { stones: 50 }, { ess: 20 }, { stones: 70 }, { stones: 100, boost: 2 }];
+export const BOOST_MIN = 30, BOOST_X = 2;
+export function questRoll(s, now = Date.now()) {
+  const q = s.quest || (s.quest = {});
+  const dk = localDay(now), wk = weekKey(now);
+  if (!q.day || dk > q.day) { q.day = dk; q.d = {}; q.dc = {}; (s.tower || (s.tower = {})).tries = TOWER_TRIES; }   // 시계를 되돌려도 다시 열리지 않게 앞으로만
+  if (!q.wk || wk > q.wk) { q.wk = wk; q.w = {}; q.wc = {}; }
+  q.att ||= { last: '', n: 0 };
+}
+export function giveReward(s, r) {
+  if (r.stones) s.stones += r.stones;
+  if (r.shards) s.shards = (s.shards || 0) + r.shards;
+  if (r.ess) s.ess = (s.ess || 0) + r.ess;
+  if (r.boost) { s.boost ||= { until: 0, charges: 0 }; s.boost.charges = (s.boost.charges || 0) + r.boost; }
+}
+function qList(kind) { return kind === 'd' ? DAILY : WEEKLY; }
+export function missionState(s, kind, m) {
+  const q = s.quest || {}, cnt = (kind === 'd' ? q.d : q.w) || {}, done = (kind === 'd' ? q.dc : q.wc) || {};
+  if (m === 'all') { const L = qList(kind); return { v: L.filter(x => done[x.id]).length, need: L.length, claimed: !!done.all }; }
+  return { v: cnt[m.id] || 0, need: m.need, claimed: !!done[m.id] };
+}
+export function claimMission(s, kind, id) {
+  questRoll(s);
+  const q = s.quest, done = kind === 'd' ? q.dc : q.wc;
+  if (id === 'all') { const ms = missionState(s, kind, 'all'); if (ms.claimed || ms.v < ms.need) return null; done.all = true; const r = kind === 'd' ? DAILY_ALL : WEEKLY_ALL; giveReward(s, r); return r; }
+  const m = qList(kind).find(x => x.id === id); if (!m) return null;
+  const ms = missionState(s, kind, m); if (ms.claimed || ms.v < ms.need) return null;
+  done[id] = true; giveReward(s, m.r); return m.r;
+}
+export function canAttend(s, now = Date.now()) { questRoll(s, now); const a = s.quest.att; return !a.last || localDay(now) > a.last; }
+export function attend(s, now = Date.now()) {
+  if (!canAttend(s, now)) return null;
+  const a = s.quest.att; const i = a.n % 7; a.n++; a.last = localDay(now);
+  giveReward(s, ATTEND[i]); return { day: i + 1, r: ATTEND[i] };
+}
+export function boostLeft(s, now = Date.now()) { return Math.max(0, ((s.boost && s.boost.until) || 0) - now); }
+export function boostMult(s, now = Date.now()) { return boostLeft(s, now) > 0 ? BOOST_X : 1; }
+export function useBoost(s, now = Date.now()) {
+  s.boost ||= { until: 0, charges: 0 };
+  if ((s.boost.charges || 0) < 1) return false;
+  s.boost.charges--; s.boost.until = Math.max(now, s.boost.until || 0) + BOOST_MIN * 60000;
+  return true;
+}
+
+// ---------- 자동화 (진행하면 해금) ----------
+export const AUTO = [
+  { id: 'skill',   need: s => (s.bestFloor || s.maxFloor) >= 15, cond: { k: 'floor', n: 15 } },
+  { id: 'boss',    need: s => (s.bestFloor || s.maxFloor) >= 25, cond: { k: 'floor', n: 25 } },
+  { id: 'upgrade', need: s => (s.rebirths || 0) >= 1,            cond: { k: 'rebirth', n: 1 } },
+  { id: 'relic',   need: s => (s.rebirths || 0) >= 3,            cond: { k: 'rebirth', n: 3 } },
+  { id: 'rebirth', need: s => (s.rebirths || 0) >= 5,            cond: { k: 'rebirth', n: 5 } },
+];
+export function autoOn(s, id) { const a = AUTO.find(x => x.id === id); return !!(a && a.need(s) && s.auto && s.auto[id]); }
+export function bossRetryWait(s) { return Math.min(600, 60 * Math.pow(2, Math.min(3, s.bossFails || 0))); }
+function autoTick(s, dt, ev) {
+  if (!s.auto) return;
+  s.autoT = (s.autoT || 0) + dt;
+  const slow = s.autoT >= 2; if (slow) s.autoT = 0;
+  if (slow && autoOn(s, 'skill') && s.sp > 0) {
+    for (let g = 0; g < 50 && s.sp > 0; g++) {
+      const c = classSkills(s.cls).filter(sd => skillUnlocked(s, sd) && (s.skills[sd.id] || 0) < SKILL_MAX).sort((a, b) => (s.skills[a.id] || 0) - (s.skills[b.id] || 0) || (a.type === 'active' ? -1 : 1));
+      if (!c.length || !learnSkill(s, c[0].id)) break;
+      ev.autoSkill = true;
+    }
+  }
+  if (autoOn(s, 'boss') && canChallenge(s)) {
+    s.autoBossT = (s.autoBossT || 0) + dt;
+    if (s.autoBossT >= bossRetryWait(s)) { s.autoBossT = 0; challengeBoss(s); ev.autoBoss = true; }
+  }
+  if (slow && autoOn(s, 'upgrade')) {
+    for (let g = 0; g < 300; g++) {
+      let best = null, bc = Infinity;
+      for (const u of UPGRADES) { const c = upgradeCost(u, s.up[u.id] || 0); if (c < bc) { bc = c; best = u; } }
+      if (!best || bc > s.gold) break;
+      buyUpgrade(s, best.id, 1); ev.autoUp = (ev.autoUp || 0) + 1;
+    }
+  }
+  if (slow && autoOn(s, 'relic')) autoRelics(s, ev);
+  if (autoOn(s, 'rebirth') && !s.boss && honorGain(s) > 0) {
+    const a = s.auto;
+    const ok = a.rbMode === 'floor' ? s.maxFloor >= Math.max(REBIRTH_FLOOR, a.rbFloor || REBIRTH_FLOOR) : (s.stuckT || 0) >= (a.rbStuck || 30) * 60;
+    if (ok) { const g = rebirth(s); ev.autoRebirth = (ev.autoRebirth || 0) + g; ev.autoRebirths = (ev.autoRebirths || 0) + 1; if (autoOn(s, 'relic')) autoRelics(s, ev); }
+  }
+}
+function autoRelics(s, ev) {
+  for (let g = 0; g < 500; g++) {
+    let best = null, bc = Infinity;
+    for (const r of RELICS) { const lv = relicLv(s, r.id); if (r.max && lv >= r.max) continue; const c = relicCost(r, lv); if (c < bc) { bc = c; best = r; } }
+    if (!best || bc > (s.honorPts || 0)) break;
+    buyRelic(s, best.id); ev.autoRelic = (ev.autoRelic || 0) + 1;
+  }
+}
+
+// ---------- 무한의 탑 (하루 3회) ----------
+export const TOWER_TRIES = 3, TOWER_TIME = 20;
+export function towerHp(k) { return monHp(k + 4) * 25; }
+export function towerDps(k) { return bossDps(k + 4) * 1.1; }
+export function towerMon(k) { return (k - 1) % ZONES; }
+export function canTower(s) { questRoll(s); return !s.boss && (s.tower.tries ?? TOWER_TRIES) > 0 && !!s.cls; }
+export function towerStart(s) {
+  if (!canTower(s)) return false;
+  s.tower.tries = (s.tower.tries ?? TOWER_TRIES) - 1;
+  s.tower.prev = { floor: s.floor, kills: s.kills, prog: s.prog, bossLock: s.bossLock };
+  const hp = towerHp(1);
+  s.boss = { tower: true, tf: 1, hp, max: hp, timer: TOWER_TIME, tmax: TOWER_TIME, gain: { ess: 0, stones: 0, shards: 0 } };
+  s.hp = null;
+  qAdd(s, 'tower', 1);
+  return true;
+}
+function towerStep(s, st, dt, burst, ev) {
+  const b = s.boss;
+  b.timer -= dt;
+  let dmg = (st.dps * dt + burst) * st.bossMult;
+  let h = (s.hp == null ? st.hp : s.hp);
+  h += st.hp * (st.regen / 100) * dt;
+  h -= towerDps(b.tf) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;
+  s.hp = Math.min(st.hp, h);
+  for (let g = 0; dmg > 0 && g < 60 && s.hp > 0; g++) {
+    if (dmg < b.hp) { b.hp -= dmg; break; }
+    dmg -= b.hp;
+    // 층 돌파: 정수 +1, 최고 기록 갱신 층마다 소환석 +3, 10층마다 조각 +15
+    s.ess = (s.ess || 0) + 1; b.gain.ess++;
+    if (b.tf > (s.tower.best || 0)) {
+      s.tower.best = b.tf; s.stones += 3; b.gain.stones += 3;
+      if (b.tf % 10 === 0) { s.shards = (s.shards || 0) + 15; b.gain.shards += 15; }
+    }
+    ev.towerClear = b.tf;
+    b.tf++;
+    const hp = towerHp(b.tf); b.hp = hp; b.max = hp; b.timer = b.tmax;
+    s.hp = Math.min(st.hp, s.hp + st.hp * 0.3);
+  }
+  if (b.timer <= 0 || s.hp <= 0) {
+    ev.towerEnd = { floor: b.tf - 1, best: s.tower.best, ...b.gain };
+    const p = s.tower.prev || {};
+    s.boss = null; s.hp = null;
+    s.floor = p.floor ?? s.floor; s.kills = p.kills ?? 0; s.prog = p.prog ?? 0; s.bossLock = p.bossLock ?? s.bossLock;
+    s.tower.prev = null;
+  }
+  return ev;
+}
+
+// ---------- 장비 부위 강화 (정수, 영구) · 세트 효과 ----------
+export const ENCH_MAX = 20, ENCH_STEP = 0.1;
+export function enchLv(s, slot) { return (s.ench && s.ench[slot]) || 0; }
+export function enchMult(s, slot) { return 1 + ENCH_STEP * enchLv(s, slot); }
+export function enchCost(lv) { return Math.ceil(6 * Math.pow(1.3, lv)); }
+export function enchant(s, slot) {
+  const lv = enchLv(s, slot);
+  if (lv >= ENCH_MAX || !SLOT_BY_ID[slot]) return false;
+  const c = enchCost(lv);
+  if ((s.ess || 0) < c) return false;
+  s.ess -= c; (s.ench ||= {})[slot] = lv + 1; qAdd(s, 'ench', 1);
+  return true;
+}
+// 같은 등급 이상 장비를 4·8부위 맞추면 공격력·체력 보너스 (가장 높은 단계 하나만 적용)
+export const SETS = [{ r: 2, t: [[4, 10], [8, 25]] }, { r: 3, t: [[4, 20], [8, 50]] }, { r: 4, t: [[4, 40], [8, 100]] }];
+export function setInfo(s) {
+  const eq = Object.values(s.equip || {}).filter(Boolean);
+  let best = { v: 0, r: -1, n: 0 };
+  const rows = SETS.map(st => { const n = eq.filter(it => it.r >= st.r).length; let v = 0, need = 0; for (const [k, b] of st.t) if (n >= k) { v = b; need = k; } if (v > best.v) best = { v, r: st.r, n: need }; return { r: st.r, n, t: st.t, v }; });
+  return { rows, best };
+}
+export function setBonus(s) { return setInfo(s).best.v; }
+
+// ---------- 업적 · 도감 (영구 보너스) ----------
+export const ACH = [
+  { id: 'kill',    t: [1e3, 1e4, 1e5, 1e6, 1e7],       m: s => (s.life && s.life.kills) || 0 },
+  { id: 'floor',   t: [25, 50, 75, 100, 150],          m: s => Math.max(s.bestFloor || 0, s.maxFloor || 0) },
+  { id: 'boss',    t: [10, 100, 500, 2000, 10000],     m: s => (s.life && s.life.bosses) || 0 },
+  { id: 'rebirth', t: [1, 5, 10, 25, 50],              m: s => s.rebirths || 0 },
+  { id: 'pull',    t: [100, 500, 1000, 3000, 10000],   m: s => s.pulls || 0 },
+  { id: 'comp',    t: [10, 30, 60, 90, 104],           m: s => Object.keys(s.comp || {}).length },
+  { id: 'clv',     t: [10, 50, 100, 200, 400],         m: s => Object.values(s.comp || {}).reduce((a, v) => a + (v.lv || 0), 0) },
+  { id: 'relic',   t: [10, 30, 60, 100, 150],          m: s => Object.values(s.relic || {}).reduce((a, b) => a + b, 0) },
+  { id: 'ench',    t: [10, 40, 80, 120, 160],             m: s => Object.values(s.ench || {}).reduce((a, b) => a + b, 0) },
+  { id: 'tower',   t: [10, 25, 50, 75, 100],           m: s => (s.tower && s.tower.best) || 0 },
+];
+export const ACH_REWARD = [20, 40, 80, 150, 300];     // 단계별 소환석
+export const ACH_PCT = 2;                              // 업적 점수 1당 공격력·체력 +2%
+export const BEST_STARS = [100, 1000, 10000];          // 몬스터 처치 도감 별
+export const BEST_PCT = 1;                             // 별 1개당 공격력·골드 +1%
+export function achMet(s, a) { const v = a.m(s); return a.t.filter(x => v >= x).length; }
+export function achClaimed(s, id) { return (s.ach && s.ach[id]) || 0; }
+export function achPoints(s) { return ACH.reduce((a, x) => a + Math.min(achClaimed(s, x.id), x.t.length), 0); }
+export function claimAch(s, id) {
+  const a = ACH.find(x => x.id === id); if (!a) return 0;
+  const c = achClaimed(s, id); if (c >= achMet(s, a)) return 0;
+  (s.ach ||= {})[id] = c + 1; const r = ACH_REWARD[c] || 0; s.stones += r;
+  return r;
+}
+export function bestStars(s) { let n = 0; for (const k of s.bestiary || []) for (const t of BEST_STARS) if ((k || 0) >= t) n++; return n; }
+function achPower(s) { const p = achPoints(s), b = bestStars(s); return { atk: (1 + ACH_PCT * p / 100) * (1 + BEST_PCT * b / 100), hp: 1 + ACH_PCT * p / 100, gold: 1 + BEST_PCT * b / 100 }; }
 
 // ---------- 오프라인 ----------
 export function advance(s, now = Date.now()) {
+  if ((s.lastTick || 0) > now + 60000) { s.lastTick = now; return { offline: false, seconds: 0 }; }   // 시계를 과거로 돌린 경우: 진행 없이 기준만 맞춤
   const last = s.lastTick || now;
   const realSec = Math.max(0, (now - last) / 1000);
   s.lastTick = now;
   if (realSec < 1 || !s.cls) return { offline: false, seconds: 0 };
   const offline = realSec > 30;
-  const sec = offline ? Math.min(realSec, OFFLINE_CAP_H * 3600) * offlineRate(s) : realSec;
-  const before = { gold: s.gold, floor: s.floor, kills: s.totalKills, level: s.level, stones: s.stones };
+  questRoll(s, now);
+  const rate = offline ? offlineRate(s) : 1;
+  const boostSec = Math.max(0, Math.min(now, (s.boost && s.boost.until) || 0) - last) / 1000;   // 부스트가 켜져 있던 구간은 한 번 더 진행
+  const sec = (offline ? Math.min(realSec, OFFLINE_CAP_H * 3600) : realSec) * rate + Math.min(boostSec, OFFLINE_CAP_H * 3600) * rate * (BOOST_X - 1);
+  const before = { gold: s.gold, floor: s.floor, kills: (s.life && s.life.kills) || 0, level: s.level, stones: s.stones };
   const ev = {};
   // 긴 오프라인은 큰 간격으로 묶어서 계산 (12시간이어도 약 9천 번 → 1초 안팎)
   const CH = sec > 600 ? Math.min(3, Math.max(0.5, sec / 8000)) : 0.5;
@@ -1136,14 +1491,14 @@ export function advance(s, now = Date.now()) {
   for (let i = 0; i < n; i++) { step(s, CH, ev); if (ev.casts && ev.casts.length > 50) ev.casts.length = 0; if (ev.compCasts && ev.compCasts.length > 50) ev.compCasts.length = 0; }
   const res = {
     offline, seconds: realSec,
-    gold: s.gold - before.gold, floors: s.floor - before.floor,
-    kills: s.totalKills - before.kills, levels: s.level - before.level,
-    stones: s.stones - before.stones, drops: ev.drops || [],
+    gold: ev.gold || 0, floors: ev.autoRebirths ? 0 : Math.max(0, s.floor - before.floor),
+    kills: ((s.life && s.life.kills) || 0) - before.kills, levels: ev.autoRebirths ? 0 : Math.max(0, s.level - before.level),
+    stones: s.stones - before.stones, drops: ev.drops || [], rebirths: ev.autoRebirths || 0,
   };
   if (offline) {
     const p = s.pending || { seconds: 0, gold: 0, floors: 0, kills: 0, levels: 0, stones: 0, drops: [] };
     p.seconds += res.seconds; p.gold += res.gold; p.floors += res.floors;
-    p.kills += res.kills; p.levels += res.levels; p.stones += res.stones;
+    p.kills += res.kills; p.levels += res.levels; p.stones += res.stones; p.rebirths = (p.rebirths || 0) + res.rebirths;
     p.drops = p.drops.concat(res.drops).sort((a, b) => (b.r * 10 + b.t) - (a.r * 10 + a.t)).slice(0, 8);
     s.pending = p;
   }
@@ -1157,8 +1512,9 @@ export function fmt(n) {
   if (n < 0) return '-' + fmt(-n);
   if (n < 1000) return n < 10 ? String(Math.round(n * 10) / 10) : String(Math.floor(n));
   let i = 0;
-  while (n >= 1000 && i < U.length - 1) { n /= 1000; i++; }
-  return (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n)) + U[i];
+  while (n >= 1000) { n /= 1000; i++; }
+  const u = i < U.length ? U[i] : String.fromCharCode(97 + Math.floor((i - U.length) / 26) % 26) + String.fromCharCode(97 + (i - U.length) % 26);
+  return (n < 10 ? n.toFixed(2) : n < 100 ? n.toFixed(1) : Math.floor(n)) + u;
 }
 export function fmtDur(sec) {
   sec = Math.max(0, Math.floor(sec));
@@ -1255,6 +1611,7 @@ export function exportCode(s) {
   return 'DM4-' + sum(body) + '-' + body;
 }
 export function importCode(code) {
+  if (String(code).length > 300000) throw new Error('Save code is too long');
   const m = /^DM4-([0-9a-z]+)-([A-Za-z0-9+/=]+)$/.exec(String(code).replace(/\s+/g, ''));
   if (!m) throw new Error('Not a save code');
   if (sum(m[2]) !== m[1]) throw new Error('Code is truncated or corrupted');

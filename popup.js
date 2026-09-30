@@ -14,6 +14,10 @@ import {
   compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A,
   RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult,
   SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp,
+  ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate,
+  DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost,
+  AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart,
+  ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
@@ -41,7 +45,7 @@ function changeLang(l) {
   S.lang = setLang(l); save(S, 'force');
   applyI18n();
   hudSig = '';
-  buildSlots(); buildBag(); buildShop(); buildSkills(); buildComps(); buildRelics(); refreshSave(); refreshSyncLine();
+  buildSlots(); buildBag(); buildShop(); buildSkills(); buildComps(); buildRelics(); buildEnch(); refreshSave(); refreshSyncLine();
   render();
 }
 const rnd = (a, b) => a + Math.random() * (b - a);
@@ -59,9 +63,9 @@ async function preload() {
     for (let t = 0; t < 6; t++) n.push(`gear/head_${c}${t}_d`);
   }
   for (const s of ['cloak', 'gloves', 'boots']) for (let t = 0; t < 5; t++) n.push(`gear/${s}${t}_d`);
-  for (let i = 0; i < 16; i++) n.push('mon/m' + i);
-  for (let i = 0; i < 12; i++) n.push('floor/f' + i);
-  for (let z = 0; z < 16; z++) n.push('wall/w' + z + '_0', 'wall/w' + z + '_1');
+  for (let i = 0; i < ZONES; i++) n.push('mon/m' + i);
+  for (let i = 0; i < 22; i++) n.push('floor/f' + i);
+  for (let z = 0; z < ZONES; z++) n.push('wall/w' + z + '_0', 'wall/w' + z + '_1');
   for (const d of ['col1', 'col2', 'col3', 'idol', 'wraith', 'demon', 'evil', 'dragon', 'iron']) n.push('deco/' + d);
   for (const c of COMPANIONS) n.push('comp/' + c.id);
   for (const s of SKILLS) n.push('skill/' + s.id);
@@ -204,6 +208,8 @@ const ZONE = [
   ['warm', 'idol', 'ember'], ['warm', 'col2', 'dust'], ['ghost', 'wraith', 'wisp'], ['warm', 'col3', 'dust'],
   ['warm', 'col1', 'drip'], ['warm', 'iron', 'dust'], ['ghost', 'wraith', 'wisp'], ['hell', 'demon', 'ember'],
   ['hell', 'demon', 'ember'], ['ghost', 'evil', 'wisp'], ['void', 'evil', 'void'], ['gold', 'dragon', 'gold'],
+  ['ghost', 'iron', 'drip'], ['ghost', 'col2', 'dust'], ['warm', 'iron', 'ember'], ['void', 'col3', 'gold'], ['void', 'wraith', 'void'],
+  ['hell', 'demon', 'ember'], ['ghost', 'evil', 'wisp'], ['hell', 'idol', 'ember'], ['gold', 'dragon', 'gold'], ['void', 'evil', 'void'],
 ].map(([fire, deco, mote]) => ({ fire, deco, mote }));
 let bgX = 0;                      // 누적 스크롤 (층 돌파 때만 흐름)
 const COMP_FORM = [{ x: 27, y: 0, s: .8 }, { x: 11, y: -5, s: .7, back: true }, { x: -4, y: 0, s: .8 }];
@@ -293,6 +299,8 @@ function drawBackdrop(dt, now, zi) {
   for (let i = 0; i < 3; i++) { const fx2 = ((now * (6 + i * 3) + i * 70) % (W + 80)) - 40; cx.beginPath(); cx.ellipse(fx2, GROUND + 4 + i * 3, 38, 3, 0, 0, 7); cx.fill(); }
   cx.restore();
 }
+const inTower = () => !!(S && S.boss && S.boss.tower);
+const sceneZone = () => inTower() ? towerMon(S.boss.tf) : monsterIndex(S.floor);
 // 캐릭터를 그린 뒤: 용사 주변 빛 · 보스 기운 · 가장자리 어둠
 function drawLighting(now) {
   const hc = heroC();
@@ -334,7 +342,7 @@ function drawScene(dt) {
   if (shake.t > 0) { const m = shake.m * (shake.t / shake.d); cx.translate(Math.round(rnd(-m, m)), Math.round(rnd(-m, m))); shake.t -= dt; }
 
   // 배경
-  drawBackdrop(dt, now, monsterIndex(S.floor));
+  drawBackdrop(dt, now, sceneZone());
 
   // 버프 오라
   for (const b of S.buffs || []) {
@@ -384,7 +392,7 @@ function drawScene(dt) {
   drawHero(cx, hx, hy, S.cls, 1, true);
 
   // 몬스터
-  const mi = monsterIndex(S.floor), mim = A['mon/m' + mi];
+  const mi = sceneZone(), mim = A['mon/m' + mi];
   if (mim && !(trans && trans.t < trans.d * .55)) {
     const b = monBox();
     let mx = b.x, my = b.y, a = 1, rot = 0;
@@ -405,7 +413,7 @@ function drawScene(dt) {
     if (mon.flash > 0 && mon.spawn < .3 && mon.die <= 0) whiteFlash(cx, mim, mx, my, b.w, b.w, Math.min(.5, mon.flash * 5), true);
     if (S.boss) {
       cx.fillStyle = '#ff5a5a'; cx.font = 'bold 7px monospace'; cx.textAlign = 'center';
-      cx.fillText('BOSS', b.cx, my - 2);
+      cx.fillText(inTower() ? S.boss.tf + 'F' : 'BOSS', b.cx, my - 2);
     }
   }
   drawLighting(now);
@@ -774,7 +782,7 @@ function frame(now) {
   const prevBoss = !!S.boss;
   const ev = {};
   // 게임 시간은 실제 경과 시간 그대로 (프레임이 느려도 손실 없음)
-  let rem = Math.min(real, 2);
+  let rem = Math.min(real, 2) * boostMult(S);
   while (rem > 0) { step(S, Math.min(.25, rem), ev); rem -= .25; }
   S.lastTick = Date.now();          // 팝업에서 진행한 시간이 오프라인에 중복 적립되지 않도록
   st = stats(S);
@@ -819,6 +827,21 @@ function handleEvents(ev, prevBoss) {
   if (ev.compCasts) for (const e of ev.compCasts.slice(-3)) compSkillFx(e);
   if (ev.echo) { for (const id of S.team || []) { const cs = compState[id]; if (cs) cs.t = Math.min(cs.t, .05); } popText(t('ui.l.echo'), 24, GROUND - 32, 'proc'); }
   if (ev.revive) { const hc = heroC(); banner(t('ui.l.revive'), 'clear', 1400); pillar = { x: hc.x, w: 28, t: 0, d: 1, color: 'rgba(255,150,80,1)' }; rise(hc.x, hc.y + 10, 30, ['#ff8a3c', '#ffe38a', '#ffffff']); addLog(t('ui.l.reviveLog')); }
+  if (ev.towerClear && performance.now() - (handleEvents._tc || 0) > 450) { handleEvents._tc = performance.now(); banner(t('ui.towerClear', { n: ev.towerClear }), 'floor', 650); mon.die = 0; mon.drop = 1; }
+  if (ev.towerEnd) {
+    const e = ev.towerEnd;
+    banner(t('ui.towerEnd', { n: e.floor }), 'lose', 1600);
+    addLog('<b>' + t('ui.towerEndLog', { n: e.floor, b: e.best }) + '</b> ' + rewardText({ ess: e.ess, stones: e.stones, shards: e.shards }));
+    save(S);
+  }
+  if (ev.autoRebirth) {
+    logLines = []; hudSig = '';
+    addLog('<b>' + t('ui.autoRebirthLog', { n: ev.autoRebirth }) + '</b>');
+    flash('#c78dff', .5, .6);
+    buildSlots(); buildBag(); buildSkills(); buildComps(); buildRelics();
+  }
+  if (ev.autoBoss) addLog(t('ui.autoBossLog'));
+  if (ev.autoSkill && !$('[data-tab="skill"]').classList.contains('hidden')) refreshSkills();
   if (ev.bonusSp) addLog(`<span class="hi">${t('ui.l.bonusSp', { n: ev.bonusSp })}</span>`);
   if (ev.bossWait && !handleEvents._waitLogged) { handleEvents._waitLogged = true; addLog(t('ui.l.bossWait')); }
   if (ev.kills && !ev.bossWin && !trans) {
@@ -944,11 +967,15 @@ function render() {
   $('#dps').textContent = fmt(st.dps);
   $('#floor').textContent = S.floor;
   $('#maxfloor').textContent = S.maxFloor;
-  $('#fname').textContent = FLOOR_NAMES[monsterIndex(S.floor)] || t('ui.abyss');
-  const mi = monsterIndex(S.floor);
+  { const lp = loopOf(S.floor); $('#fname').textContent = (FLOOR_NAMES[monsterIndex(S.floor)] || t('ui.abyss')) + (lp ? ' · ' + t('ui.loop', { n: lp + 1 }) : ''); }
+  const mi = sceneZone();
+  if (inTower()) {
+    $('#fname').textContent = t('ui.towerName');
+    $('#mname').textContent = t('ui.towerFloor', { n: S.boss.tf }) + ' · ' + MONSTERS[mi];
+    $('#mcount').textContent = t('ui.towerBest', { n: S.tower.best || 0 });
+  }
   if (S.boss) {
-    $('#mname').textContent = t('ui.lord', { m: MONSTERS[mi] });
-    $('#mcount').textContent = t('ui.boss');
+    if (!inTower()) { $('#mname').textContent = t('ui.lord', { m: MONSTERS[mi] }); $('#mcount').textContent = t('ui.boss'); }
     $('#mbar').style.width = Math.max(0, (S.boss.hp / S.boss.max) * 100) + '%';
     $('#heroWrap').classList.remove('hidden');
     $('#hbar').style.width = Math.max(0, (S.hp / st.hp) * 100) + '%';
@@ -980,8 +1007,8 @@ function render() {
     const bk = row.querySelector('.brk');
     if (bk) bk.textContent = t('ui.breakNext', { m: fmtX(breakMult(u.id, n)), x: BREAK_X, n: (Math.floor(n / BREAK_EVERY) + 1) * BREAK_EVERY });
   }
-  $('#shopDot').classList.toggle('hidden', !UPGRADES.some(u => S.gold >= upgradeCost(u, S.up[u.id] || 0)));
-  $('#skillDot').classList.toggle('hidden', S.sp <= 0);
+  $('#shopDot').classList.toggle('hidden', autoOn(S, 'upgrade') || !UPGRADES.some(u => S.gold >= upgradeCost(u, S.up[u.id] || 0)));
+  $('#skillDot').classList.toggle('hidden', autoOn(S, 'skill') || S.sp <= 0);
   $('#compDot').classList.toggle('hidden', S.stones < PULL_COST && !(S.team || []).some(id => { const c = COMP_BY_ID[id], o = S.comp[id]; return c && o && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(c, o.lv || 0); }));
   if (!render._gd || performance.now() - render._gd > 1000) {
     render._gd = performance.now();
@@ -1004,8 +1031,19 @@ function render() {
   $('#rbBtn').disabled = hg <= 0;
   $('#rbBar').style.width = Math.min(100, (S.maxFloor / REBIRTH_FLOOR) * 100) + '%';
   $('#rbHint').textContent = hg > 0 ? t('ui.rbGain', { h: hg, p: hg * 5 }) : t('ui.rbNeed', { n: REBIRTH_FLOOR, m: S.maxFloor });
-  $('#rbDot').classList.toggle('hidden', hg <= 0 && !relicAffordable());
+  $('#rbDot').classList.toggle('hidden', hg <= 0 && !relicAffordable() && !canReinc(S));
   refreshRelics();
+  refreshReinc();
+  const bl = boostLeft(S);
+  $('#boostTag').classList.toggle('hidden', bl <= 0);
+  if (bl > 0) $('#boostTag').textContent = '×' + BOOST_X + ' ' + fmtClock(bl);
+  if (!render._q || performance.now() - render._q > 1000) {
+    render._q = performance.now();
+    questRoll(S);
+    $('#questDot').classList.toggle('hidden', !questHasClaim());
+    if (!$('[data-tab="quest"]').classList.contains('hidden')) buildQuest();
+    if (!$('[data-tab="gear"]').classList.contains('hidden')) refreshEnch();
+  }
   $('#bagInfo').textContent = t('ui.bag', { n: fmt(bagCount(S)), k: S.bag.length });
 }
 
@@ -1045,6 +1083,7 @@ function buildSlots() {
     [t('stat.bossP'), '+' + Math.round(r.bossP) + '%'], [t('stat.goldP'), '×' + st.goldMult.toFixed(2)], [t('stat.regen'), st.regen.toFixed(1) + '%/s'], [t('stat.xpP'), '×' + st.xpMult.toFixed(2)],
   ];
   $('#statsum').innerHTML = rows.map(([a, b]) => `<div>${a}<b>${b}</b></div>`).join('');
+  refreshEnch();
 }
 const recentKeys = new Set();
 let bagFilter = 'all', bagSort = 'value';
@@ -1141,7 +1180,7 @@ function refreshSkills() {
     d.classList.toggle('lock', !un);
     d.classList.toggle('nosp', un && (S.sp < 1 || lv >= SKILL_MAX));
     d.querySelector('i').textContent = sd.type === 'active' ? t('ui.cd', { n: sd.cd }) : t('ui.passive');
-    d.querySelector('.ds').textContent = un ? (lv ? skillDesc(sd, lv) : t('ui.notLearned') + ' · ' + skillDesc(sd, 1)) : t('ui.unlockAt', { n: sd.unlock });
+    d.querySelector('.ds').textContent = lv ? skillDesc(sd, lv) : (un ? t('ui.notLearned') : t('ui.unlockAt', { n: sd.unlock })) + ' · ' + skillDesc(sd, 1);
     d.querySelector('.nx').textContent = un && lv > 0 && lv < SKILL_MAX ? t('ui.next') + ': ' + skillDesc(sd, lv + 1) : '';
     const l = d.querySelector('.lvl');
     l.textContent = lv + '/' + SKILL_MAX; l.classList.toggle('max', lv >= SKILL_MAX);
@@ -1160,8 +1199,9 @@ function openClassModal(isChange) {
   for (const c of CLASS_IDS) {
     const cl = CLASSES[c];
     const d = document.createElement('div');
-    d.className = 'clsc' + (S.cls === c ? ' cur' : '');
-    d.innerHTML = `<canvas width="64" height="64"></canvas><b style="color:${cl.color}">${cl.name}</b><div class="d">${cl.desc}</div><div class="sks">${classSkills(c).map(sd => `<img class="px" src="${skillSrc(sd.id)}" title="${sd.name}">`).join('')}</div>`;
+    d.className = 'clsc' + (S.cls === c ? ' now' : '');
+    if (S.cls === c) d.dataset.now = t('ui.nowCls');
+    d.innerHTML = `<canvas width="64" height="64"></canvas><b style="color:${cl.color}">${cl.name}</b><div class="d">${cl.desc}</div>`;
     d.onclick = () => {
       if (S.cls === c) { $('#clsModal').classList.add('hidden'); return; }
       if (S.cls) backup(S, 'class');
@@ -1354,7 +1394,7 @@ function holdRepeat(el, act, done) {
   const loop = gap => {
     timer = setTimeout(() => {
       if (!on) return;
-      if (!once()) { finish(); return; }
+      if (!el.isConnected || !once()) { finish(); return; }
       loop(gap === HOLD_DELAY ? HOLD_START : Math.max(HOLD_MIN, gap * HOLD_ACCEL));
     }, gap);
   };
@@ -1381,6 +1421,228 @@ function holdRepeat(el, act, done) {
 }
 window.addEventListener('blur', () => { if (holdStopAll) holdStopAll(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && holdStopAll) holdStopAll(); });
+
+// ================= 공용 표시 =================
+const fmtClock = ms => { const s = Math.ceil(ms / 1000), h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60), x = s % 60; return (h ? h + ':' + String(m).padStart(2, '0') : m) + ':' + String(x).padStart(2, '0'); };
+function rewardText(r) {
+  const p = [];
+  if (r.stones) p.push(t('rw.stones', { n: r.stones }));
+  if (r.shards) p.push(t('rw.shards', { n: r.shards }));
+  if (r.ess) p.push(t('rw.ess', { n: r.ess }));
+  if (r.boost) p.push(t('rw.boost', { n: r.boost }));
+  return p.join(' · ');
+}
+const fmtN = n => n < 100000 ? Math.floor(n).toLocaleString('en-US') : fmt(n);
+const untilMidnight = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - d.getTime(); };
+const essTxt = e0 => { const d = (S.ess || 0) - e0; return d > 0 ? ' · ' + t('rw.ess', { n: fmt(d) }) : ''; };
+const pips = (n, on) => '<span class="pips">' + Array.from({ length: n }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('') + '</span>';
+
+// ================= 모험 탭 (미션 · 탑 · 업적 · 도감 · 자동) =================
+let qTab = 'mission';
+const QTABS = ['mission', 'tower', 'ach', 'book', 'auto'];
+function missionClaimable(kind) {
+  const L = kind === 'd' ? DAILY : WEEKLY;
+  if (L.some(m => { const ms = missionState(S, kind, m); return !ms.claimed && ms.v >= ms.need; })) return true;
+  const a = missionState(S, kind, 'all'); return !a.claimed && a.v >= a.need;
+}
+function qDot(k) {
+  if (k === 'mission') return canAttend(S) || missionClaimable('d') || missionClaimable('w');
+  if (k === 'tower') return canTower(S);
+  if (k === 'ach') return ACH.some(a => achClaimed(S, a.id) < achMet(S, a));
+  return false;
+}
+function questHasClaim() { return qDot('mission') || qDot('ach') || qDot('tower'); }
+// 지금 받을 수 있는 보상 개수 (출석 + 미션 + 올클 보너스 + 업적 단계)
+function claimCount() {
+  let n = canAttend(S) ? 1 : 0;
+  for (const kind of ['d', 'w']) {
+    const L = kind === 'd' ? DAILY : WEEKLY;
+    const done = L.filter(m => { const ms = missionState(S, kind, m); return !ms.claimed && ms.v >= ms.need; }).length;
+    n += done;
+    const a = missionState(S, kind, 'all'); if (!a.claimed && a.v + done >= a.need) n++;
+  }
+  for (const a of ACH) n += Math.max(0, achMet(S, a) - achClaimed(S, a.id));
+  return n;
+}
+// 한 번에 전부 받고, 받은 목록을 창으로 보여준다
+function claimAllQuest() {
+  const got = [];
+  const r0 = attend(S); if (r0) got.push([t('q.attendLog', { n: r0.day }), r0.r]);
+  for (const kind of ['d', 'w']) {
+    const tag = t(kind === 'd' ? 'q.dailyTag' : 'q.weeklyTag');
+    for (const m of kind === 'd' ? DAILY : WEEKLY) { const r = claimMission(S, kind, m.id); if (r) got.push([tag + ' · ' + t('q.m.' + m.id, { n: fmtN(m.need) }), r]); }
+    const ra = claimMission(S, kind, 'all'); if (ra) got.push([tag + ' · ' + t('q.all'), ra]);
+  }
+  for (const a of ACH) { for (let g = 0; g < 10; g++) { const tier = achClaimed(S, a.id) + 1; const r = claimAch(S, a.id); if (!r) break; got.push([t('ach.' + a.id) + ' · ' + t('q.achTier', { n: tier }), { stones: r }]); } }
+  if (!got.length) return;
+  const sum = {};
+  for (const [, r] of got) for (const [k, v] of Object.entries(r)) sum[k] = (sum[k] || 0) + v;
+  $('#rwList').innerHTML = got.map(([l, r], i) => `<div class="rwrow" style="--i:${i}"><span>${l}</span><b>${rewardText(r)}</b></div>`).join('');
+  $('#rwTotal').innerHTML = [['stones', 'assets/ui/stone.png'], ['shards', null], ['ess', 'assets/ui/rune.png'], ['boost', null]].filter(([k]) => sum[k]).map(([k, ic]) => `<div class="rwtot">${ic ? `<img src="${ic}" class="px i14" alt="">` : ''}<span>${t('rw.' + k, { n: fmt(sum[k]) })}</span></div>`).join('');
+  $('#rwCount').textContent = t('q.rwCount', { n: got.length });
+  $('#rewardModal').classList.remove('hidden');
+  addLog('<b>' + t('q.rwLog', { n: got.length }) + '</b> ' + rewardText(sum));
+  save(S); st = stats(S); buildQuest(); render();
+}
+function missionRows(kind) {
+  const L = kind === 'd' ? DAILY : WEEKLY;
+  const row = (id, title, ms, r) => { const done = ms.v >= ms.need; return `<div class="qrow ${ms.claimed ? 'claimed' : ''}"><div class="qt"><b>${title}</b><div class="qbar"><i style="width:${Math.min(100, ms.v / ms.need * 100)}%"></i></div><span>${fmtN(Math.min(ms.v, ms.need))} / ${fmtN(ms.need)} · ${rewardText(r)}</span></div><button class="mini" data-act="claim" data-k="${kind}" data-id="${id}" ${done && !ms.claimed ? '' : 'disabled'}>${ms.claimed ? t('q.claimed') : t('q.claim')}</button></div>`; };
+  return L.map(m => row(m.id, t('q.m.' + m.id, { n: fmtN(m.need) }), missionState(S, kind, m), m.r)).join('') +
+    row('all', t('q.all'), missionState(S, kind, 'all'), kind === 'd' ? DAILY_ALL : WEEKLY_ALL);
+}
+function qMission() {
+  const a = S.quest.att || { n: 0 }, can = canAttend(S), nx = a.n % 7;
+  const bl = boostLeft(S), ch = (S.boost && S.boost.charges) || 0;
+  return `<div class="qcard"><div class="qh"><b>${t('q.attend')}</b><span>${t('q.attendDays', { n: a.n })}</span></div>
+      <div class="attrow">${ATTEND.map((r, i) => `<div class="att ${i < nx ? 'got' : ''} ${i === nx && can ? 'next' : ''}"><b>${t('q.day', { n: i + 1 })}</b><span>${rewardText(r)}</span></div>`).join('')}</div>
+      <button class="big sm" data-act="attend" ${can ? '' : 'disabled'}>${can ? t('q.attendBtn') : t('q.attendDone')}</button></div>
+    <div class="qcard"><div class="qh"><b>${t('q.boost')}</b><span>${t('q.boostCharges', { n: ch })}</span></div>
+      <div class="qx">${bl > 0 ? t('q.boostOn', { x: BOOST_X, t: fmtClock(bl) }) : t('q.boostDesc', { m: BOOST_MIN, x: BOOST_X })}</div>
+      <button class="big sm" data-act="boost" ${ch ? '' : 'disabled'}>${t('q.boostBtn', { m: BOOST_MIN, x: BOOST_X })}</button></div>
+    <div class="sech">${t('q.daily')}<span>${t('q.dailyReset')}</span></div>${missionRows('d')}
+    <div class="sech">${t('q.weekly')}<span>${t('q.weeklyReset')}</span></div>${missionRows('w')}`;
+}
+function qTower() {
+  const tw = S.tower || {}, tries = tw.tries ?? TOWER_TRIES;
+  const busy = S.boss && !inTower();
+  return `<div class="qcard ctr"><img src="assets/ui/rune.png" class="px i48" alt=""><div class="qh c"><b>${t('q.towerTitle')}</b></div>
+    <div class="qx">${t('q.towerDesc', { t: TOWER_TIME })}</div>
+    <div class="rbstats"><div><span>${t('q.towerBest')}</span><b>${tw.best || 0}F</b></div><div><span>${t('q.towerTries')}</span><b>${tries}/${TOWER_TRIES}</b></div><div><span>${t('q.towerDaily')}</span><b>${fmtClock(untilMidnight())}</b></div></div>
+    ${inTower() ? `<div class="qx hi">${t('q.towerNow', { n: S.boss.tf, s: Math.max(0, S.boss.timer).toFixed(1) })}</div>` : ''}
+    ${busy ? `<div class="qx">${t('q.towerBusy')}</div>` : ''}
+    <button class="big" data-act="tower" ${canTower(S) ? '' : 'disabled'}>${t('q.towerBtn')}</button>
+    <div class="qx">${t('q.towerRule')}</div></div>`;
+}
+function qAch() {
+  const P = achPoints(S);
+  return `<div class="qcard"><div class="qh"><b>${t('q.achTitle')}</b><span>${t('q.achHead', { p: P, v: P * ACH_PCT })}</span></div><div class="qx">${t('q.achNote', { v: ACH_PCT })}</div></div>` +
+    ACH.map(a => {
+      const met = achMet(S, a), cl = achClaimed(S, a.id), v = a.m(S), done = cl >= a.t.length, next = a.t[Math.min(cl, a.t.length - 1)];
+      return `<div class="qrow"><div class="qt"><b>${t('ach.' + a.id)} ${pips(a.t.length, cl)}</b><div class="qbar"><i style="width:${done ? 100 : Math.min(100, v / next * 100)}%"></i></div><span>${done ? t('q.achDone') : fmtN(Math.min(v, next)) + ' / ' + fmtN(next)} · ${t('ach.d.' + a.id)}</span></div><button class="mini" data-act="ach" data-id="${a.id}" ${cl < met ? '' : 'disabled'}>${done ? t('q.claimed') : t('q.achBtn', { n: ACH_REWARD[cl] })}</button></div>`;
+    }).join('');
+}
+function qBook() {
+  const n = bestStars(S), owned = Object.keys(S.comp || {}).length;
+  const cells = Array.from({ length: ZONES }, (_, z) => {
+    const k = (S.bestiary || [])[z] || 0, seen = k > 0 || Math.max(S.bestFloor || 0, S.maxFloor) >= zoneStart(z);
+    const on = BEST_STARS.filter(x => k >= x).length;
+    return `<div class="bk ${seen ? '' : 'unk'}" title="B${zoneStart(z)}F~"><img class="px" src="assets/mon/m${z}.png" alt=""><div class="bn">${seen ? MONSTERS[z] : '???'}</div>${pips(3, on)}<div class="bc">${fmt(k)}</div></div>`;
+  }).join('');
+  return `<div class="qcard"><div class="qh"><b>${t('q.bookTitle')}</b><span>${t('q.bookHead', { n, m: ZONES * 3, v: n * BEST_PCT })}</span></div><div class="qx">${t('q.bookNote', { a: fmt(BEST_STARS[0]), b: fmt(BEST_STARS[1]), c: fmt(BEST_STARS[2]), v: BEST_PCT })}</div></div>
+    <div class="book">${cells}</div>
+    <div class="qx c">${t('q.bookComp', { n: owned, m: COMPANIONS.length })}</div>`;
+}
+function qAuto() {
+  const au = S.auto || {};
+  return `<div class="qx">${t('q.autoNote')}</div>` + AUTO.map(a => {
+    const un = a.need(S), on = !!au[a.id];
+    const opt = a.id === 'rebirth' && un ? `<div class="rbopt"><select data-act="rbmode"><option value="stuck" ${au.rbMode !== 'floor' ? 'selected' : ''}>${t('auto.rb.stuck')}</option><option value="floor" ${au.rbMode === 'floor' ? 'selected' : ''}>${t('auto.rb.floor')}</option></select><input type="number" data-act="rbval" min="${au.rbMode === 'floor' ? 30 : 5}" max="999" value="${au.rbMode === 'floor' ? (au.rbFloor || Math.max(30, (S.bestFloor || 30) - 5)) : (au.rbStuck || 30)}"><span>${au.rbMode === 'floor' ? t('auto.rb.floorU') : t('auto.rb.min')}</span></div>` : '';
+    return `<div class="qrow ${un ? '' : 'lock'}"><div class="qt"><b>${t('auto.' + a.id)}</b><span>${un ? t('auto.d.' + a.id, { w: Math.round(bossRetryWait(S) / 60) }) : t('auto.lock.' + a.cond.k, { n: a.cond.n })}</span>${opt}</div><label class="tgl"><input type="checkbox" data-act="auto" data-id="${a.id}" ${on ? 'checked' : ''} ${un ? '' : 'disabled'}><i></i></label></div>`;
+  }).join('');
+}
+function buildQuest() {
+  const body = $('#qBody'); if (!body) return;
+  const ae = document.activeElement;
+  if (ae && body.contains(ae) && (ae.tagName === 'INPUT' || ae.tagName === 'SELECT')) return;   // 입력 중에는 다시 그리지 않음
+  if (buildQuest.press) return;                                                                 // 누르고 있는 동안 교체 금지
+  const cc = claimCount(), qa = $('#qAll');
+  qa.disabled = !cc; qa.textContent = cc ? t('q.claimAll', { n: cc }) : t('q.claimNone');
+  morph($('#qNav'), QTABS.map(k => `<button class="mini ${qTab === k ? 'on' : ''}" data-q="${k}">${t('q.tab.' + k)}${qDot(k) ? '<i class="dot"></i>' : ''}</button>`).join(''));
+  morph(body, qTab === 'mission' ? qMission() : qTab === 'tower' ? qTower() : qTab === 'ach' ? qAch() : qTab === 'book' ? qBook() : qAuto());
+}
+// 바뀐 줄만 교체 (버튼이 매초 새로 만들어져 클릭이 씹히는 것 방지)
+function morph(el, html) {
+  const tp = document.createElement('template'); tp.innerHTML = html;
+  const next = [...tp.content.children], cur = [...el.children];
+  if (next.length !== cur.length) { el.replaceChildren(...next); return; }
+  next.forEach((n, i) => { if (cur[i].outerHTML !== n.outerHTML) cur[i].replaceWith(n); });
+}
+function bindQuest() {
+  $('#qAll').onclick = claimAllQuest;
+  $('#rwOk').onclick = () => $('#rewardModal').classList.add('hidden');
+  $('#qNav').onclick = e => { const b = e.target.closest('[data-q]'); if (!b) return; qTab = b.dataset.q; buildQuest(); };
+  const qb = $('#qBody');
+  qb.addEventListener('pointerdown', () => { buildQuest.press = true; });
+  for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) qb.addEventListener(ev, () => { buildQuest.press = false; });
+  $('#qBody').addEventListener('click', e => {
+    const b = e.target.closest('button[data-act]'); if (!b || b.disabled) return;
+    const act = b.dataset.act;
+    if (act === 'attend') { const r = attend(S); if (r) { addLog(t('q.attendLog', { n: r.day }) + ' · ' + rewardText(r.r)); flyTo('assets/ui/stone.png', 90, 40, $('#stoneBox'), 3); } }
+    else if (act === 'boost') { if (useBoost(S)) addLog('<b>' + t('q.boostLog', { m: BOOST_MIN, x: BOOST_X }) + '</b>'); }
+    else if (act === 'claim') { const r = claimMission(S, b.dataset.k, b.dataset.id); if (r) addLog(t('q.claimLog') + ' · ' + rewardText(r)); }
+    else if (act === 'ach') { const r = claimAch(S, b.dataset.id); if (r) addLog(t('q.achLog', { a: t('ach.' + b.dataset.id) }) + ' · ' + rewardText({ stones: r })); }
+    else if (act === 'tower') { if (towerStart(S)) { addLog('<b>' + t('q.towerLog') + '</b>'); document.querySelector('.tabs button[data-go="dungeon"]').click(); } }
+    save(S); st = stats(S); buildQuest(); render();
+  });
+  $('#qBody').addEventListener('change', e => {
+    const el = e.target, act = el.dataset.act; S.auto ||= {};
+    if (act === 'auto') S.auto[el.dataset.id] = el.checked;
+    else if (act === 'rbmode') S.auto.rbMode = el.value;
+    else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else S.auto.rbStuck = Math.max(5, v); }
+    save(S); el.blur(); buildQuest();
+  });
+}
+
+// ================= 장비 부위 강화 · 세트 =================
+function buildEnch() {
+  const box = $('#enchList'); if (!box) return;
+  box.innerHTML = '';
+  for (const sl of SLOTS) {
+    const d = document.createElement('div');
+    d.className = 'up ench'; d.dataset.slot = sl.id;
+    d.innerHTML = `<div class="n"><b>${sl.name}</b><span class="ed"></span></div><div class="lvl"></div><div class="cost"><img src="assets/ui/rune.png" class="px i14" alt=""><b>0</b></div>`;
+    holdRepeat(d, () => {
+      if (!enchant(S, sl.id)) return false;
+      st = stats(S); refreshEnch();
+      d.classList.remove('bought'); void d.offsetWidth; d.classList.add('bought');
+      return true;
+    }, n => { if (n) { addLog(t('ui.enchLog', { s: `<b>${sl.name}</b>`, n: enchLv(S, sl.id) })); buildSlots(); } });
+    box.appendChild(d);
+  }
+  refreshEnch();
+}
+function refreshEnch() {
+  const line = $('#essLine'); if (!line) return;
+  const totalEnch = SLOTS.reduce((a, sl) => a + enchLv(S, sl.id), 0), sbv = setInfo(S).best.v;
+  line.textContent = t('ui.essLine', { n: fmt(S.ess || 0) }) + ' · ' + t('ui.enchSum', { n: totalEnch }) + (sbv ? ' · ' + t('ui.setShort', { v: sbv }) : '');
+  for (const d of document.querySelectorAll('.ench')) {
+    const id = d.dataset.slot, lv = enchLv(S, id), max = lv >= ENCH_MAX, c = enchCost(lv);
+    d.classList.toggle('no', max || (S.ess || 0) < c);
+    d.querySelector('.ed').textContent = t('ui.enchEff', { p: Math.round(ENCH_STEP * lv * 100) }) + (max ? '' : ' → +' + Math.round(ENCH_STEP * (lv + 1) * 100) + '%');
+    d.querySelector('.lvl').textContent = '+' + lv + '/' + ENCH_MAX;
+    d.querySelector('.cost b').textContent = max ? 'MAX' : fmt(c);
+  }
+  const si = setInfo(S);
+  $('#setInfo').innerHTML = `<div class="sech">${t('ui.setHead')}<span>${si.best.v ? t('ui.setOn', { v: si.best.v }) : t('ui.setOff')}</span></div>` +
+    si.rows.map(r => `<div class="setrow ${r.v && r.r === si.best.r ? 'on' : ''}"><b style="color:${RARITIES[r.r].color}">${t('ui.setTier', { r: RARITIES[r.r].name })}</b><span>${r.n}/8</span>${r.t.map(([k, v]) => `<em class="${r.n >= k ? 'on' : ''}">${t('ui.setStep', { k, v })}</em>`).join('')}</div>`).join('') +
+    `<div class="relnote">${t('ui.setNote')}</div>`;
+}
+
+// ================= 윤회 (환생 탭) =================
+function refreshReinc() {
+  const box = $('#reincBox'); if (!box || box.closest('.page').classList.contains('hidden')) return;
+  const k = karmaGain(S), K = S.karma || 0;
+  $('#reincGain').textContent = k;
+  $('#karma').textContent = K; $('#reincN').textContent = S.reinc || 0; $('#cycleBest').textContent = 'B' + (S.cycleBest || 0);
+  $('#karmaEff').textContent = t('ui.karmaEff', { h: Math.round(KARMA_HONOR * K * 100), p: Math.round(KARMA_POW * K * 100) });
+  $('#reincHint').textContent = k > 0 ? t('ui.reincGain', { k, h: Math.round(KARMA_HONOR * k * 100), p: Math.round(KARMA_POW * k * 100) }) : t('ui.reincNeed', { n: REINC_FLOOR, m: S.cycleBest || 0 });
+  if (!bindReinc._armed) $('#reincBtn').disabled = k <= 0;
+}
+function bindReinc() {
+  let tm = null;
+  const reset = () => { bindReinc._armed = false; $('#reincBtn').textContent = t('ui.doReinc'); $('#reincBtn').classList.remove('armed'); };
+  $('#reincBtn').onclick = async () => {
+    if (!canReinc(S)) return;
+    if (!bindReinc._armed) { bindReinc._armed = true; $('#reincBtn').textContent = t('ui.reincAgain'); $('#reincBtn').classList.add('armed'); clearTimeout(tm); tm = setTimeout(reset, 4000); return; }
+    clearTimeout(tm); reset();
+    await backup(S, 'reinc');
+    const k = reincarnate(S);
+    save(S, 'force'); logLines = []; hudSig = '';
+    addLog('<b>' + t('ui.reincLog', { n: k }) + '</b>');
+    flash('#ffd98a', .8, 1);
+    buildSlots(); buildBag(); buildSkills(); buildComps(); buildRelics();
+  };
+}
 
 // ================= 유물 (환생 탭) =================
 const fmtX = m => (Math.round(m * 100) / 100).toString();
@@ -1449,14 +1711,20 @@ function bindUI() {
       if (b.dataset.go === 'skill') buildSkills();
       if (b.dataset.go === 'comp') buildComps();
       if (b.dataset.go === 'rebirth') refreshSave();
+      if (b.dataset.go === 'quest') buildQuest();
       hideTip();
     };
   });
   const chk = $('#autoEq');
   chk.checked = S.autoEquip;
   chk.onchange = () => { S.autoEquip = chk.checked; save(S); };
-  $('#sellWorse').onclick = () => { const g = sellAllWorse(S); addLog(g ? t('ui.soldWorse', { g: `<b>${fmt(g)}</b>` }) : t('ui.nothing')); save(S); buildBag(); };
-  $('#sellLow').onclick = () => { const r = +$('#sellR').value; const g = sellByRarity(S, r); addLog(g ? t('ui.soldBelow', { r: RARITIES[r].name, g: `<b>${fmt(g)}</b>` }) : t('ui.nothing')); save(S); buildBag(); };
+  $('#sellWorse').onclick = () => { const e0 = S.ess || 0; const g = sellAllWorse(S); addLog(g ? t('ui.soldWorse', { g: `<b>${fmt(g)}</b>` }) + essTxt(e0) : t('ui.nothing')); save(S); buildBag(); refreshEnch(); };
+  $('#sellLow').onclick = () => { const e0 = S.ess || 0; const r = +$('#sellR').value; const g = sellByRarity(S, r); addLog(g ? t('ui.soldBelow', { r: RARITIES[r].name, g: `<b>${fmt(g)}</b>` }) + essTxt(e0) : t('ui.nothing')); save(S); buildBag(); refreshEnch(); };
+  bindQuest(); bindReinc();
+  const eb = $('.enchbox'), setFold = open => { eb.classList.toggle('open', open); $('#enchToggle').setAttribute('aria-expanded', open); };
+  let foldOpen = false; try { foldOpen = localStorage.getItem('dm.enchOpen') === '1'; } catch (e) {}
+  setFold(foldOpen);
+  $('#enchToggle').onclick = () => { const o = !eb.classList.contains('open'); setFold(o); try { localStorage.setItem('dm.enchOpen', o ? '1' : '0'); } catch (e) {} };
   $('#wOk').onclick = () => $('#welcome').classList.add('hidden');
   $('#langSel').onchange = e => changeLang(e.target.value);
   $('#setBtn').onclick = () => { hideTip(); refreshSave(); refreshSyncLine(); $('#setModal').classList.remove('hidden'); };
@@ -1621,7 +1889,8 @@ function showReport(res) {
     t('ui.rep.time', { t: fmtDur(res.seconds) }) + '<br>' +
     t('ui.rep.kills', { k: `<b>${fmt(res.kills)}</b>`, g: `<b>${fmt(res.gold)}</b>` }) + (res.stones > 0 ? t('ui.rep.stones', { s: `<b>${res.stones}</b>` }) : '') + '<br>' +
     (res.floors > 0 ? t('ui.rep.floors', { f: `<b>${res.floors}</b>`, n: S.floor }) + '<br>' : '') +
-    (res.levels > 0 ? t('ui.rep.lv', { l: `<b>${res.levels}</b>` }) + '<br>' : '');
+    (res.levels > 0 ? t('ui.rep.lv', { l: `<b>${res.levels}</b>` }) + '<br>' : '') +
+    (res.rebirths > 0 ? t('ui.rep.rebirths', { n: `<b>${res.rebirths}</b>` }) + '<br>' : '');
   const best = res.drops.slice().sort((a, b) => (b.r * 10 + b.t) - (a.r * 10 + a.t)).slice(0, 8);
   $('#wDrops').innerHTML = best.map(it => `<div style="border-color:${RARITIES[it.r].color}"><img class="px" src="${itemIcon(it, S.cls)}"></div>`).join('');
   $('#welcome').classList.remove('hidden');
@@ -1644,7 +1913,7 @@ async function init() {
   st = stats(S);
   (window.__dmLog || (() => {}))('advance done ' + Math.round(performance.now() - _adv0) + 'ms');
   window.__dmStep = 'build';
-  buildSlots(); buildBag(); buildShop(); buildSkills(); buildComps(); buildRelics(); bindUI();
+  buildSlots(); buildBag(); buildShop(); buildSkills(); buildComps(); buildRelics(); buildEnch(); bindUI();
   window.__dmStep = 'render';
   render();
   if (!S.cls) openClassModal(false);

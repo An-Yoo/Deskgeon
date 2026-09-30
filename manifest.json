@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "__MSG_extName__",
-  "version": "4.8.0",
+  "version": "5.0.0",
   "description": "__MSG_extDesc__",
   "permissions": [
     "storage",
@@ -26,6 +26,6 @@
     "48": "icons/icon48.png",
     "128": "icons/icon128.png"
   },
-  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1xopoAw49xuHeuigxzhGQ0MxC9MXep/1oqhXpu437WzxUS90aI5iM3aUV8QXBbxbu9z1lkHAW2zVEqYhKsy9NEVe21aYHdmEKGISSvVHF6q0zsSO6QVL7zEFydH7FE4R7+oS2t8HI0SQW1ePAQxq4H3WKBHkQZ6tExBS4jYUAzAQTLvq5hSCQ2pV90JpSFN6VYMtE+9Eztfhr/b2PeAaKEP0j8aInbWAx3/RTF86MlrVHLx+DS28ggk7mHBVsVHkJ7ihMEYjoeMm9o2Au4b4EVdqr/0mjBDlRGLkpoYZIpE1RA0K76fS2YTywlrs43o3IWfEmbXHLXflkQ42Y88XFQIDAQAB",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAupIuxRjskpTlnsGWug+hrAK/e1QxhGzoDWGxZinsCnbRjsiuSYmmXJuS+jOK0k9nNzHGUBHPipszpXNdJTW0xm8GJvR3hXwRdH2VK4URCOYdzJw+s9fiw8dxekot0GZADb7mvaYowv7kJ4tKUE8DuDUVsRP+iNdPEGVAzhssoOxsbfxuBlvdSI+MF9UKmvY6aHzoJlPT3VDUkp9iwVDWnDS6/pdUjX7cJk9hLFSDbNiw4MO67YwoBl/H+z0LUlO+9YL+VUkOa23iT9wXPUMdbz4OQtzzHwE3C7SxtBO4AGI1JpAdUFp2ytibHl/ddVU3NcHzLpbPGciESwjZfi1IyQIDAQAB",
   "default_locale": "en"
 }

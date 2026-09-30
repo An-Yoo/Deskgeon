@@ -27,6 +27,7 @@
       <div class="floorbar">
         <span class="fl">B<b id="floor">1</b>F</span>
         <span class="fname" id="fname"></span>
+        <span class="boostTag hidden" id="boostTag"></span>
         <span class="best"><span data-i18n="ui.best">Best</span> B<b id="maxfloor">1</b>F</span>
       </div>
       <div class="screen" id="screen">
@@ -60,6 +61,17 @@
         <div class="slots" id="slots"></div>
       </div>
       <div class="statsum" id="statsum"></div>
+      <div class="enchbox">
+        <button class="foldh" id="enchToggle" aria-expanded="false">
+          <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          <b data-i18n="ui.enchHead">Gear enhancement</b><span id="essLine"></span>
+        </button>
+        <div class="foldb">
+          <div class="relnote" data-i18n="ui.enchNote"></div>
+          <div id="enchList"></div>
+          <div id="setInfo"></div>
+        </div>
+      </div>
       <div class="bagbar">
         <span id="bagInfo"></span>
         <label class="chk"><input type="checkbox" id="autoEq"><span data-i18n="ui.autoEquip">Auto-equip</span></label>
@@ -130,6 +142,25 @@
         <div class="relnote" data-i18n="ui.relicNote"></div>
         <div id="relicList"></div>
       </div>
+      <div class="rb reinc" id="reincBox">
+        <h2 data-i18n="ui.reinc">Reincarnation</h2>
+        <p data-i18n="ui.reincDesc"></p>
+        <div class="rbgain"><b id="reincGain">0</b><span data-i18n="ui.karma">Karma</span></div>
+        <div class="rbhint" id="reincHint"></div>
+        <button class="big" id="reincBtn" disabled data-i18n="ui.doReinc">Reincarnate</button>
+        <div class="rbstats">
+          <div><span data-i18n="ui.karma">Karma</span><b id="karma">0</b></div>
+          <div><span data-i18n="ui.reincN">Reincarnations</span><b id="reincN">0</b></div>
+          <div><span data-i18n="ui.cycleBest">Cycle best</span><b id="cycleBest">B0</b></div>
+        </div>
+        <div class="rbhint" id="karmaEff"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" data-tab="quest">
+      <button class="big sm qall" id="qAll" disabled data-i18n="q.claimNone">Nothing to claim</button>
+      <div class="qnav" id="qNav"></div>
+      <div class="qbody" id="qBody"></div>
     </section>
   </main>
 
@@ -140,6 +171,7 @@
     <button data-go="comp"><span data-i18n="ui.tab.comp">Allies</span><i class="dot hidden" id="compDot"></i></button>
     <button data-go="shop"><span data-i18n="ui.tab.shop">Upgrade</span><i class="dot hidden" id="shopDot"></i></button>
     <button data-go="rebirth"><span data-i18n="ui.tab.rebirth">Rebirth</span><i class="dot hidden" id="rbDot"></i></button>
+    <button data-go="quest"><span data-i18n="ui.tab.quest">Quest</span><i class="dot hidden" id="questDot"></i></button>
   </nav>
 
   <div class="modal hidden" id="clsModal">
@@ -165,6 +197,16 @@
       <h2 id="gTitle" data-i18n="ui.summonResult">Summon</h2>
       <div class="gresult" id="gResult"></div>
       <button class="big" id="gOk" data-i18n="ui.ok">OK</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="rewardModal">
+    <div class="win rwwin">
+      <h2 data-i18n="q.rwTitle">Rewards received</h2>
+      <p id="rwCount"></p>
+      <div class="rwtotal" id="rwTotal"></div>
+      <div class="rwlist" id="rwList"></div>
+      <button class="big" id="rwOk" data-i18n="ui.ok">OK</button>
     </div>
   </div>
 
