@@ -1989,14 +1989,26 @@ function toast(msg, color) {
   setTimeout(() => el.remove(), 2300);
 }
 const ago = ms => { const s = Math.floor((Date.now() - ms) / 1000); return s < 60 ? t('ui.agoS', { n: s }) : s < 3600 ? t('ui.agoM', { n: Math.floor(s / 60) }) : t('ui.agoH', { n: Math.floor(s / 3600) }); };
+let drvBusy = false;
+// 자주 나오는 로그인 오류를 알아듣기 쉬운 말로
+function drvErrText(e) {
+  e = String(e || '');
+  if (/only one web auth flow/i.test(e)) return t('ui.drvBusyErr');
+  if (/did not approve|user cancel|closed|access_denied/i.test(e)) return t('ui.drvCancel');
+  if (/login-needed|interaction_required|consent_required|login_required/.test(e)) return t('ui.drvRelogin');
+  if (/Failed to fetch|NetworkError|network/i.test(e)) return t('ui.drvNet');
+  return e;
+}
 function refreshSyncLine() {
   const dd = $('#drvDot'), dt = $('#drvTxt'), db = $('#drvBtn');
   if (dd) {
     dd.className = 'sdot';
     if (!driveState.supported) { dd.classList.add('off'); dt.textContent = t('ui.drvUnsupported'); db.disabled = true; }
     else if (!driveState.linked) { dt.textContent = t('ui.drvOff'); db.textContent = t('ui.driveLink'); db.disabled = false; }
-    else if (driveState.ok === false) { dd.classList.add('bad'); dt.textContent = t('ui.drvErr', { e: driveState.err }); db.textContent = t('ui.driveUnlink'); }
-    else { dd.classList.add('ok'); dt.textContent = driveState.at ? t('ui.drvOk', { ago: ago(driveState.at) }) : t('ui.drvLinked'); db.textContent = t('ui.driveUnlink'); }
+    else if (drvBusy) { dt.textContent = t('ui.drvWait'); db.textContent = t('ui.drvWaitBtn'); db.disabled = true; }
+    else if (driveState.ok === false && /login-needed|interaction_required|consent_required|login_required/.test(driveState.err)) { dd.classList.add('bad'); dt.textContent = t('ui.drvRelogin'); db.textContent = t('ui.drvReloginBtn'); db.disabled = false; }
+    else if (driveState.ok === false) { dd.classList.add('bad'); dt.textContent = t('ui.drvErr', { e: drvErrText(driveState.err) }); db.textContent = t('ui.driveUnlink'); db.disabled = false; }
+    else { dd.classList.add('ok'); dt.textContent = driveState.at ? t('ui.drvOk', { ago: ago(driveState.at) }) : t('ui.drvLinked'); db.textContent = t('ui.driveUnlink'); db.disabled = false; }
   }
   const dot = $('#syncDot'), txt = $('#syncTxt');
   if (!dot) return;
@@ -2041,18 +2053,24 @@ async function applySave(raw, why) {
 function bindSave() {
   driveStatus().then(refreshSyncLine);
   let drvArmed = false;
+  // 로그인은 서비스 워커에서 진행되므로, 팝업을 다시 열었을 때나 다른 창에서 끝났을 때도 상태를 바로 반영
+  chrome.storage.onChanged.addListener((ch, area) => { if (area === 'local' && ch['dm.drive']) driveStatus().then(refreshSyncLine); });
   $('#drvBtn').onclick = async () => {
-    if (driveState.linked) {
+    if (drvBusy) return;
+    const relogin = driveState.linked && driveState.ok === false && /login-needed|interaction_required|consent_required|login_required/.test(driveState.err);
+    if (driveState.linked && !relogin) {
       if (!drvArmed) { drvArmed = true; $('#drvBtn').textContent = t('ui.unlinkAgain'); setTimeout(() => { drvArmed = false; refreshSyncLine(); }, 3000); return; }
       await driveUnlink(); toast(t('ui.unlinked')); refreshSyncLine(); return;
     }
+    drvBusy = true; refreshSyncLine();
     try {
       await driveLink();
       const r = await driveSync(S, { interactive: true, push: false });
       if (r.action === 'pull') await applySave(r.save, 'drive');
+      else if (r.action === 'error') throw new Error(r.err);
       else { await driveSync(S, { push: true }); toast(t('ui.driveDone')); }
-    } catch (e) { toast(t('ui.linkFail', { e: e.message || e }), '#ff6b7a'); }
-    refreshSyncLine();
+    } catch (e) { toast(t('ui.linkFail', { e: drvErrText(e.message || e) }), '#ff6b7a'); }
+    drvBusy = false; refreshSyncLine();
   };
   $('#syncNow').onclick = async () => { await save(S, 'force'); refreshSyncLine(); toast(syncState.ok ? t('ui.savedAcc') : t('ui.syncFail', { e: syncState.err || '' }), syncState.ok ? null : '#ff6b7a'); };
   $('#expBtn').onclick = async () => {

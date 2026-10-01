@@ -1,4 +1,4 @@
-import { load, save, advance, stats, fmt, CLASSES, normalize, backup, driveSync, driveWrite, driveStatus, setLang, t } from './game.js';
+import { load, save, advance, stats, fmt, CLASSES, normalize, backup, driveSync, driveWrite, driveStatus, driveAuthLocal, setLang, t } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
 
@@ -24,6 +24,13 @@ chrome.runtime.onInstalled.addListener(boot);
 chrome.runtime.onStartup.addListener(boot);
 chrome.alarms.onAlarm.addListener(a => { if (a.name === ALARM) tick(); });
 chrome.runtime.onMessage.addListener((msg, _s, reply) => {
+  // 구글 로그인: 팝업이 닫혀도 여기서 끝까지 진행되고, 동시에 여러 창이 열리지 않게 한 곳에서만 처리
+  if (msg?.type === 'drive-auth') {
+    driveAuthLocal(!!msg.interactive)
+      .then(token => { swLog('drive auth ok' + (msg.interactive ? ' (login)' : '')); reply({ ok: true, token }); })
+      .catch(e => { swLog('drive auth fail ' + (e && e.message || e)); reply({ ok: false, err: String((e && e.message) || e) }); });
+    return true;
+  }
   if (msg?.type === 'refresh') { tick().then(() => reply({ ok: true })); return true; }
   // 팝업이 닫힐 때 넘겨준 최신 상태를 확실히 저장 + 동기화
   if (msg?.type === 'flush' && msg.save) {

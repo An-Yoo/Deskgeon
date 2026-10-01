@@ -1827,28 +1827,66 @@ export const driveState = { supported: !!(chrome.identity && chrome.identity.lau
 async function drvGet() { return (await chrome.storage.local.get(DRV_KEY))[DRV_KEY] || {}; }
 async function drvSet(patch) { const cur = await drvGet(); const n = { ...cur, ...patch }; await chrome.storage.local.set({ [DRV_KEY]: n }); return n; }
 
-async function driveAuth(interactive) {
+// 로그인 창은 한 번에 하나만 열 수 있다(크롬 제한). 그래서
+//  1) 모든 로그인 요청을 서비스 워커 한 곳에서 처리하고(팝업이 닫혀도 로그인이 끝까지 진행돼 토큰이 저장된다)
+//  2) 진행 중인 로그인이 있으면 새로 열지 않고 그 결과를 같이 기다린다.
+//  3) 창 없는 갱신은 8초 안에 끝내고, 실패하면 10분 동안 다시 시도하지 않는다(숨은 창이 계속 열려 느려지는 것 방지).
+const IN_SW = typeof document === 'undefined';
+const SILENT_BACKOFF = 10 * 60 * 1000;
+let authP = null;
+async function authFlow(interactive) {
   const redirect = chrome.identity.getRedirectURL();
   const q = new URLSearchParams({
     client_id: DRIVE.clientId, response_type: 'token', redirect_uri: redirect,
     scope: DRIVE.scope, include_granted_scopes: 'true',
   });
   if (!interactive) q.set('prompt', 'none');
-  const back = await chrome.identity.launchWebAuthFlow({ url: 'https://accounts.google.com/o/oauth2/v2/auth?' + q, interactive });
-  const h = new URLSearchParams((back.split('#')[1] || ''));
+  const url = 'https://accounts.google.com/o/oauth2/v2/auth?' + q;
+  let back;
+  try {
+    back = await chrome.identity.launchWebAuthFlow(interactive ? { url, interactive } : { url, interactive, abortOnLoadForNonInteractive: true, timeoutMsForNonInteractive: 8000 });
+  } catch (e) {
+    // 옵션을 모르는 브라우저(구버전·파이어폭스)는 기본 옵션으로 다시
+    if (!interactive && /abortOnLoad|timeoutMs|unexpected property|Invalid/i.test(String(e && e.message))) back = await chrome.identity.launchWebAuthFlow({ url, interactive });
+    else throw e;
+  }
+  const h = new URLSearchParams(((back || '').split('#')[1] || ''));
   if (h.get('error')) throw new Error(h.get('error'));
   const token = h.get('access_token');
   if (!token) throw new Error('No token received');
   const exp = Date.now() + (Number(h.get('expires_in') || 3600) - 60) * 1000;
-  await drvSet({ linked: true, token, exp });
+  await drvSet({ linked: true, token, exp, silentFailAt: 0 });
   return token;
+}
+export async function driveAuthLocal(interactive) {
+  if (authP) {
+    try { const tk = await authP; if (tk) return tk; }
+    catch (e) { if (!interactive) throw e; }
+    if (authP) return authP;
+  }
+  authP = authFlow(interactive)
+    .catch(async e => { if (!interactive) await drvSet({ silentFailAt: Date.now() }); throw e; })
+    .finally(() => { authP = null; });
+  return authP;
+}
+async function driveAuth(interactive) {
+  if (!IN_SW && chrome.runtime && chrome.runtime.sendMessage) {
+    let r = null;
+    try { r = await chrome.runtime.sendMessage({ type: 'drive-auth', interactive }); } catch (e) { r = null; }
+    if (r && r.ok) return r.token;
+    if (r && !r.ok) throw new Error(r.err || 'auth failed');
+  }
+  return driveAuthLocal(interactive);                    // 서비스 워커를 못 쓰면 이 화면에서 직접
 }
 async function driveToken(interactive = false) {
   const d = await drvGet();
   if (d.token && d.exp > Date.now()) return d.token;
   if (!d.linked && !interactive) throw new Error('not-linked');
+  if (!interactive && d.silentFailAt && Date.now() - d.silentFailAt < SILENT_BACKOFF) throw new Error('login-needed');
+  const recentFail = d.silentFailAt && Date.now() - d.silentFailAt < SILENT_BACKOFF;
+  if (interactive && recentFail) return driveAuth(true);   // 방금 조용한 갱신이 실패했으면 바로 로그인 창
   try { return await driveAuth(false); }                 // 로그인 세션이 살아 있으면 창 없이 갱신
-  catch (e) { if (interactive) return await driveAuth(true); throw e; }
+  catch (e) { if (interactive) return await driveAuth(true); throw new Error('login-needed'); }
 }
 async function driveFetch(url, opts = {}, interactive = false, retry = true) {
   const token = await driveToken(interactive);
@@ -1912,7 +1950,7 @@ export async function driveStatus() {
 export async function driveLink() {
   if (!driveState.supported) throw new Error('Google sign-in not supported');
   await driveAuth(true);
-  driveState.linked = true;
+  driveState.linked = true; driveState.ok = null; driveState.err = '';
   return true;
 }
 export async function driveUnlink() {
@@ -1922,11 +1960,23 @@ export async function driveUnlink() {
   Object.assign(driveState, { linked: false, ok: null, at: 0, err: '' });
 }
 // 로컬과 드라이브를 비교해 최신 쪽을 돌려주고, 로컬이 더 최신이면 드라이브에 올린다
+// 진행도 비교: 윤회 → 최고층 → 환생 → 레벨 → 처치 수
+export function progressCmp(a, b) {
+  const k = s => [s.reinc || 0, s.bestFloor || s.maxFloor || 0, s.rebirths || 0, s.level || 0, s.totalKills || 0];
+  const x = k(a), y = k(b); for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i] ? 1 : -1; return 0;
+}
 export async function driveSync(s, { interactive = false, push = true } = {}) {
   await driveStatus();
   if (!driveState.linked || !driveState.supported) return { action: 'off' };
   try {
+    const d0 = await drvGet();
     const remote = await driveRead(interactive);
+    if (remote && !d0.lastSavedAt) {
+      const n = normalize(remote);
+      if (progressCmp(n, s) > 0) return { action: 'pull', save: n };
+      if (push) { await driveWrite(s, interactive); return { action: 'push' }; }
+      return { action: 'same' };
+    }
     if (remote && (remote.savedAt || 0) > (s.savedAt || 0) + 1000) {
       const n = normalize(remote);
       return { action: 'pull', save: n };

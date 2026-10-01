@@ -6,9 +6,13 @@
 <p>
 <img alt="Genre" src="https://img.shields.io/badge/장르-방치형%20RPG-7a5cff">
 <img alt="Platform" src="https://img.shields.io/badge/플랫폼-Chrome%20확장-4285F4">
-<img alt="Version" src="https://img.shields.io/badge/버전-5.3.0-2ea44f">
+<img alt="Version" src="https://img.shields.io/badge/버전-5.3.1-2ea44f">
 <img alt="Price" src="https://img.shields.io/badge/가격-무료-ffc35c">
 </p>
+
+<p><a href="https://chromewebstore.google.com/detail/deskgeon-idle-dungeon-rpg/adaoggopidkbankjinlalfnjlgncanpk"><img alt="Chrome 웹 스토어에서 설치" src="https://img.shields.io/badge/Chrome%20웹%20스토어-무료%20설치-4285F4?logo=googlechrome&logoColor=white&style=for-the-badge"></a></p>
+
+**[Chrome 웹 스토어에서 설치하기](https://chromewebstore.google.com/detail/deskgeon-idle-dungeon-rpg/adaoggopidkbankjinlalfnjlgncanpk)** · [홈페이지](https://an-yoo.github.io/Deskgeon/) · English: *Deskgeon is a free idle dungeon RPG Chrome extension. A pixel hero lives in your toolbar and keeps delving while you work.*
 
 **인기 태그:** `방치형` `인크리멘탈` `RPG` `픽셀 그래픽` `던전 크롤러` `수집` `가챠` `싱글 플레이어` `캐주얼` `판타지`
 
@@ -133,6 +137,10 @@
 ---
 
 ## 설치 방법
+
+**추천:** [Chrome 웹 스토어](https://chromewebstore.google.com/detail/deskgeon-idle-dungeon-rpg/adaoggopidkbankjinlalfnjlgncanpk)에서 **Chrome에 추가**를 누르면 끝입니다. 업데이트도 자동으로 받습니다. (엣지·웨일·브레이브 등 크로미움 계열 브라우저도 같은 페이지에서 설치할 수 있습니다.)
+
+**직접 설치(개발 버전):**
 
 1. 이 저장소를 내려받아 원하는 폴더에 압축을 풉니다. (폴더를 지우거나 옮기면 게임도 사라지니 계속 둘 곳에 풀어주세요.)
 2. 주소창에 `chrome://extensions` 입력 (엣지는 `edge://extensions`)
