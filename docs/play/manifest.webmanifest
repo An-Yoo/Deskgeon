@@ -1,0 +1,24 @@
+{
+  "id": "./",
+  "name": "Deskgeon - Idle Dungeon RPG",
+  "short_name": "Deskgeon",
+  "description": "A pixel-fantasy idle dungeon RPG. Descend dungeon floors with auto battles, collect gear and companions, and grow stronger through rebirth.",
+  "lang": "ko",
+  "dir": "ltr",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait",
+  "background_color": "#0d0b17",
+  "theme_color": "#1d1430",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "pwa-icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "pwa-icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "screenshots": [
+    { "src": "pwa-icons/shot1.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "Dungeon" }, { "src": "pwa-icons/shot2.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "Companions" }
+  ]
+}

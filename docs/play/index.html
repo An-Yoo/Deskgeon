@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1d1430">
+<meta name="description" content="Deskgeon - pixel-fantasy idle dungeon RPG">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="pwa-icons/icon-192.png">
+<link rel="apple-touch-icon" href="pwa-icons/icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Deskgeon</title>
+<link rel="stylesheet" href="popup.css">
+<link rel="stylesheet" href="web.css">
+<script src="web-shim.js"></script>
+<script src="web-fit.js"></script>
+<script src="boot.js"></script>
+</head>
+<body>
+  <div class="gmini" id="gMini"><i class="gmd" id="gMiniDot"></i><span class="gmt" id="gMiniTxt"></span><button class="mini" id="gMiniStop"></button><button class="mini" id="gMiniOpen"></button></div>
+  <header class="hud">
+    <div class="hudleft">
+      <div class="lv"><span class="clsTag" id="clsTag">-</span>Lv.<b id="lv">1</b><i class="sp hidden" id="spTag">SP 0</i></div>
+      <div class="xpbar"><i id="xpbar"></i></div>
+    </div>
+    <div class="hudright">
+      <div class="cur">
+        <span class="gold" id="goldBox"><img src="assets/ui/gold.png" class="px i14" alt=""><b id="gold">0</b></span>
+        <span class="stone" id="stoneBox"><img src="assets/ui/stone.png" class="px i14" alt=""><b id="stones">0</b></span>
+      </div>
+      <div class="dps"><span data-i18n="ui.dps">DPS</span> <b id="dps">0</b></div>
+    </div>
+    <button class="setbtn" id="setBtn" data-i18n-title="ui.settings" aria-label="Settings"><i class="dot hidden" id="setDot"></i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+  </header>
+
+  <main>
+    <section class="page" data-tab="dungeon">
+      <div class="floorbar">
+        <span class="fl">B<b id="floor">1</b>F</span>
+        <span class="fname" id="fname"></span>
+        <span class="boostTag hidden" id="boostTag"></span>
+        <span class="best"><span data-i18n="ui.best">Best</span> B<b id="maxfloor">1</b>F</span>
+      </div>
+      <div class="screen" id="screen">
+        <canvas id="cv" width="180" height="96"></canvas>
+        <div class="cdrow" id="cdrow"></div>
+        <div class="buffrow" id="buffrow"></div>
+        <div class="pasrow" id="pasrow"></div>
+        <div class="dmgs" id="dmgs"></div>
+        <div class="banners" id="banners"></div>
+        <div class="flash" id="flash"></div>
+      </div>
+      <div class="battle">
+        <div class="mline"><span id="mname"></span><span id="mcount"></span></div>
+        <div class="bar mon"><i id="mbar"></i></div>
+        <div class="bar hero hidden" id="heroWrap"><i id="hbar"></i><span id="hlabel"></span></div>
+        <button class="bossbtn hidden" id="bossBtn"><span data-i18n="ui.bossChallenge">Challenge Boss</span> <b>B5F</b></button>
+        <div class="bosstimer hidden" id="bossTimer"><span data-i18n="ui.boss">Boss</span> <b id="btime">30.0</b>s</div>
+      </div>
+      <button class="evbar hidden" id="evBox"></button>
+      <div class="ebrow hidden" id="ebRow"></div>
+      <div class="statgrid">
+        <div><span data-i18n="stat.atk">ATK</span><b id="s_atk">0</b></div>
+        <div><span data-i18n="stat.hp">HP</span><b id="s_hp">0</b></div>
+        <div><span data-i18n="stat.crit">Crit</span><b id="s_crit">0%</b></div>
+        <div><span data-i18n="ui.allyDps">Ally DPS</span><b id="s_comp">0</b></div>
+      </div>
+      <div class="guidebox autocard hidden" id="autoCard"></div>
+      <div class="guidebox hidden" id="guideBox"></div>
+      <div class="log" id="log"></div>
+    </section>
+
+    <section class="page hidden" data-tab="gear">
+      <div class="doll">
+        <canvas id="dollcv" width="48" height="48"></canvas>
+        <button class="mini cosbtn" id="cosBtn" data-i18n="cos.btn">Costume</button><button class="mini cosbtn soulbtn" id="soulBtn" data-i18n="soul.btn">Soul Weapon</button>
+        <div class="slots" id="slots"></div>
+      </div>
+      <div class="statsum" id="statsum"></div>
+      <div class="enchbox">
+        <button class="foldh" id="enchToggle" aria-expanded="false">
+          <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+          <b data-i18n="ui.enchHead">Gear enhancement</b><span id="essLine"></span>
+        </button>
+        <div class="foldb">
+          <div id="enchList"></div>
+          <div id="setInfo"></div>
+        </div>
+      </div>
+      <div class="bagbar">
+        <span id="bagInfo"></span>
+        <label class="chk"><input type="checkbox" id="autoEq"><span data-i18n="ui.autoEquip">Auto-equip</span></label>
+        <select id="bagSort"><option value="value" data-i18n="ui.sort.value">Best</option><option value="rarity" data-i18n="ui.sort.rarity">Rarity</option><option value="slot" data-i18n="ui.sort.slot">Slot</option><option value="count" data-i18n="ui.sort.count">Count</option></select>
+      </div>
+      <div class="bagfilt" id="bagFilt"></div>
+      <div class="bagbar"><span data-i18n="ui.autoSell">Auto-sell</span><select id="autoSell"><option value="-1" data-i18n="ui.off">Off</option><option value="0" data-i18n="ui.le.0">Common</option><option value="1" data-i18n="ui.le.1">Uncommon or lower</option><option value="2" data-i18n="ui.le.2">Rare or lower</option></select></div>
+      <div class="bagbar">
+        <button class="mini" id="sellWorse" data-i18n="ui.sellWorse">Sell weaker</button>
+        <button class="mini" id="oddsBtn" data-i18n="ui.odds">Drop rates</button>
+        <span class="sellr"><select id="sellR"><option value="0" data-i18n="rar.0">Common</option><option value="1" data-i18n="rar.1">Uncommon</option><option value="2" data-i18n="rar.2">Rare</option></select><button class="mini" id="sellLow" data-i18n="ui.sellBelow">Sell all</button></span>
+      </div>
+      <div class="bag" id="bag"></div>
+    </section>
+
+    <section class="page hidden" data-tab="skill">
+      <div class="clsbox" id="clsbox"></div>
+      <div class="spbar"><span data-i18n="ui.sp">Skill points</span> <b id="spLeft">0</b><button class="mini" id="respecBtn" data-i18n="ui.respec">Reset skills</button></div>
+      <div class="sech" data-i18n="ui.active">Active</div>
+      <div class="skills" id="skA"></div>
+      <div class="sech" data-i18n="ui.passive">Passive</div>
+      <div class="skills" id="skP"></div>
+      <div class="msbox" id="msBox">
+        <div class="sech"><span data-i18n="ui.mastery">Mastery</span><span id="msHead"></span></div>
+        <div class="relnote" data-i18n="ui.msNote"></div>
+        <div id="msList"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" data-tab="comp">
+      <div class="gacha">
+        <div class="gtitle" data-i18n="ui.altar">Summoning Altar</div>
+        <div class="banner-sel" id="bannerSel"></div>
+        <div class="grow">
+          <button class="big sm" id="pull1"><span data-i18n="ui.pull1">Summon x1</span><i id="pull1Cost"></i></button>
+          <button class="big sm" id="pull10"><span data-i18n="ui.pull10">Summon x10</span><i id="pull10Cost"></i></button>
+          <button class="big sm alt" id="pull100"><span data-i18n="ui.pull100">Summon x100</span><i id="pull100Cost"></i></button>
+        </div>
+        <div class="stonerow"><button class="mini" id="buyStone"><span data-i18n="ui.buyStones">Buy 10 stones</span> <b id="stoneCost">0</b><i id="stoneDisc"></i></button><button class="mini" id="buyStoneAll"><span data-i18n="ui.buyStonesAll">Buy max</span> <b id="buyAllN"></b></button></div>
+        <div class="shardrow"><div class="shardline" id="shardLine"></div><button class="mini" id="lvAll" data-i18n="ui.lvAll">Level up all</button></div>
+        <div class="rates"><span id="rateLine"></span> · <b id="pity"></b></div>
+        <button class="mini wide milebtn" id="mileBtn">Mileage</button>
+      </div>
+      <div class="ownsum" id="ownsum"></div>
+      <div class="petbox" id="petBox"></div>
+      <div class="expbox" id="expBox"></div>
+      <div class="teamh" data-i18n="ui.party">Party</div>
+      <div class="team" id="team"></div>
+      <div class="teamh" data-i18n="ui.presets">Presets</div>
+      <div class="presets" id="presets"></div>
+      <div class="filt" id="filt"></div>
+      <div class="ccount" id="compCount"></div>
+      <div class="comps" id="comps"></div>
+    </section>
+
+    <section class="page hidden" data-tab="shop">
+      <div class="sshop" id="stoneShop"></div>
+      <div class="shop" id="shop"></div>
+    </section>
+
+    <section class="page hidden" data-tab="rebirth">
+      <div class="rb">
+        <img src="assets/ui/orb.png" class="px i48" alt="">
+        <h2 data-i18n="ui.rebirth">Rebirth</h2>
+        <p data-i18n="ui.rebirthDesc"></p>
+        <div class="rbgain"><b id="rbGain">0</b><span data-i18n="ui.honor">Honor</span></div>
+        <div class="bar rbbar"><i id="rbBar"></i></div>
+        <div class="rbhint" id="rbHint"></div>
+        <div class="rbhint conv" id="rbConv"></div>
+        <button class="big" id="rbBtn" disabled data-i18n="ui.doRebirth">Rebirth</button>
+        <div class="rbstats">
+          <div><span data-i18n="ui.honor">Honor</span><b id="honor">0</b></div>
+          <div><span data-i18n="ui.rebirths">Rebirths</span><b id="rebirths">0</b></div>
+          <div><span data-i18n="ui.kills">Total kills</span><b id="kills">0</b></div>
+        </div>
+      </div>
+      <div class="relics">
+        <div class="relh"><b data-i18n="ui.relics">Relics</b><span id="relicPts"></span></div>
+        <div class="relnote" data-i18n="ui.relicNote"></div>
+        <div id="relicList"></div>
+      </div>
+      <div class="rb reinc" id="reincBox">
+        <h2 data-i18n="ui.reinc">Reincarnation</h2>
+        <p data-i18n="ui.reincDesc"></p>
+        <div class="rbgain"><b id="reincGain">0</b><span data-i18n="ui.karma">Karma</span></div>
+        <div class="rbhint" id="reincHint"></div>
+        <div class="rbhint conv" id="reincConv"></div>
+        <button class="big" id="reincBtn" disabled data-i18n="ui.doReinc">Reincarnate</button>
+        <div class="rbstats">
+          <div><span data-i18n="ui.karma">Karma</span><b id="karma">0</b></div>
+          <div><span data-i18n="ui.reincN">Reincarnations</span><b id="reincN">0</b></div>
+          <div><span data-i18n="ui.cycleBest">Cycle best</span><b id="cycleBest">B0</b></div>
+        </div>
+        <div class="rbhint" id="karmaEff"></div>
+      </div>
+    </section>
+
+    <section class="page hidden" data-tab="quest">
+      <button class="big sm qall" id="qAll" disabled data-i18n="q.claimNone">Nothing to claim</button>
+      <div class="qnav" id="qNav"></div>
+      <div class="qbody" id="qBody"></div>
+    </section>
+  </main>
+
+  <nav class="tabs">
+    <button class="on" data-go="dungeon" data-i18n="ui.tab.dungeon">Dungeon</button>
+    <button data-go="gear" id="tabGear"><span data-i18n="ui.tab.gear">Gear</span><i class="dot hidden" id="gearDot"></i></button>
+    <button data-go="skill"><span data-i18n="ui.tab.skill">Skills</span><i class="dot hidden" id="skillDot"></i></button>
+    <button data-go="comp"><span data-i18n="ui.tab.comp">Allies</span><i class="dot hidden" id="compDot"></i></button>
+    <button data-go="shop"><span data-i18n="ui.tab.shop">Upgrade</span><i class="dot hidden" id="shopDot"></i></button>
+    <button data-go="rebirth"><span data-i18n="ui.tab.rebirth">Rebirth</span><i class="dot hidden" id="rbDot"></i></button>
+    <button data-go="quest"><span data-i18n="ui.tab.quest">Quest</span><i class="dot hidden" id="questDot"></i></button>
+  </nav>
+
+  <div class="modal hidden" id="clsModal">
+    <div class="win cwin">
+      <h2 id="clsTitle" data-i18n="ui.chooseClass">Choose your class</h2>
+      <p id="clsSub"></p>
+      <div class="clsgrid" id="clsGrid"></div>
+      <button class="mini wide hidden" id="clsCancel" data-i18n="ui.cancel">Cancel</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="welcome">
+    <div class="win">
+      <h2 data-i18n="ui.report">While you were away</h2>
+      <p id="wBody"></p>
+      <div class="wdrops" id="wDrops"></div>
+      <button class="big" id="wOk" data-i18n="ui.ok">OK</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="gachaModal">
+    <div class="win gwin">
+      <h2 id="gTitle" data-i18n="ui.summonResult">Summon</h2>
+      <div class="gresult" id="gResult"></div>
+      <div class="grow gbtns"><button class="big sm alt hidden" id="gAuto" data-i18n="ui.pullAuto">Auto summon</button><button class="big sm" id="gOk" data-i18n="ui.ok">OK</button></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="autoModal">
+    <div class="win awin">
+      <h2 id="aTitle">Auto summon</h2>
+      <p id="aCount"></p>
+      <div class="arar" id="aRar"></div>
+      <div class="asum" id="aSum"></div>
+      <div class="gresult ahi" id="aHi"></div>
+      <div class="areason" id="aReason"></div>
+      <div class="aopt" id="aOpt">
+        <label class="chk sel"><span data-i18n="ui.aOptBatch">Each round</span><select id="aBatch"><option value="10" data-i18n="ui.aB10">10 pulls</option><option value="100" data-i18n="ui.aB100">100 pulls</option></select></label>
+        <label class="chk sel"><span data-i18n="ui.aOptStop">Stop on</span><select id="aStopR"><option value="3" data-i18n="ui.aS3">UR or better</option><option value="4" data-i18n="ui.aS4">LR or better</option><option value="5" data-i18n="ui.aS5">MR only</option><option value="-1" data-i18n="ui.aSn">Never</option></select></label>
+        <label class="chk"><input type="checkbox" id="aNewc"><span data-i18n="ui.aOptNew">Stop on a new ally</span></label>
+        <label class="chk"><input type="checkbox" id="aBuy"><span data-i18n="ui.aOptBuy">Buy stones with gold when out</span></label>
+        <label class="chk"><input type="checkbox" id="aMini"><span data-i18n="ui.aOptMini">Gacha mode: shrink to a thin bar</span></label>
+      </div>
+      <div class="grow"><button class="big sm alt hidden" id="aRestart" data-i18n="ui.aRestart">Start again</button><button class="big sm alt" id="aMiniNow" data-i18n="ui.aMiniNow">Shrink</button><button class="big sm" id="aStop">Stop</button></div>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="soulModal">
+    <div class="win soulwin" id="soulWin"></div>
+  </div>
+
+  <div class="modal hidden" id="petModal">
+    <div class="win petwin" id="petWin"></div>
+  </div>
+
+  <div class="modal hidden" id="rewardModal">
+    <div class="win rwwin">
+      <h2 data-i18n="q.rwTitle">Rewards received</h2>
+      <p id="rwCount"></p>
+      <div class="rwtotal" id="rwTotal"></div>
+      <div class="rwlist" id="rwList"></div>
+      <button class="big" id="rwOk" data-i18n="ui.ok">OK</button>
+    </div>
+  </div>
+
+  <div class="modal hidden" id="compModal">
+    <div class="win cdwin" id="compDetail"></div>
+  </div>
+
+  <div class="modal hidden" id="setModal">
+    <div class="win setwin">
+      <div class="sethead"><h2 data-i18n="ui.settings">Settings</h2><button class="mini" id="setClose" data-i18n="ui.close">Close</button></div>
+        <div class="savebox">
+          <div class="sbh" data-i18n="set.auto">Automation</div>
+          <div class="autobox" id="autoBox"></div>
+          <div class="sbh" data-i18n="help.title">Guide</div>
+          <div class="grow"><button class="mini wide" id="helpBtn" data-i18n="help.open">How to play</button><button class="mini wide" id="guideShow" data-i18n="gd.show">Show starter guide</button></div>
+          <div class="sbh sm" data-i18n="ui.lang">Language</div>
+          <select id="langSel" class="wide"></select>
+          <div class="sbh" data-i18n="ui.save">Save &amp; Sync</div>
+          <div class="sbh sm" data-i18n="ui.drive">Google Drive</div>
+          <div class="syncline"><i class="sdot" id="drvDot"></i><span id="drvTxt" data-i18n="ui.checking">Checking...</span></div>
+          <button class="mini wide" id="drvBtn" data-i18n="ui.driveLink">Connect Google</button>
+          <div class="sbh sm" data-i18n="ui.browserSync">Browser sync</div>
+          <div class="syncline"><i class="sdot" id="syncDot"></i><span id="syncTxt" data-i18n="ui.checking">Checking...</span></div>
+          <div class="grow">
+            <button class="mini wide" id="syncNow" data-i18n="ui.syncNow">Sync now</button>
+            <button class="mini wide" id="expBtn" data-i18n="ui.copyCode">Copy save code</button>
+          </div>
+          <textarea id="impTxt" data-i18n-ph="ui.codePh"></textarea>
+          <button class="mini wide" id="impBtn" data-i18n="ui.loadCode">Load save code</button>
+          <div class="sbh sm" data-i18n="ui.backups">Backups</div>
+          <div class="baks" id="baks"></div>
+          <div class="sbh sm" data-i18n="ui.diag">Diagnostics</div>
+          <div class="grow">
+            <button class="mini wide" id="diagShow" data-i18n="ui.diagShow">Show log</button>
+            <button class="mini wide" id="diagCopy" data-i18n="ui.diagCopy">Copy log</button>
+            <button class="mini wide" id="diagClear" data-i18n="ui.diagClear">Clear</button>
+          </div>
+          <textarea id="diagTxt" class="hidden" readonly></textarea>
+        </div>
+      </div>
+  </div>
+
+  <div class="modal hidden" id="mileModal"><div class="win evwin" id="mileWin"></div></div>
+  <div class="modal hidden" id="expModal"><div class="win evwin" id="expWin"></div></div>
+  <div class="modal hidden" id="cgModal"><div class="win evwin" id="cgWin"></div></div>
+  <div class="modal hidden" id="cosModal"><div class="win evwin" id="cosWin"></div></div>
+  <div class="modal hidden" id="evModal">
+    <div class="win evwin" id="evWin"></div>
+  </div>
+
+  <div class="modal hidden" id="helpModal">
+    <div class="win setwin helpwin">
+      <div class="sethead"><h2 data-i18n="help.title">Guide</h2><button class="mini" id="helpClose" data-i18n="ui.close">Close</button></div>
+      <div class="helpnav" id="helpNav"></div>
+      <div class="helpbody" id="helpBody"></div>
+    </div>
+  </div>
+
+  <div class="tip hidden" id="tip"></div>
+  <div class="flyer" id="flyer"></div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
