@@ -241,6 +241,145 @@ export const SKILLS = [
   { id: 'clr_grace',   cls: 'clr', type: 'passive', name: '은총',        unlock: 55, c0: 10, cl: 0.6, eff: 'comp',  m0: 3.0, ml: 0.25, fx: 'grace', desc: (c, m) => `${c.toFixed(1)}% 확률로 동료 공격 ${m.toFixed(1)}배` },
 ];
 export const SKILL_BY_ID = Object.fromEntries(SKILLS.map(s => [s.id, s]));
+// ---------- 스킬 변이: Lv.10 스킬마다 둘 중 하나를 고른다 (언제든 바꿀 수 있고 환생해도 선택은 유지) ----------
+export function mutKind(sd) {
+  if (sd.type === 'active') return sd.eff === 'burst' ? 'burst' : sd.eff === 'buff' ? 'buff' : sd.eff === 'heal' ? 'heal' : sd.eff === 'timer' ? 'timer' : 'goldA';
+  return { extra: 'extra', heal: 'pheal', cdr: 'pcdr', shield: 'pshield', gold: 'pgold', xp: 'pxp', comp: 'pcomp' }[sd.eff] || 'extra';
+}
+export const MUT_DEF = { burst: 'b', buff: 'b', heal: 'a', timer: 'a', goldA: 'a', extra: 'a', pheal: 'b', pcdr: 'a', pshield: 'a', pgold: 'a', pxp: 'b', pcomp: 'a' };
+export function mutOf(s, sd) { if ((s.skills[sd.id] || 0) < 10) return null; const m = s.mut && s.mut[sd.id]; return m === 'a' || m === 'b' ? m : null; }
+export function setMut(s, id, m) { const sd = SKILL_BY_ID[id]; if (!sd || sd.cls !== s.cls || (s.skills[id] || 0) < 10 || (m !== 'a' && m !== 'b' && m !== null)) return false; (s.mut ||= {}); if (m) s.mut[id] = m; else delete s.mut[id]; return true; }
+export function mutPending(s) { return classSkills(s.cls || 'war').filter(sd => (s.skills[sd.id] || 0) >= 10 && !mutOf(s, sd)).length; }
+function mutCd(s, sd) { const m = mutOf(s, sd), k = mutKind(sd); if (k === 'timer' && m === 'b') return 0.5; return 1; }
+
+// ---------- 던전 이벤트: 진행하다 보면 선택지가 생기고, 열지 않으면 기본 선택으로 지나간다 ----------
+export const EVENT_EVERY = 1200, EVENT_TTL = 7200, EVENT_MAX = 3, EBUFF_T = 1800;
+export const EVENTS = [
+  { id: 'altar',   o: [{ b: [['atkX', 1.4], ['hpX', 0.8]] }, { r: { goldMin: 20 } }, { r: { stones: 5 } }] },
+  { id: 'smith',   o: [{ b: [['atkX', 1.25]], t: 3600 }, { r: { essF: 1 } }, { r: { goldMin: 5 } }] },
+  { id: 'stairs',  o: [{ b: [['monX', 1.3], ['goldX', 2]] }, { r: { stones: 3 } }] },
+  { id: 'wounded', o: [{ r: { shardsF: 1 } }, { r: { goldMin: 15 }, b: [['atkX', 0.9]] }, { b: [['xpX', 1.5]] }] },
+  { id: 'chest',   o: [{ gamble: 0.7, r: { goldMin: 30 }, fail: [['hpX', 0.8], ['atkX', 0.9]] }, { r: { goldMin: 3 } }] },
+  { id: 'spring',  o: [{ rand: [[['atkX', 1.5]], [['goldX', 1.8]], [['xpX', 2]]] }, { r: { boost: 1 } }, { b: [['hpX', 1.2]] }] },
+  { id: 'library', o: [{ b: [['xpX', 2]] }, { r: { essF: 0.5 } }] },
+  { id: 'merchant',o: [{ cost: 10, r: { stones: 30 } }, { r: { stones: 3 } }] },
+  { id: 'spirit',  o: [{ b: [['armor', 80]] }, { b: [['goldX', 1.5]] }] },
+  { id: 'crack',   need: s => riftUnlocked(s), o: [{ r: { keys: 1 } }, { r: { dust: 20 } }] },
+];
+export const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));
+function goldPerMin(s, st) { const f = s.floor; return goldPerKill(f) * st.goldMult * Math.min(20, st.dps / monHp(f)) * 60; }
+export function eventReward(s, o, st) {
+  const r = {}, x = o.r || {};
+  if (x.goldMin) r.gold = goldPerMin(s, st || stats(s)) * x.goldMin;
+  if (x.stones) r.stones = x.stones;
+  if (x.essF) r.ess = Math.ceil((3 + s.maxFloor / 10) * x.essF);
+  if (x.shardsF) r.shards = Math.ceil((5 + s.maxFloor / 20) * x.shardsF);
+  if (x.boost) r.boost = x.boost;
+  if (x.keys) r.keys = x.keys;
+  if (x.dust) r.dust = x.dust;
+  return r;
+}
+export function eventOptOk(s, ev, i) { const o = EVENT_BY_ID[ev.id].o[i]; if (!o) return false; if (o.cost) return s.gold >= goldPerMin(s, stats(s)) * o.cost; return true; }
+function addEbuff(s, list, t) { s.ebuffs ||= []; for (const [k, v] of list) s.ebuffs.push({ k, v, t: t || EBUFF_T }); if (s.ebuffs.length > 12) s.ebuffs.splice(0, s.ebuffs.length - 12); }
+export function resolveEvent(s, idx, choice) {
+  const ev = (s.events || [])[idx]; if (!ev) return null;
+  const E = EVENT_BY_ID[ev.id]; const ci = choice == null ? E.o.length - 1 : choice;
+  if (!eventOptOk(s, ev, ci)) return null;
+  const o = E.o[ci], st = stats(s), out = { id: ev.id, c: ci, auto: choice == null, r: {}, b: [] };
+  if (o.cost) s.gold -= goldPerMin(s, st) * o.cost;
+  let buffs = o.b || null;
+  if (o.gamble != null) { if (Math.random() < o.gamble) out.r = eventReward(s, o, st); else { buffs = o.fail; out.fail = true; } }
+  else out.r = eventReward(s, o, st);
+  if (o.rand) buffs = o.rand[Math.floor(Math.random() * o.rand.length)];
+  if (buffs) { addEbuff(s, buffs, o.t); out.b = buffs; out.t = o.t || EBUFF_T; }
+  const r = out.r; if (r.gold) s.gold += r.gold; if (r.dust) runeState(s).dust += r.dust; giveReward(s, r);
+  s.events.splice(idx, 1);
+  (s.evLog ||= []).unshift({ id: ev.id, c: ci, auto: out.auto, at: Date.now() }); s.evLog.length = Math.min(s.evLog.length, 10);
+  return out;
+}
+function eventTick(s, dt, ev) {
+  if (!s.cls || s.maxFloor < 5) return;
+  s.events ||= [];
+  for (const e of s.events) e.age = (e.age || 0) + dt;
+  for (let i = s.events.length - 1; i >= 0; i--) if (s.events[i].age >= EVENT_TTL) { const r = resolveEvent(s, i, null); if (r) (ev.evAuto ||= []).push(r); }
+  if (s.boss && s.boss.tower) return;
+  s.evT = (s.evT || 0) + dt;
+  if (s.evT >= EVENT_EVERY && s.events.length < EVENT_MAX) {
+    s.evT = 0;
+    const pool = EVENTS.filter(e => (!e.need || e.need(s)) && !s.events.some(x => x.id === e.id));
+    const e = pool[Math.floor(Math.random() * pool.length)];
+    if (e) { s.events.push({ id: e.id, f: s.floor, age: 0 }); ev.newEvent = e.id; }
+  } else if (s.events.length >= EVENT_MAX) s.evT = Math.min(s.evT, EVENT_EVERY);
+}
+const EB_ADD = { armor: 1, critD: 1, spdA: 1 };
+export function ebuffMult(s, k) { const add = EB_ADD[k]; let m = add ? 0 : 1; for (const b of s.ebuffs || []) if (b.k === k) m = add ? m + b.v : m * b.v; return m; }
+
+// ---------- 초보자 가이드: 순서대로 하나씩, 달성하면 보상 ----------
+const _sum = o => Object.values(o || {}).reduce((a, b) => a + (+b || 0), 0);
+export const GUIDE = [
+  { id: 'equip',   go: 'gear',    r: 10, ok: s => Object.values(s.equip || {}).filter(Boolean).length >= 3 },
+  { id: 'upgrade', go: 'shop',    r: 10, ok: s => _sum(s.up) >= 10 },
+  { id: 'skill',   go: 'skill',   r: 10, ok: s => _sum(s.skills) >= 3 || (s.rebirths || 0) > 0 },
+  { id: 'boss',    go: 'dungeon', r: 15, ok: s => (s.bestFloor || s.maxFloor) >= 6 },
+  { id: 'summon',  go: 'comp',    r: 20, ok: s => (s.pulls || 0) >= 10 },
+  { id: 'team',    go: 'comp',    r: 15, ok: s => (s.team || []).length >= 3 },
+  { id: 'mission', go: 'quest',   r: 15, ok: s => { const q = s.quest || {}; return !!(q.att && q.att.n) || Object.keys(q.dc || {}).length > 0 || Object.keys(q.wc || {}).length > 0; } },
+  { id: 'floor20', go: 'dungeon', r: 20, ok: s => (s.bestFloor || s.maxFloor) >= 20 },
+  { id: 'tower',   go: 'quest',   r: 20, ok: s => towerBestAll(s) >= 1 },
+  { id: 'rebirth', go: 'rebirth', r: 30, ok: s => (s.rebirths || 0) >= 1 },
+  { id: 'auto',    go: 'settings',r: 20, ok: s => Object.entries(s.auto || {}).some(([k, v]) => v === true && k !== 'boss' && AUTO.some(a => a.id === k && a.need(s))) },
+  { id: 'relic',   go: 'rebirth', r: 30, ok: s => _sum(s.relic) >= 1 },
+];
+export function guideStep(s) { const n = (s.guide && s.guide.n) || 0; return n < GUIDE.length ? GUIDE[n] : null; }
+export function guideClaim(s) { const g = guideStep(s); if (!g || !g.ok(s)) return 0; (s.guide ||= {}).n = ((s.guide.n) || 0) + 1; s.stones += g.r; return g.r; }
+
+// ---------- 오늘의 던전: 모두 같은 날짜 시드로 Lv.1부터 15분 (즉시 계산) ----------
+export const DAILY_TRIES = 3, DAILY_SEC = 900;
+export const DAILY_MODS = [
+  { id: 'bloodmoon', b: [['critD', 100], ['regenX', 0.3]] },
+  { id: 'arcane',    b: [['skillX', 3], ['atkX', 0.6]] },
+  { id: 'legion',    b: [['compX', 3], ['atkX', 0.7]] },
+  { id: 'giants',    b: [['monX', 1.6], ['goldX', 2.5]] },
+  { id: 'glass',     b: [['atkX', 1.8], ['hpX', 0.45]] },
+  { id: 'fortress',  b: [['armor', 120], ['atkX', 0.8]] },
+  { id: 'haste',     b: [['spdA', 80], ['hpX', 0.75]] },
+];
+export const DAILY_BLESS = [{ id: 'power', b: [['atkX', 1.3]] }, { id: 'fortune', b: [['goldX', 2]] }, { id: 'wisdom', b: [['xpX', 2]] }];
+function hash32(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+export function dailyKey(now = Date.now()) { return localDay(now); }
+export function dailyMod(day) { return DAILY_MODS[hash32('mod' + day) % DAILY_MODS.length]; }
+export function dailyState(s, now = Date.now()) { const d = dailyKey(now); if (!s.daily || s.daily.day !== d) s.daily = { day: d, tries: DAILY_TRIES, best: null, last: null }; return s.daily; }
+export function dailyRun(s, cls, bless, now = Date.now()) {
+  const ds = dailyState(s, now); if (ds.tries <= 0 || !CLASSES[cls]) return null;
+  const B = DAILY_BLESS.find(x => x.id === bless) || DAILY_BLESS[0];
+  const day = ds.day, mod = dailyMod(day);
+  let seed = hash32(day + '|' + cls + '|' + B.id) || 1;
+  const rnd = () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+  const realRandom = Math.random; Math.random = rnd;
+  const OC = OWN_CACHE; OWN_CACHE = { ref: null, ver: -1, list: [] };
+  let r;
+  try {
+    const d = newSave(); d.cls = cls; d.daily = null; d.noEv = true; d.noSig = true; d.quest = null; d.auto = {}; d.autoEquip = true; d.lastTick = 0; d.stones = 0;
+    d.ebuffs = [...mod.b, ...B.b].map(([k, v]) => ({ k, v, t: 1e9 }));
+    let bossT = 0, reachAt = 0, best = 1;
+    for (let T = 0; T < DAILY_SEC; T += 0.5) {
+      const e = {}; step(d, 0.5, e);
+      if (d.maxFloor > best) { best = d.maxFloor; reachAt = T; }
+      if (((T * 2) | 0) % 4 === 0) {
+        for (let g2 = 0; g2 < 20 && d.sp > 0; g2++) { const c = classSkills(cls).filter(sd => skillUnlocked(d, sd) && (d.skills[sd.id] || 0) < SKILL_MAX).sort((a, b) => (d.skills[a.id] || 0) - (d.skills[b.id] || 0) || (a.type === 'active' ? -1 : 1)); if (!c.length || !learnSkill(d, c[0].id)) break; }
+        for (let g3 = 0; g3 < 200; g3++) { let bu = null, bc = Infinity; for (const u of UPGRADES) { const c = upgradeCost(u, d.up[u.id] || 0); if (c < bc) { bc = c; bu = u; } } if (!bu || bc > d.gold) break; buyUpgrade(d, bu.id, 1); }
+      }
+      if (canChallenge(d)) { bossT += 0.5; if (bossT >= (d.bossFails ? 20 : 2)) { bossT = 0; challengeBoss(d); } }
+    }
+    r = { day, cls, bless: B.id, mod: mod.id, floor: best, at: Math.round(reachAt), lv: d.level, dps: stats(d).dps };
+  } finally { Math.random = realRandom; OWN_CACHE = OC; COMP_VER++; }
+  ds.tries--; ds.last = r;
+  const prev = ds.best ? ds.best.floor : 0;
+  r.reward = Math.max(0, r.floor - prev) + (prev ? 0 : 10);
+  if (!ds.best || r.floor > ds.best.floor || (r.floor === ds.best.floor && r.at < ds.best.at)) ds.best = r;
+  s.stones += r.reward;
+  return r;
+}
 export function skillVal(sd, lv) { return sd.v0 + sd.vl * (Math.max(1, lv) - 1); }
 export function passiveChance(sd, lv) { return sd.c0 + sd.cl * (Math.max(1, lv) - 1); }
 export function passiveMult(sd, lv) { return sd.m0 + sd.ml * (Math.max(1, lv) - 1); }
@@ -550,6 +689,7 @@ export function newSave() {
     life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbFloor: 0 },
     ench: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, bossFails: 0,
     mastery: {}, gachaOpt: { stopUR: true, stopNew: false, autoBuy: false },
+    goldConv: true, mut: {}, events: [], ebuffs: [], evT: 0, evLog: [], bossPity: {}, sigGot: {}, daily: null, guide: { n: 0 }, autoSeen: [],
     towers: {}, rift: { keys: 2, best: 0, lvl: 1 }, runes: { eq: [null, null, null, null], bag: [], dust: 0 },
     autoEquip: true, pending: null,
     lastTick: Date.now(), createdAt: Date.now(),
@@ -617,6 +757,19 @@ function sanitize(o, now = Date.now()) {
   o.quest = { day: isDay(q.day) ? q.day : '', d: cnt(q.d), dc: flags(q.dc, DAILY), wk: isDay(q.wk) ? q.wk : '', w: cnt(q.w), wc: flags(q.wc, WEEKLY),
     att: { last: q.att && isDay(q.att.last) ? q.att.last : '', n: int(q.att && q.att.n, 0, 0, 1e6) } };
   o.boost = { charges: int(o.boost && o.boost.charges, 0, 0, 999), until: num(o.boost && o.boost.until, 0, 0, now + 24 * 3600e3) };
+  { const MS = Object.fromEntries(SKILLS.map(x => [x.id, 1]));
+    const mu = o.mut && typeof o.mut === 'object' ? o.mut : {}; o.mut = {}; for (const [k, v] of Object.entries(mu)) if (MS[k] && (v === 'a' || v === 'b') && !/__proto__|constructor|prototype/.test(k)) o.mut[k] = v;
+    o.events = (Array.isArray(o.events) ? o.events : []).filter(e => e && EVENT_BY_ID[e.id]).slice(0, EVENT_MAX).map(e => ({ id: e.id, f: int(e.f, 1, 1, 1e6), age: num(e.age, 0, 0, EVENT_TTL) }));
+    const EBK = { atkX: [0.5, 1.5], hpX: [0.4, 1.3], goldX: [1, 2.5], xpX: [1, 2.5], monX: [1, 1.6], armor: [0, 150], critD: [0, 100], spdA: [0, 80], skillX: [1, 3], compX: [1, 3], regenX: [0.3, 1] };
+    o.ebuffs = (Array.isArray(o.ebuffs) ? o.ebuffs : []).filter(b => b && EBK[b.k]).slice(0, 12).map(b => ({ k: b.k, v: num(b.v, 1, EBK[b.k][0], EBK[b.k][1]), t: num(b.t, 0, 0, 3600) }));
+    o.evT = num(o.evT, 0, 0, EVENT_EVERY); o.evLog = (Array.isArray(o.evLog) ? o.evLog : []).filter(e => e && EVENT_BY_ID[e.id]).slice(0, 10).map(e => ({ id: e.id, c: int(e.c, 0, 0, 3), auto: !!e.auto, at: num(e.at, 0, 0, now + 60000) }));
+    const zk = Array.from({ length: ZONES }, (_, i) => String(i));
+    o.bossPity = pickObj(o.bossPity, zk, v => int(v, 0, 0, SIG_PITY)); o.sigGot = pickObj(o.sigGot, zk, v => int(v, 0, 0, 1e6));
+    const dl = o.daily; o.daily = dl && typeof dl === 'object' && isDay(dl.day) ? { day: dl.day, tries: int(dl.tries, DAILY_TRIES, 0, DAILY_TRIES), best: dl.best && typeof dl.best === 'object' ? { floor: int(dl.best.floor, 1, 1, 400), at: int(dl.best.at, 0, 0, DAILY_SEC), lv: int(dl.best.lv, 1, 1, 1000), cls: CLASSES[dl.best.cls] ? dl.best.cls : 'war', bless: DAILY_BLESS.some(x => x.id === dl.best.bless) ? dl.best.bless : 'power', mod: DAILY_MODS.some(x => x.id === dl.best.mod) ? dl.best.mod : DAILY_MODS[0].id, day: dl.day } : null, last: null } : null;
+    o.guide = { n: int(o.guide && o.guide.n, 0, 0, GUIDE.length), hide: !!(o.guide && o.guide.hide) };
+    o.autoSeen = Array.isArray(o.autoSeen) ? o.autoSeen.filter(x => AUTO.some(a => a.id === x)) : AUTO.filter(a => a.need(o)).map(a => a.id);
+    o.noEv = false; o.noSig = false; o.goldConv = o.goldConv !== false;
+    o.autoNew = (Array.isArray(o.autoNew) ? o.autoNew : []).filter((x, i, a) => AUTO.some(z => z.id === x) && a.indexOf(x) === i); }
   const clampRune = ru => (ru && typeof ru === 'object' && RUNE_STATS[ru.k]) ? Object.assign({ k: ru.k, r: int(ru.r, 0, 0, 4), t: int(ru.t, 1, 1, 1000), u: int(ru.u, 0, 0, RUNE_UP_MAX) }, (ru.k2 && RUNE_STATS[ru.k2] && ru.k2 !== ru.k && int(ru.r, 0, 0, 4) === 4) ? { k2: ru.k2 } : {}) : null;
   { const rs = o.rift || {}; o.rift = { keys: int(rs.keys, KEY_DAILY, 0, KEY_MAX + 20), best: int(rs.best, 0, 0, 1000), lvl: 1 }; o.rift.lvl = int(rs.lvl, 1, 1, o.rift.best + 1);
     const ru = o.runes || {}; o.runes = { eq: Array.from({ length: RUNE_SLOTS }, (_, i) => clampRune((ru.eq || [])[i])), bag: (Array.isArray(ru.bag) ? ru.bag : []).map(clampRune).filter(Boolean).slice(0, RUNE_BAG), dust: num(ru.dust, 0, 0, 1e15) };
@@ -672,6 +825,8 @@ export function normalize(s) {
   o.boost = { ...b.boost, ...(s.boost || {}) };
   o.tower = { ...b.tower, ...(s.tower || {}) };
   o.auto = { ...b.auto, ...(s.auto || {}) };
+  if (!Array.isArray(s.autoSeen)) o.autoSeen = null;
+  if (!s.guide && ((s.rebirths || 0) > 0 || (s.bestFloor || s.maxFloor || 0) >= 30)) o.guide = { n: 0, hide: true };   // 이미 익숙한 플레이어는 가이드를 접어 둔다
   o.ench = { ...(s.ench || {}) }; o.ach = { ...(s.ach || {}) };
   o.bestiary = Array.isArray(s.bestiary) ? s.bestiary.slice(0, ZONES) : [];
   // 탑 도중 저장된 세이브: 보스 상태는 그대로 이어서 진행
@@ -760,6 +915,10 @@ export const UNIQUES = {
   command:   { slot: 'amulet', name: '총사령관', desc: '동료 피해 +80%', stats: { compP: 80 } },
   wisdom:    { slot: 'amulet', name: '깨달음', desc: '경험치 +40% · 골드 획득 +30%', stats: { xpP: 40, goldP: 30 } },
 };
+// ---------- 보스 전용 드롭: 구역마다 정해진 전설 고유 효과 + 천장 ----------
+export const SIG_RATE = 0.01, SIG_PITY = 40;
+export const SIG_ORDER = ['vamp', 'thorns', 'gale', 'eagle', 'midas', 'shade', 'fury', 'chrono', 'command', 'sage', 'immortal', 'wisdom', 'dragoneye', 'phoenix', 'echo', 'thunder'];
+export function sigOf(zone) { return SIG_ORDER[zone % SIG_ORDER.length]; }
 const UNIQ_BY_SLOT = {};
 for (const [id, u] of Object.entries(UNIQUES)) (UNIQ_BY_SLOT[u.slot] ||= []).push(id);
 
@@ -800,6 +959,21 @@ export function rollItem(floor, boss = false) {
   }
   if (r === 4) { const pool = UNIQ_BY_SLOT[sl.id]; it.u = pool[Math.floor(Math.random() * pool.length)]; }
   return it;
+}
+export function rollSig(floor, uid) {
+  const u = UNIQUES[uid]; let it, g = 0;
+  do { it = rollItem(floor, true); } while (it.s !== u.slot && ++g < 80);
+  if (it.s !== u.slot) { const sl = SLOT_BY_ID[u.slot]; it = { s: sl.id, t: Math.min(sl.tiers - 1, Math.floor(floor / (64 / sl.tiers))), r: 4, f: Math.floor(floor / 4) }; it.a = AFFIX_KEYS.slice().sort(() => Math.random() - 0.5).slice(0, AFFIX_COUNT[4]).map(k => [k, Math.round(affixBase(k, it.t) * (0.7 + Math.random() * 0.6) * 1.6 * 10) / 10]); }
+  if (it.r !== 4) { it.r = 4; it.a = AFFIX_KEYS.slice().sort(() => Math.random() - 0.5).slice(0, AFFIX_COUNT[4]).map(k => [k, Math.round(affixBase(k, it.t) * (0.7 + Math.random() * 0.6) * 1.6 * 10) / 10]); }
+  it.u = uid; return it;
+}
+function sigRoll(s, f, ev) {
+  const z = monsterIndex(f); s.bossPity ||= {}; s.sigGot ||= {};
+  const n = (s.bossPity[z] || 0) + 1;
+  if (n >= SIG_PITY || Math.random() < SIG_RATE) {
+    s.bossPity[z] = 0; s.sigGot[z] = (s.sigGot[z] || 0) + 1;
+    const it = rollSig(f, sigOf(z)); (ev.drops ||= []).push(it); ev.sig = { z, u: it.u }; pickup(s, it, ev);
+  } else s.bossPity[z] = n;
 }
 export function itemScore(it) {
   const sl = SLOT_BY_ID[it.s];
@@ -866,21 +1040,35 @@ export function stats(s) {
       else if (p.eff === 'allcomp') pAll += p.val / 100;
     }
   }
-  // 버프
-  for (const b of s.buffs || []) for (const [k, v] of Object.entries(b.stats || {})) add(k, v);
+  // 버프 (변이 B 버프는 공격력·동료·스킬 효과가 따로 곱해진다)
+  const xm = { atkP: 1, compP: 1, skillP: 1 };
+  for (const b of s.buffs || []) for (const [k, v] of Object.entries(b.stats || {})) { if (k[0] === 'x' && xm[k.slice(1)] != null) xm[k.slice(1)] *= 1 + v / 100; else add(k, v); }
+  // 던전 이벤트·오늘의 던전 효과
+  add('def', ebuffMult(s, 'armor')); add('critDmg', ebuffMult(s, 'critD')); add('spd', ebuffMult(s, 'spdA'));
 
-  // 패시브 (현재 직업)
-  let extra = 0, pHeal = 0, pCdr = 0, pShield = 0, pGold = 0, pXp = 0, pComp = 0;
+  // 패시브 (현재 직업) + Lv.10 변이
+  let extra = 0, extraBoss = 0, pHeal = 0, pCdr = 0, pShield = 0, pGold = 0, pXp = 0, pComp = 0, cdrCap = 0.35;
+  let muAtk = 1, muSkill = 1, muComp = 1;
   const spd = Math.max(20, 100 + a.spd);
   const aps = spd / 100;
   for (const sd of classSkills(s.cls || 'war', 'passive')) {
     const lv = s.skills[sd.id] || 0;
     if (!lv) continue;
-    const c = passiveChance(sd, lv) / 100, m = passiveMult(sd, lv);
-    if (sd.eff === 'extra') { extra += c * m; if (sd.heal) pHeal += aps * c * sd.heal; }
+    let c = passiveChance(sd, lv) / 100, m = passiveMult(sd, lv), blk = 50;
+    const mu = mutOf(s, sd), k = mutKind(sd);
+    if (mu) {
+      if (k === 'extra') { if (mu === 'a') c *= 1.35; }
+      else if (k === 'pheal') { if (mu === 'a') m *= 2; else a.def += 40; }
+      else if (k === 'pcdr') { if (mu === 'a') { m *= 1.5; cdrCap = 0.55; } else muSkill *= 1.4; }
+      else if (k === 'pshield') { if (mu === 'a') blk = 75; else c *= 2; }
+      else if (k === 'pgold') { if (mu === 'a') m *= 2; else { m *= 0.5; muAtk *= 1.2; } }
+      else if (k === 'pxp') { if (mu === 'a') m *= 2.5; else muAtk *= 1.2; }
+      else if (k === 'pcomp') { if (mu === 'a') m *= 1.6; else muComp *= 1.5; }
+    }
+    if (sd.eff === 'extra') { extra += c * m; if (mu === 'b') extraBoss += c * m; if (sd.heal) pHeal += aps * c * sd.heal; }
     else if (sd.eff === 'heal') pHeal += aps * c * m;
     else if (sd.eff === 'cdr') pCdr += aps * c * m;
-    else if (sd.eff === 'shield') pShield += Math.min(1, aps * c * m) * 50;
+    else if (sd.eff === 'shield') pShield += Math.min(1, aps * c * m) * blk;
     else if (sd.eff === 'gold') pGold += c * m;
     else if (sd.eff === 'xp') pXp += c * m;
     else if (sd.eff === 'comp') pComp += c * m;
@@ -894,14 +1082,15 @@ export function stats(s) {
   const sb = setBonus(s), ap = achPower(s), kx = 1 + KARMA_POW * (s.karma || 0);
   const mAtk = (1 + 0.03 * masteryLv(s, 'atk')) * (1 + (rt.atk || 0) / 100), mHp = (1 + 0.03 * masteryLv(s, 'hp')) * (1 + (rt.hp || 0) / 100);
   const rAtk = (1 + relicVal(s, 'atk') / 100) * (1 + sb / 100) * ap.atk * kx * mAtk, rHp = (1 + relicVal(s, 'hp') / 100) * (1 + sb / 100) * ap.hp * kx * mHp;
-  const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult * rAtk;
-  const hpF = hp * Math.max(0.2, 1 + a.hpP / 100) * rHp;
+  const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult * rAtk * ebuffMult(s, 'atkX') * muAtk * xm.atkP;
+  const hpF = hp * Math.max(0.2, 1 + a.hpP / 100) * rHp * ebuffMult(s, 'hpX');
   const hit = atkF * (1 + (crit / 100) * (critMult - 1));
   const thunder = mech.thunder ? Math.min(1, crit / 100) * 0.2 * 4 : 0;
   const heroDps = hit * aps * (1 + extra) + atkF * aps * thunder;
+  const heroDpsBoss = hit * aps * (1 + extra + extraBoss) + atkF * aps * thunder;
   // 성직자: 동료도 용사의 치명타 확률로 치명타 (동료 치명타는 고정 보너스, 100% 초과분은 여러 단계)
   const compCrit = s.cls === 'clr' ? 1 + (crit / 100) * CLR_COMP_CRIT : 1;
-  const compMult = (1 + a.compP / 100) * (1 + pComp) * (1 + pAll) * (1 + (rt.comp || 0) / 100) * compCrit;
+  const compMult = (1 + a.compP / 100) * (1 + pComp) * (1 + pAll) * (1 + (rt.comp || 0) / 100) * compCrit * ebuffMult(s, 'compX') * muComp * xm.compP;
   let compDps = 0;
   const compHits = team.map(({ c, aw, lv }) => { const d = compCoef(c, aw, lv) * atkF * compMult * (selfX[c.id] || 1); compDps += d; return { id: c.id, dps: d }; });
   const compActs = team.filter(x => x.aw >= CSK_AW_A).map(x => x.c);
@@ -910,15 +1099,15 @@ export function stats(s) {
   const cap = v => (Number.isFinite(v) ? Math.min(v, 1e300) : (v > 0 ? 1e300 : 0));
   return {
     atk: cap(atkF), hp: cap(hpF), crit, critMult, spd, aps, hit: cap(hit),
-    heroDps: cap(heroDps), compDps: cap(compDps), compHits, compActs, dps: cap(heroDps + compDps),
+    heroDps: cap(heroDps), compDps: cap(compDps), compHits, compActs, dps: cap(heroDps + compDps), dpsBoss: cap(heroDpsBoss + compDps),
     def: 100 * (1 - (100 / (100 + ARMOR_K * Math.max(0, a.def))) * (1 - Math.min(50, pShield) / 100)), armor: a.def, cdr,
-    cdRate: 1 + cdr * 1 / 100 + Math.min(0.35, pCdr),
-    regen: a.regen + pHeal,
-    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100) * ap.gold * (1 + 0.03 * masteryLv(s, 'gold')) * (1 + (rt.gold || 0) / 100),
+    cdRate: 1 + cdr * 1 / 100 + Math.min(cdrCap, pCdr),
+    regen: (a.regen + pHeal) * ebuffMult(s, 'regenX'),
+    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100) * ap.gold * (1 + 0.03 * masteryLv(s, 'gold')) * (1 + (rt.gold || 0) / 100) * ebuffMult(s, 'goldX'),
     bossMult: (1 + a.bossP / 100) * (1 + relicVal(s, 'boss') / 100) * (1 + (rt.boss || 0) / 100),
-    skillMult: (1 + a.skillP / 100) * (1 + (rt.skill || 0) / 100),
+    skillMult: (1 + a.skillP / 100) * (1 + (rt.skill || 0) / 100) * ebuffMult(s, 'skillX') * muSkill * xm.skillP,
     weak: Math.min(80, a.weak),
-    xpMult: (1 + pXp) * (1 + a.xpP / 100) * (1 + relicVal(s, 'xp') / 100),
+    xpMult: (1 + pXp) * (1 + a.xpP / 100) * (1 + relicVal(s, 'xp') / 100) * ebuffMult(s, 'xpX'),
     mech,
     extra, honorMult, raw: a,
   };
@@ -928,35 +1117,41 @@ export function xpNeed(level) { return Math.ceil(xpPerKill(Math.max(1, Math.roun
 
 // ---------- 진행 엔진 ----------
 function cast(s, st, sd, lv, ev) {
-  const v = skillVal(sd, lv);
+  const v = skillVal(sd, lv), mu = mutOf(s, sd);
   if (sd.eff === 'burst') {
-    const dmg = st.heroDps * v * st.skillMult * (s.boss && sd.bossX ? sd.bossX : 1);
+    const muX = mu === 'a' ? (s.boss ? 1.6 : 1.1) : mu === 'b' ? (s.boss ? 1.1 : 1.5) : 1;
+    const dmg = muX * st.heroDps * v * st.skillMult * (s.boss && sd.bossX ? sd.bossX : 1);
     if (sd.weak) pushBuff(s, sd.id, sd.dur, { weak: sd.weak });
     (ev.casts ||= []).push({ id: sd.id, dmg });
     return dmg;
   }
   if (sd.eff === 'buff') {
-    pushBuff(s, sd.id, sd.dur, sd.buff(v));
+    const bs = sd.buff(v);
+    if (mu === 'b') { for (const k of Object.keys(bs)) if (k === 'atkP' || k === 'compP' || k === 'skillP') { bs['x' + k] = bs[k]; delete bs[k]; } }
+    pushBuff(s, sd.id, sd.dur * (mu === 'a' ? 2 : 1), bs);
     if (sd.heal && s.boss && s.hp != null) s.hp = Math.min(st.hp, s.hp + st.hp * sd.heal / 100);
     (ev.casts ||= []).push({ id: sd.id });
     return 0;
   }
   if (sd.eff === 'heal') {
     if (!s.boss || s.hp == null || s.hp > st.hp * 0.8) return -1;   // 필요할 때까지 대기
-    s.hp = Math.min(st.hp, s.hp + st.hp * v / 100);
-    (ev.casts ||= []).push({ id: sd.id, heal: st.hp * v / 100 });
+    const hv = v * (mu === 'a' ? 1.5 : 1);
+    s.hp = Math.min(st.hp, s.hp + st.hp * hv / 100);
+    if (mu === 'b') pushBuff(s, sd.id + ':b', 6, { def: 60 });
+    (ev.casts ||= []).push({ id: sd.id, heal: st.hp * hv / 100 });
     return 0;
   }
   if (sd.eff === 'timer') {
     if (!s.boss || s.boss.timer > (s.boss.tmax || BOSS_TIME) * 0.5) return -1;   // 보스전 후반까지 대기
-    s.boss.timer += v;
+    s.boss.timer += v * (mu === 'a' ? 1.6 : 1);
     if (sd.heal && s.hp != null) s.hp = Math.min(st.hp, s.hp + st.hp * sd.heal / 100);
     if (sd.cdAll) for (const k of Object.keys(s.cd)) if (k !== sd.id) s.cd[k] = Math.max(0, s.cd[k] - sd.cdAll);
     (ev.casts ||= []).push({ id: sd.id, time: v });
     return 0;
   }
   if (sd.eff === 'gold') {
-    const g = goldPerKill(s.floor) * st.goldMult * v;
+    const g = goldPerKill(s.floor) * st.goldMult * v * (mu === 'a' ? 2 : 1);
+    if (mu === 'b') pushBuff(s, sd.id + ':b', 6, { xatkP: 40 });
     s.gold += g;
     ev.gold = (ev.gold || 0) + g;
     (ev.casts ||= []).push({ id: sd.id, gold: g });
@@ -986,6 +1181,8 @@ export function step(s, dt, ev) {
   ev = ev || {};
   if (!s.cls) return ev;
   autoTick(s, dt, ev);
+  if (!s.noEv) eventTick(s, dt, ev);
+  if (s.ebuffs && s.ebuffs.length) { for (const b of s.ebuffs) b.t -= dt; s.ebuffs = s.ebuffs.filter(b => b.t > 0); }
   if (!s.boss || !s.boss.tower) s.stuckT = (s.stuckT || 0) + dt;
   s.dropBank = Math.min(3, (s.dropBank || 0) + dt * DROP_PER_SEC);                    // 직업 선택 전에는 멈춤
   const st = stats(s);
@@ -1005,7 +1202,7 @@ export function step(s, dt, ev) {
     for (let n = 0; cd <= 0 && n < 8; n++) {
       const r = cast(s, st, sd, lv, ev);
       if (r >= 0) {
-        burst += r; cd += sd.cd;
+        burst += r; cd += sd.cd * mutCd(s, sd);
         if (st.mech.echo) { burst += st.compDps * 3; ev.echo = true; }
       } else { cd = 0; break; }
     }
@@ -1026,7 +1223,7 @@ export function step(s, dt, ev) {
   if (s.boss && s.boss.tower) return towerStep(s, st, dt, burst, ev);
   if (s.boss) {
     s.boss.timer -= dt;
-    s.boss.hp -= (st.dps * dt + burst) * st.bossMult;
+    s.boss.hp -= (st.dpsBoss * dt + burst) * st.bossMult;
     let h = (s.hp == null ? st.hp : s.hp);
     h += st.hp * (st.regen / 100) * dt;
     const invuln = st.mech.invuln && s.boss.timer > (s.boss.tmax || BOSS_TIME) - 5;
@@ -1056,12 +1253,12 @@ export function step(s, dt, ev) {
     const tmax = bossTime(s);
     s.boss = { hp: bh, max: bh, timer: tmax, tmax };
     s.hp = st.hp;
-    ev.bossStart = true;
+    ev.bossStart = true; firstStrike(s);
     return ev;
   }
 
   const M = monHp(s.floor);
-  s.prog += (st.dps * dt + burst) / M;
+  s.prog += (st.dps * dt + burst) / (M * ebuffMult(s, 'monX'));
   let k = Math.floor(s.prog);
   if (k <= 0) return ev;
   s.prog -= k;
@@ -1081,6 +1278,8 @@ export function step(s, dt, ev) {
   }
   return ev;
 }
+// 변이 B 버프: 보스전·탑·균열이 시작되면 바로 발동
+function firstStrike(s) { for (const sd of classSkills(s.cls || 'war', 'active')) if (sd.eff === 'buff' && mutOf(s, sd) === 'b') s.cd[sd.id] = 0; }
 export function canChallenge(s) { return !!s.bossLock && !s.boss && isBossFloor(s.floor + 1); }
 export function challengeBoss(s) {
   if (!canChallenge(s)) { s.bossLock = false; return false; }
@@ -1116,6 +1315,7 @@ function gainKill(s, st, boss, ev, n) {
     drops = Math.min(drops, Math.floor(s.dropBank || 0));
     s.dropBank = (s.dropBank || 0) - drops;
   }
+  if (boss && !s.noSig) sigRoll(s, f, ev);
   for (let i = 0; i < drops; i++) {
     const it = rollItem(f, boss);
     (ev.drops ||= []).push(it);
@@ -1270,9 +1470,14 @@ export function honorGain(s) {
   // 층이 깊을수록 기하급수로 증가: B30 3 · B35 4 · B40 7 · B45 12 · B50 20 · B60 52 · B70 135
   return Math.max(1, Math.floor(3 * Math.pow(1.10, s.maxFloor - REBIRTH_FLOOR) * (1 + KARMA_HONOR * (s.karma || 0))));
 }
+// 환생·윤회 직전 남은 골드로 소환석을 산다 (가격 규칙은 일반 구매와 같음). 환경설정에서 끌 수 있다.
+export let LAST_CONV = { stones: 0, gold: 0 };
+function convertGold(s) { LAST_CONV = { stones: 0, gold: 0 }; if (s.goldConv === false) return LAST_CONV; const r = buyStoneMax(s); LAST_CONV = { stones: r.stones, gold: r.spent }; return LAST_CONV; }
+export function convPreview(s) { return s.goldConv === false ? 0 : stoneMaxCount(s) * 10; }
 export function rebirth(s) {
   const g = honorGain(s);
   if (!g) return 0;
+  convertGold(s);
   const keep = {
     honor: s.honor + g, honorPts: (s.honorPts || 0) + g, relic: { ...(s.relic || {}) }, bestFloor: Math.max(s.bestFloor || 0, s.maxFloor), rebirths: s.rebirths + 1, autoEquip: s.autoEquip, createdAt: s.createdAt,
     cls: s.cls, banner: s.banner,
@@ -1290,7 +1495,7 @@ function persistKeep(s) {
   return {
     life: { ...(s.life || {}) }, quest: s.quest || {}, boost: { ...(s.boost || {}) }, tower: { ...(s.tower || {}), prev: null }, towers: JSON.parse(JSON.stringify(s.towers || {})), rift: { ...(s.rift || {}) }, runes: JSON.parse(JSON.stringify(s.runes || {})), auto: { ...(s.auto || {}) },
     ench: { ...(s.ench || {}) }, ess: s.ess || 0, ach: { ...(s.ach || {}) }, bestiary: (s.bestiary || []).slice(), karma: s.karma || 0, reinc: s.reinc || 0,
-    autoSell: s.autoSell, gachaOpt: { ...(s.gachaOpt || {}) }, bestFloor: Math.max(s.bestFloor || 0, s.maxFloor || 0), cycleBest: Math.max(s.cycleBest || 0, s.maxFloor || 0),
+    autoSell: s.autoSell, goldConv: s.goldConv !== false, gachaOpt: { ...(s.gachaOpt || {}) }, mut: { ...(s.mut || {}) }, bossPity: { ...(s.bossPity || {}) }, sigGot: { ...(s.sigGot || {}) }, daily: s.daily ? JSON.parse(JSON.stringify(s.daily)) : null, guide: { ...(s.guide || {}) }, autoSeen: (s.autoSeen || []).slice(), autoNew: (s.autoNew || []).slice(), events: (s.events || []).slice(), evT: s.evT || 0, evLog: (s.evLog || []).slice(), bestFloor: Math.max(s.bestFloor || 0, s.maxFloor || 0), cycleBest: Math.max(s.cycleBest || 0, s.maxFloor || 0),
   };
 }
 // 환생·윤회 때 가방과 착용 장비는 사라지는 대신 정수로 분해된다
@@ -1312,6 +1517,7 @@ export function canReinc(s) { return karmaGain(s) > 0; }
 export function reincarnate(s) {
   if (!canReinc(s)) return 0;
   const k = karmaGain(s);
+  convertGold(s);
   const keep = {
     cls: s.cls, banner: s.banner, autoEquip: s.autoEquip, createdAt: s.createdAt, lang: s.lang,
     comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, shards: s.shards || 0, pulls: s.pulls, pity: s.pity,
@@ -1417,6 +1623,7 @@ function autoTick(s, dt, ev) {
       if (!learnSkill(s, c[0].id)) break;
       ev.autoSkill = true;
     }
+    for (const sd of classSkills(s.cls)) if ((s.skills[sd.id] || 0) >= SKILL_MAX && !mutOf(s, sd)) { setMut(s, sd.id, MUT_DEF[mutKind(sd)]); ev.autoMut = true; }
   }
   if (autoOn(s, 'boss') && canChallenge(s)) {
     s.autoBossT = (s.autoBossT || 0) + dt;
@@ -1434,7 +1641,7 @@ function autoTick(s, dt, ev) {
   if (autoOn(s, 'rebirth') && !s.boss && honorGain(s) > 0) {
     const a = s.auto;
     const ok = a.rbMode === 'floor' ? s.maxFloor >= Math.max(REBIRTH_FLOOR, a.rbFloor || REBIRTH_FLOOR) : (s.stuckT || 0) >= (a.rbStuck || 30) * 60;
-    if (ok) { const g = rebirth(s); ev.autoRebirth = (ev.autoRebirth || 0) + g; ev.autoRebirths = (ev.autoRebirths || 0) + 1; if (autoOn(s, 'relic')) autoRelics(s, ev); }
+    if (ok) { const g = rebirth(s); ev.autoRebirth = (ev.autoRebirth || 0) + g; ev.convStones = (ev.convStones || 0) + LAST_CONV.stones; ev.autoRebirths = (ev.autoRebirths || 0) + 1; if (autoOn(s, 'relic')) autoRelics(s, ev); }
   }
 }
 function autoRelics(s, ev) {
@@ -1474,7 +1681,7 @@ export function towerStart(s, id = 'inf') {
   savePrev(s);
   const hp = towerHp(1, id);
   s.boss = { tower: id, tf: 1, hp, max: hp, timer: T.time, tmax: T.time, gain: {} };
-  s.hp = null;
+  s.hp = null; firstStrike(s);
   qAdd(s, 'tower', 1);
   return true;
 }
@@ -1484,7 +1691,7 @@ function towerStep(s, st, dt, burst, ev) {
   if (b.tower === 'rift') return riftStep(s, st, dt, burst, ev);
   const id = TOWER_BY_ID[b.tower] ? b.tower : 'inf', T = TOWER_BY_ID[id], ts = towerState(s, id);
   b.timer -= dt;
-  let dmg = (st.dps * dt + burst) * st.bossMult * runeMult(s, 'tower');
+  let dmg = (st.dpsBoss * dt + burst) * st.bossMult * runeMult(s, 'tower');
   let h = (s.hp == null ? st.hp : s.hp);
   h += st.hp * (st.regen / 100) * dt;
   h -= towerDps(b.tf, id) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;
@@ -1531,14 +1738,14 @@ export function riftStart(s, L) {
   savePrev(s);
   const hp = riftHp(L, 1);
   s.boss = { tower: 'rift', L, tf: 1, hp, max: hp, timer: RIFT_TIME, tmax: RIFT_TIME, gain: {} };
-  s.hp = null;
+  s.hp = null; firstStrike(s);
   qAdd(s, 'rift', 1);
   return true;
 }
 function riftStep(s, st, dt, burst, ev) {
   const b = s.boss, L = b.L;
   b.timer -= dt;
-  let dmg = (st.dps * dt + burst) * st.bossMult * runeMult(s, 'tower');
+  let dmg = (st.dpsBoss * dt + burst) * st.bossMult * runeMult(s, 'tower');
   let h = (s.hp == null ? st.hp : s.hp);
   h += st.hp * (st.regen / 100) * dt;
   h -= riftDps(L) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;

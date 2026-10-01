@@ -19,7 +19,7 @@
       </div>
       <div class="dps"><span data-i18n="ui.dps">DPS</span> <b id="dps">0</b></div>
     </div>
-    <button class="setbtn" id="setBtn" data-i18n-title="ui.settings" aria-label="Settings"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <button class="setbtn" id="setBtn" data-i18n-title="ui.settings" aria-label="Settings"><i class="dot hidden" id="setDot"></i><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
   </header>
 
   <main>
@@ -46,12 +46,16 @@
         <button class="bossbtn hidden" id="bossBtn"><span data-i18n="ui.bossChallenge">Challenge Boss</span> <b>B5F</b></button>
         <div class="bosstimer hidden" id="bossTimer"><span data-i18n="ui.boss">Boss</span> <b id="btime">30.0</b>s</div>
       </div>
+      <button class="evbar hidden" id="evBox"></button>
+      <div class="ebrow hidden" id="ebRow"></div>
       <div class="statgrid">
         <div><span data-i18n="stat.atk">ATK</span><b id="s_atk">0</b></div>
         <div><span data-i18n="stat.hp">HP</span><b id="s_hp">0</b></div>
         <div><span data-i18n="stat.crit">Crit</span><b id="s_crit">0%</b></div>
         <div><span data-i18n="ui.allyDps">Ally DPS</span><b id="s_comp">0</b></div>
       </div>
+      <div class="guidebox autocard hidden" id="autoCard"></div>
+      <div class="guidebox hidden" id="guideBox"></div>
       <div class="log" id="log"></div>
     </section>
 
@@ -136,6 +140,7 @@
         <div class="rbgain"><b id="rbGain">0</b><span data-i18n="ui.honor">Honor</span></div>
         <div class="bar rbbar"><i id="rbBar"></i></div>
         <div class="rbhint" id="rbHint"></div>
+        <div class="rbhint conv" id="rbConv"></div>
         <button class="big" id="rbBtn" disabled data-i18n="ui.doRebirth">Rebirth</button>
         <div class="rbstats">
           <div><span data-i18n="ui.honor">Honor</span><b id="honor">0</b></div>
@@ -153,6 +158,7 @@
         <p data-i18n="ui.reincDesc"></p>
         <div class="rbgain"><b id="reincGain">0</b><span data-i18n="ui.karma">Karma</span></div>
         <div class="rbhint" id="reincHint"></div>
+        <div class="rbhint conv" id="reincConv"></div>
         <button class="big" id="reincBtn" disabled data-i18n="ui.doReinc">Reincarnate</button>
         <div class="rbstats">
           <div><span data-i18n="ui.karma">Karma</span><b id="karma">0</b></div>
@@ -241,6 +247,10 @@
     <div class="win setwin">
       <div class="sethead"><h2 data-i18n="ui.settings">Settings</h2><button class="mini" id="setClose" data-i18n="ui.close">Close</button></div>
         <div class="savebox">
+          <div class="sbh" data-i18n="set.auto">Automation</div>
+          <div class="autobox" id="autoBox"></div>
+          <div class="sbh" data-i18n="help.title">Guide</div>
+          <div class="grow"><button class="mini wide" id="helpBtn" data-i18n="help.open">How to play</button><button class="mini wide" id="guideShow" data-i18n="gd.show">Show starter guide</button></div>
           <div class="sbh sm" data-i18n="ui.lang">Language</div>
           <select id="langSel" class="wide"></select>
           <div class="sbh" data-i18n="ui.save">Save &amp; Sync</div>
@@ -266,6 +276,18 @@
           <textarea id="diagTxt" class="hidden" readonly></textarea>
         </div>
       </div>
+  </div>
+
+  <div class="modal hidden" id="evModal">
+    <div class="win evwin" id="evWin"></div>
+  </div>
+
+  <div class="modal hidden" id="helpModal">
+    <div class="win setwin helpwin">
+      <div class="sethead"><h2 data-i18n="help.title">Guide</h2><button class="mini" id="helpClose" data-i18n="ui.close">Close</button></div>
+      <div class="helpnav" id="helpNav"></div>
+      <div class="helpbody" id="helpBody"></div>
+    </div>
   </div>
 
   <div class="tip hidden" id="tip"></div>
