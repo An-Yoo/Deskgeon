@@ -1,5 +1,5 @@
 import {
-  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV,
+  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
@@ -20,7 +20,7 @@ function applyI18n() {
   $('#pull1Cost').textContent = t('ui.stones', { n: PULL_COST });
   $('#pull10Cost').textContent = t('ui.stones', { n: PULL10_COST }) + ' · ' + t('ui.srPlus');
   $('#pull100Cost').textContent = t('ui.stones', { n: PULL10_COST * 10 });
-  $('#rateLine').textContent = C_RARITY.map(r => r.name + ' ' + +(r.rate * 100).toFixed(1) + '%').join(' · ');
+  $('#rateLine').textContent = C_RARITY.map(r => r.name + ' ' + +(r.rate * 100).toFixed(2) + '%').join(' · ');
   const ls = $('#langSel');
   ls.innerHTML = Object.entries(LANGS).map(([k, n]) => `<option value="${k}" ${k === getLang() ? 'selected' : ''}>${n}</option>`).join('');
 }
@@ -51,6 +51,9 @@ async function preload() {
   for (let z = 0; z < ZONES; z++) n.push('wall/w' + z + '_0', 'wall/w' + z + '_1');
   for (const d of ['col1', 'col2', 'col3', 'idol', 'wraith', 'demon', 'evil', 'dragon', 'iron']) n.push('deco/' + d);
   for (const c of COMPANIONS) n.push('comp/' + c.id);
+  for (const z of COSTUMES) n.push('cos/' + z.id);
+  for (const p of PETS) n.push('pet/' + p);
+  for (const w of SOUL_LOOKS) n.push('soul/' + w);
   for (const s of SKILLS) n.push('skill/' + s.id);
   for (const f of ['arrow', 'dagger', 'icicle', 'beam', 'zap', 'dart', 'poison', 'flame', 'frost', 'b_fire', 'b_blue', 'b_yellow', 'b_pink', 'b_green', 'b_smoke', 'firestorm', 'iceblast', 'arc', 'eblast', 'holy', 'mystic', 'pcloud', 'shadow', 'blood', 'drain', 'meteor', 'smoke', 'warp', 'sanct', 'gold_dust', 'orb']) n.push('fx/' + f);
   await Promise.all(n.map(async k => { A[k] = await img(`assets/${k}.png`); }));
@@ -70,23 +73,29 @@ let trans = null;              // 층 돌파 연출
 let pillar = null;             // 레벨업 / 성광 기둥
 const compState = {};
 
+// 이펙트 간소화: 번쩍임·화면 흔들림·가산 발광·컷인을 끄고 파티클을 1/4로
+const lowFx = () => !!(S && S.lowFx);
+function applyLowFx() { document.documentElement.classList.toggle('lowfx', lowFx()); }
 function later(t, fn) { timers.push({ t, fn }); }
 function part(o) { parts.push(Object.assign({ x: 0, y: 0, vx: 0, vy: 0, g: 0, t: 0, life: .6, size: 2, color: '#fff', drag: 2 }, o)); }
 function burst(x, y, n, colors, spd = 60, g = 140, size = 2, life = .5) {
+  if (lowFx()) n = Math.ceil(n / 4);
   for (let i = 0; i < n; i++) {
     const a = Math.random() * Math.PI * 2, v = spd * rnd(.35, 1.1);
     part({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - spd * .35, g, size: size * rnd(.7, 1.3), color: pick(colors), life: life * rnd(.6, 1.3) });
   }
 }
 function rise(x, y, n, colors, w = 14) {
+  if (lowFx()) n = Math.ceil(n / 4);
   for (let i = 0; i < n; i++) part({ x: x + rnd(-w, w), y: y + rnd(-4, 6), vx: rnd(-6, 6), vy: rnd(-40, -18), g: -10, size: rnd(1, 2.2), color: pick(colors), life: rnd(.5, 1), drag: .5 });
 }
-function fxs(key, x, y, o = {}) { const im = A['fx/' + key]; if (im) sprites.push(Object.assign({ im, x, y, t: 0, dur: .4, s0: .6, s1: 1.6, a0: 1, rot: 0, add: true }, o)); }
+function fxs(key, x, y, o = {}) { const im = A['fx/' + key]; if (!im) return; const sp = Object.assign({ im, x, y, t: 0, dur: .4, s0: .6, s1: 1.6, a0: 1, rot: 0, add: true }, o); if (lowFx()) { sp.add = false; sp.a0 = Math.min(sp.a0, .55); sp.s1 = Math.min(sp.s1, 1.2); } sprites.push(sp); }
 function proj(key, x0, y0, x1, y1, dur, o = {}) { projs.push(Object.assign({ im: A['fx/' + key], x0, y0, x1, y1, t: 0, dur, arc: 0, scale: 1, rot: 0, trail: null }, o)); }
 function slash(x, y, o = {}) { slashes.push(Object.assign({ x, y, t: 0, dur: .16, r: 12, a0: -2.2, a1: .6, color: '#ffffff', w: 2 }, o)); }
-function bolt(x0, y0, x1, y1, o = {}) { bolts.push(Object.assign({ x0, y0, x1, y1, t: 0, dur: .28, color: '#bfe4ff' }, o)); }
-function doShake(m, d = .25) { if (m >= shake.m * (shake.t / shake.d || 0)) shake = { t: d, d, m }; }
+function bolt(x0, y0, x1, y1, o = {}) { if (lowFx()) return; bolts.push(Object.assign({ x0, y0, x1, y1, t: 0, dur: .28, color: '#bfe4ff' }, o)); }
+function doShake(m, d = .25) { if (lowFx()) return; if (m >= shake.m * (shake.t / shake.d || 0)) shake = { t: d, d, m }; }
 function flash(color, o = .6, d = .3) {
+  if (lowFx()) return;
   const f = $('#flash');
   f.style.background = color; f.style.setProperty('--fo', o); f.style.setProperty('--fd', d + 's');
   f.classList.remove('go'); void f.offsetWidth; f.classList.add('go');
@@ -107,6 +116,7 @@ function banner(html, cls, ms = 1600) {
   setTimeout(() => b.remove(), ms);
 }
 function cutin(sd) {
+  if (lowFx()) return;
   const b = document.createElement('div');
   b.className = 'cutin';
   b.style.color = CLASSES[sd.cls].color;
@@ -151,16 +161,18 @@ function silhouette(im, color = 'rgba(6,4,12,.9)') {
   SIL.set(im, c); return c;
 }
 let heroComp = null, heroSig = '';
-function heroSprite(cls) {
+function heroLayers(cls, ov) {
   const c = cls || 'war', eq = S.equip;
-  const L = [];
-  if (eq.cloak) L.push(itemDoll('cloak', eq.cloak.t, c));
-  L.push('cls/' + c);
-  if (eq.boots) L.push(itemDoll('boots', eq.boots.t, c));
-  if (eq.body) L.push(itemDoll('body', eq.body.t, c));
-  if (eq.gloves) L.push(itemDoll('gloves', eq.gloves.t, c));
-  if (eq.head) L.push(itemDoll('head', eq.head.t, c));
-  L.push(itemDoll('weapon', eq.weapon ? eq.weapon.t : 0, c));
+  const L = [], look = slot => ov && ov.slot === slot ? ov.v : lookOf(S, slot);
+  const soulLook = ov && ov.soul ? ov.soul : (S.soul && S.soul.made && S.soul.show ? S.soul.look : null);
+  const lay = slot => { const v = look(slot); if (v === 'hide') return null; if (v === 'auto' && slot === 'weapon' && soulLook) return 'soul/' + soulLook; if (v === 'auto') return eq[slot] ? itemDoll(slot, eq[slot].t, c) : (slot === 'weapon' ? itemDoll('weapon', 0, c) : null); if (v[0] === 't') return itemDoll(slot, +v.slice(1), c); return 'cos/' + v; };
+  // 외형(base)은 직업 기본 몸을 바꾸고, 머리(hair)·보조손(offhand)은 "장비대로"면 그리지 않는다
+  const extra = slot => { const v = look(slot); return v && v !== 'auto' && v !== 'hide' && !/^t\d$/.test(v) ? 'cos/' + v : null; };
+  for (const sl of ['cloak', 'base', 'boots', 'body', 'gloves', 'hair', 'head', 'weapon', 'offhand']) { if (sl === 'base') { L.push(extra('base') || 'cls/' + c); continue; } const k = (sl === 'hair' || sl === 'offhand') ? extra(sl) : lay(sl); if (k) L.push(k); }
+  return L;
+}
+function heroSprite(cls) {
+  const L = heroLayers(cls);
   const sig = L.join('|') + L.map(k => A[k] ? 1 : 0).join('');
   if (sig !== heroSig || !heroComp) {
     heroSig = sig;
@@ -240,7 +252,7 @@ function drawBackdrop(dt, now, zi) {
   for (let k = t0; k < t0 + 4; k++) {
     const x = Math.round(k * SP - wx), y = 20;
     if (x < -40 || x > W + 40) continue;
-    const fl = .85 + .15 * Math.sin(now * 13 + k * 3.1) + .08 * Math.sin(now * 29 + k);
+    const fl = lowFx() ? .9 : .85 + .15 * Math.sin(now * 13 + k * 3.1) + .08 * Math.sin(now * 29 + k);
     // 벽·바닥에 번지는 빛
     cx.save(); cx.globalCompositeOperation = 'lighter';
     let rg = cx.createRadialGradient(x, y, 1, x, y, 34 * fl);
@@ -294,7 +306,7 @@ function drawLighting(now) {
   g.addColorStop(0, 'rgba(255,230,190,.10)'); g.addColorStop(1, 'rgba(255,230,190,0)');
   cx.fillStyle = g; cx.fillRect(hc.x - 32, hc.y - 32, 64, 64);
   if (S.boss) {
-    const b = monBox(), p = .5 + .5 * Math.sin(now * 3);
+    const b = monBox(), p = lowFx() ? .3 : .5 + .5 * Math.sin(now * 3);
     g = cx.createRadialGradient(b.cx, b.cy, 2, b.cx, b.cy, 34 + p * 6);
     g.addColorStop(0, `rgba(255,40,70,${.16 + p * .08})`); g.addColorStop(1, 'rgba(255,40,70,0)');
     cx.fillStyle = g; cx.fillRect(b.cx - 44, b.cy - 44, 88, 88);
@@ -334,7 +346,7 @@ function drawScene(dt) {
     const sd = SKILL_BY_ID[b.id];
     if (!sd || !sd.color) continue;
     const hc = heroC();
-    const p = .5 + .5 * Math.sin(now * 8);
+    const p = lowFx() ? .2 : .5 + .5 * Math.sin(now * 8);
     cx.save(); cx.globalCompositeOperation = 'lighter';
     cx.fillStyle = sd.color; cx.globalAlpha = .18 + p * .14;
     cx.beginPath(); cx.ellipse(hc.x, GROUND - 1, 15 + p * 2, 4.5, 0, 0, 7); cx.fill();
@@ -375,6 +387,9 @@ function drawScene(dt) {
   cx.fillStyle = 'rgba(0,0,0,.45)';
   cx.beginPath(); cx.ellipse(hx + 16, GROUND - 1, 10, 3, 0, 0, 7); cx.fill();
   drawHero(cx, hx, hy, S.cls, 1, true);
+  { const pid = S.pets && S.pets.act, pim = pid && A['pet/' + pid]; if (pim) { const sc = .6, hop = Math.abs(Math.sin(now * (trans ? 12 : 3.2))) * (trans ? 3 : 1.6), px = hx - 13, py = GROUND - 32 * sc - hop;
+    cx.fillStyle = 'rgba(0,0,0,.35)'; cx.beginPath(); cx.ellipse(px + 16 * sc, GROUND - 1, 6, 2, 0, 0, 7); cx.fill();
+    cx.drawImage(silhouette(pim), 0, 0, pim.width + 2, pim.height + 2, px - sc, py - sc, (pim.width + 2) * sc, (pim.height + 2) * sc); cx.drawImage(pim, px, py, 32 * sc, 32 * sc); } }
 
   // 몬스터
   const mi = sceneZone(), mim = A['mon/m' + mi];
@@ -410,7 +425,7 @@ function drawScene(dt) {
   if (pillar) {
     pillar.t += dt;
     const k = 1 - pillar.t / pillar.d;
-    if (k <= 0) pillar = null;
+    if (k <= 0 || lowFx()) pillar = null;
     else {
       cx.save(); cx.globalCompositeOperation = 'lighter';
       const pg = cx.createLinearGradient(0, 0, 0, GROUND);
@@ -813,6 +828,9 @@ function handleEvents(ev, prevBoss) {
   if (ev.evAuto) for (const r of ev.evAuto.slice(-3)) addLog(t('ev.autoLog', { e: t('ev.' + r.id), o: t('ev.' + r.id + '.o' + r.c) }));
   if (ev.sig) { banner(t('sig.drop', { u: UNIQUES[ev.sig.u].name }), 'floor', 1800); addLog('<b>' + t('sig.dropLog', { m: MONSTERS[ev.sig.z], u: UNIQUES[ev.sig.u].name }) + '</b>'); }
   if (ev.autoMut) refreshSkills();
+  if (ev.soulEnpass) popText(t('sfx.n.enpass'), 140, 34, 'proc');
+  if (ev.soulUp && ev.soulUp % 10 === 0) addLog('<b style="color:#9fe3ff">' + t('soul.up', { w: soulName(), n: ev.soulUp }) + '</b>');
+  if (ev.mrUp) { const last = ev.mrUp[ev.mrUp.length - 1]; const nm = COMP_BY_ID[last.id].name; addLog('<b style="color:' + C_RARITY[5].color + '">' + t('mrp.up', { c: nm, n: t('mrp.n.' + last.id), l: last.lv }) + '</b> · ' + mrpText(last.id, last.lv)); if (last.lv % 10 === 0) banner(t('mrp.up', { c: nm, n: t('mrp.n.' + last.id), l: last.lv }), 'floor', 1800); }
   if (ev.casts) for (const c of ev.casts.slice(-3)) castFx(c);
   if (ev.compCasts) for (const e of ev.compCasts.slice(-3)) compSkillFx(e);
   if (ev.echo) { for (const id of S.team || []) { const cs = compState[id]; if (cs) cs.t = Math.min(cs.t, .05); } popText(t('ui.l.echo'), 24, GROUND - 32, 'proc'); }
@@ -951,7 +969,13 @@ function updateBattleHud() {
 }
 
 // ================= 렌더 =================
+// 자동 장착이 다른 행동(상자·원정·소환·파티 변경) 중에 장비를 옮겼으면 기록에 한 줄
+// (상자를 10개 열면 매번 다시 배분되므로, 마지막으로 기록한 상태와 비교해 실제로 바뀐 칸만 센다)
+let cgSnap = null;
+const cgSnapNow = () => { const m = {}; const eq = (S.cg || {}).eq || {}; for (const id in eq) for (const k in eq[id]) m[id + '|' + k] = cgScore(eq[id][k]); return m; };
+function noteCgMoved() { if (!cgTakeMoved()) return; const now = cgSnapNow(), old = cgSnap || {}; let n = 0; for (const key of new Set([...Object.keys(now), ...Object.keys(old)])) if (now[key] !== old[key]) n++; cgSnap = now; if (n) { addLog(t('cg.autoMoved', { e: Object.keys(now).length, b: cgBag(S).length })); const eb = $('#expBox'); if (eb) eb.dataset.sig = ''; } }
 function render() {
+  noteCgMoved();
   const cl = CLASSES[S.cls || 'war'];
   const tag = $('#clsTag');
   tag.textContent = S.cls ? cl.name : '-'; tag.style.background = S.cls ? cl.color : '#666';
@@ -960,7 +984,7 @@ function render() {
   $('#spTag').classList.toggle('hidden', S.sp <= 0);
   $('#xpbar').style.width = Math.min(100, (S.xp / xpNeed(S.level)) * 100) + '%';
   $('#gold').textContent = fmt(S.gold);
-  $('#stones').textContent = S.stones;
+  $('#stones').textContent = fmtN(S.stones);
   $('#dps').textContent = fmt(st.dps);
   $('#floor').textContent = S.floor;
   $('#maxfloor').textContent = S.maxFloor;
@@ -1011,7 +1035,8 @@ function render() {
   $('#shopDot').classList.toggle('hidden', autoOn(S, 'upgrade') || !UPGRADES.some(u => S.gold >= upgradeCost(u, S.up[u.id] || 0)));
   $('#skillDot').classList.toggle('hidden', autoOn(S, 'skill') || (S.sp <= 0 && !mutPending(S)));
   renderGuide(); renderEvents(); autoNotice();
-  $('#compDot').classList.toggle('hidden', S.stones < PULL_COST && !(S.team || []).some(id => { const c = COMP_BY_ID[id], o = S.comp[id]; return c && o && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(c, o.lv || 0); }));
+  if (!document.querySelector('[data-tab="comp"]').classList.contains('hidden')) { renderExped(); renderPetBox(); }
+  $('#compDot').classList.toggle('hidden', !expSlots(S).some(x => x && Date.now() >= x.end) && S.stones < PULL_COST && !(S.team || []).some(id => { const c = COMP_BY_ID[id], o = S.comp[id]; return c && o && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(c, o.lv || 0); }));
   if (!render._gd || performance.now() - render._gd > 1000) {
     render._gd = performance.now();
     $('#gearDot').classList.toggle('hidden', !S.bag.some(it => !S.equip[it.s] || itemScore(it) > itemScore(S.equip[it.s])));
@@ -1020,6 +1045,8 @@ function render() {
   $('#stoneCost').textContent = fmt(stonePrice(S));
   { const n = stoneMaxCount(S); $('#buyAllN').textContent = n ? t('ui.buyAllN', { n: fmtN(n * 10) }) : ''; $('#buyStoneAll').disabled = !n; }
   $('#pull1').disabled = S.stones < PULL_COST;
+  { const mb = $('#mileBtn'); if (mb) { mb.textContent = t('mile.btn', { n: fmtN(S.mile || 0) }); mb.classList.toggle('hot', (S.mile || 0) >= MILE_LR); } }
+  if (!document.querySelector('[data-tab="shop"]').classList.contains('hidden')) buildStoneShop();
   $('#pull10').disabled = S.stones < PULL10_COST;
   $('#pull100').disabled = S.stones < PULL10_COST * 10;
 
@@ -1029,13 +1056,13 @@ function render() {
   $('#respecBtn').disabled = !Object.keys(S.skills || {}).length;
 
   const hg = honorGain(S);
-  $('#rbGain').textContent = hg;
-  $('#honor').textContent = S.honor;
+  $('#rbGain').textContent = fmtN(hg);
+  $('#honor').textContent = fmtN(S.honor);
   $('#rebirths').textContent = S.rebirths;
   $('#kills').textContent = fmt(S.totalKills);
   $('#rbBtn').disabled = hg <= 0;
   $('#rbBar').style.width = Math.min(100, (S.maxFloor / REBIRTH_FLOOR) * 100) + '%';
-  $('#rbHint').textContent = hg > 0 ? t('ui.rbGain', { h: hg, p: hg * 5 }) : t('ui.rbNeed', { n: REBIRTH_FLOOR, m: S.maxFloor });
+  $('#rbHint').textContent = hg > 0 ? t('ui.rbGain', { h: fmtN(hg), p: fmtP(hg * 5) }) : t('ui.rbNeed', { n: REBIRTH_FLOOR, m: S.maxFloor });
   { const cv = hg > 0 ? convPreview(S) : 0; $('#rbConv').textContent = S.goldConv === false ? t('conv.off') : cv ? t('conv.pre', { n: fmtN(cv) }) : ''; }
   $('#rbDot').classList.toggle('hidden', hg <= 0 && !relicAffordable() && !canReinc(S));
   refreshRelics();
@@ -1084,9 +1111,9 @@ function buildSlots() {
   const r = st.raw;
   const rows = [
     [t('stat.atk'), fmt(st.atk)], [t('stat.hp'), fmt(st.hp)], [t('stat.crit'), st.crit.toFixed(1) + '%'],
-    [t('stat.critDmg'), '×' + st.critMult.toFixed(2)], [t('stat.spd'), Math.round(st.spd)], [t('stat.def'), Math.round(st.armor || 0) + ' (' + t('ui.cdEff', { n: Math.round(st.def) }) + ')'],
-    [t('stat.cdr'), Math.round(st.cdr) + ' (' + t('ui.cdEff', { n: Math.round(100 - 100 / (1 + st.cdr / 100)) }) + ')'], [t('stat.skillP'), '+' + Math.round(r.skillP) + '%'], [t('stat.compP'), '+' + Math.round(r.compP) + '%'],
-    [t('stat.bossP'), '+' + Math.round(r.bossP) + '%'], [t('stat.goldP'), '×' + st.goldMult.toFixed(2)], [t('stat.regen'), st.regen.toFixed(1) + '%/s'], [t('stat.xpP'), '×' + st.xpMult.toFixed(2)],
+    [t('stat.critDmg'), '×' + fmtM(st.critMult)], [t('stat.spd'), fmtP(st.spd)], [t('stat.def'), fmtP(st.armor || 0) + ' (' + t('ui.cdEff', { n: Math.round(st.def) }) + ')'],
+    [t('stat.cdr'), fmtP(st.cdr) + ' (' + t('ui.cdEff', { n: Math.round(100 - 100 / (1 + st.cdr / 100)) }) + ')'], [t('stat.skillP'), '+' + fmtP(r.skillP) + '%'], [t('stat.compP'), '+' + fmtP(r.compP) + '%'],
+    [t('stat.bossP'), '+' + fmtP(r.bossP) + '%'], [t('stat.goldP'), '×' + fmtM(st.goldMult)], [t('stat.regen'), (st.regen < 1000 ? st.regen.toFixed(1) : fmt(st.regen)) + '%/s'], [t('stat.xpP'), '×' + fmtM(st.xpMult)],
   ];
   $('#statsum').innerHTML = rows.map(([a, b]) => `<div>${a}<b>${b}</b></div>`).join('');
   refreshEnch();
@@ -1267,7 +1294,252 @@ function openClassModal(isChange) {
 // ================= 동료 탭 =================
 const CF = { cls: 'all', r: 'all', eff: 'all', own: 'all', sort: 'rarity' };
 function effTxt(k, v) { return statText(k, v); }
+// ================= 원정대 · 동료 장비 · 코스튬 =================
+const CG_COL = ['#b8b8c8', '#6bd66b', '#5aa9ff', '#c77dff', '#ffb347'];
+// 커서를 올리면 무엇이 올라가는지 보여 준다 (id가 있으면 그 동료 기준의 실제 수치까지)
+function basicXText() { const st = stats(S); return t('cg.basicX', { x: fmtN(Math.round(st.basicX * 10) / 10), b: fmtP(cgBladeSum(S)), s: fmtP((st.skillMult - 1) * 100), k: Math.round(BASIC_SKILL_K * 100) }); }
+function cgTip(it, id) { const v = cgVal(it); let s = t('cg.tip.' + it.k, { v, e: Math.round(cgExpVal(it) * 10) / 10 }); const c = id && COMP_BY_ID[id], o = id && S.comp[id];
+  if (c && o && it.k !== 'blade') { const k = it.k === 'charm' ? c.team.k : c.own.k, base = it.k === 'charm' ? teamValue(S, c, o.aw, o.lv) : ownValue(c, o.aw, o.lv); s += '\n' + t('cg.tip.now', { a: statText(k, base), b: statText(k, base * (1 + v / 100)) }); }
+  if (it.k === 'blade') s += '\n' + basicXText();
+  return s.replace(/"/g, '&quot;'); }
+const cgName = (it, id) => `<span style="color:${CG_COL[it.r]}" title="${cgTip(it, id)}">${t('cg.k.' + it.k)} +${cgVal(it)}%</span>`;
+function mrpText(id, lv) { const mp = MR_POW[id]; return t('mrp.e.' + id, { a: Math.round(mp.v * lv * 10) / 10, b: Math.round((mp.v2 || 0) * lv * 10) / 10 }); }
+function mrpHtml(id) {
+  const lv = mrpLv(S, id), xp = mrpXp(S, id), need = mrpNeed(lv), max = lv >= MRP_MAX, inTeam = (S.team || []).includes(id) && !onExped(S, id);
+  return `<div class="h">${t('mrp.head', { n: t('mrp.n.' + id) })} <b class="mrlv">Lv.${lv}/${MRP_MAX}</b></div>
+    <div class="clvbar mrbar"><i style="width:${max ? 100 : xp / need * 100}%"></i></div>
+    <div class="x"><b>${lv ? mrpText(id, lv) : t('mrp.none')}</b>${max ? '' : ' → ' + t('mrp.next') + ' ' + mrpText(id, lv + 1)}</div>
+    <div class="x">${max ? t('mrp.max') : t('mrp.how', { x: Math.floor(xp), n: need })}${inTeam ? '' : ' · <span class="warn">' + t('mrp.notTeam') + '</span>'}</div>`;
+}
+function cgSlotsHtml(id) {
+  const e = cgEq(S, id), bag = cgBag(S);
+  return `<div class="h">${t('cg.head')}</div><div class="cgslots">${CG_KINDS.map(k => { const it = e[k]; const best = bag.map((x, i) => [x, i]).filter(([x]) => x.k === k).sort((a, b) => cgScore(b[0]) - cgScore(a[0]))[0];
+    const better = best && (!it || cgScore(best[0]) > cgScore(it));
+    return `<div class="cgs" title="${t('cg.g.' + k)}"><i>${t('cg.k.' + k)}</i>${it ? cgName(it, id) : `<span class="mut2">${t('cg.empty')}</span>`}<div class="cgb">${better ? `<button class="mini hot" data-cg="${k}" data-bi="${best[1]}" title="${cgTip(best[0], id)}">${t('cg.equipBest', { v: cgVal(best[0]) })}</button>` : ''}${it ? `<button class="mini" data-cg="${k}" data-off="1">${t('cg.off')}</button>` : ''}</div></div>`; }).join('')}</div><div class="x">${t('cg.desc')}</div>${S.cgAuto !== false ? `<div class="x mut2">${t('cg.autoHint')}</div>` : ''}`;
+}
+const fmtLeft = ms => { const s = Math.max(0, Math.ceil(ms / 1000)); const h = Math.floor(s / 3600), m = Math.floor(s % 3600 / 60); return h ? t('exp.hm', { h, m }) : m ? t('exp.m', { m }) : t('exp.s', { s }); };
+function renderExped() {
+  const box = $('#expBox'); if (!box) return;
+  const now = Date.now(), sl = expSlots(S);
+  const sig = sl.map(x => x ? x.ids.join(',') + (now >= x.end ? 'D' : Math.floor((x.end - now) / 30000)) : '-').join('|') + cgBag(S).length + getLang() + (S.stones >= rushAllCost(S, now)) + expSel.di + expFree(S).length;
+  if (box.dataset.sig === sig) return; box.dataset.sig = sig;
+  const nEmpty = sl.filter(x => !x).length, nRun = sl.filter(x => x && now < x.end).length, nDone = sl.filter(x => x && now >= x.end).length, rAll = rushAllCost(S, now), canSend = nEmpty && expFree(S).length;
+  box.innerHTML = `<div class="exph"><b>${t('exp.title')}</b><button class="mini" data-x="bag">${t('cg.bagBtn', { n: cgBag(S).length, m: CG_BAG })}</button></div>` +
+    `<div class="expall">${canSend ? `<select data-x="alldi">${EXP_DUR.map((h, i) => `<option value="${i}" ${expSel.di === i ? 'selected' : ''}>${t('exp.dur', { h })}</option>`).join('')}</select><button class="mini hot" data-x="sendAll">${t('exp.sendAll', { n: nEmpty })}</button>` : ''}${nRun ? `<button class="mini ${S.stones >= rAll ? 'hot' : ''}" data-x="rushAll" ${S.stones >= rAll ? '' : 'disabled'} title="${t('exp.rushAllT')}">${t('exp.rushAll', { n: nRun })} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(rAll)}</button>` : ''}${nDone > 1 ? `<button class="mini hot" data-x="claimAll">${t('exp.claimAll', { n: nDone })}</button>` : ''}</div>` + sl.map((x, i) => {
+    if (!x) return `<div class="exps"><span class="mut2">${t('exp.idle')}</span><button class="mini hot" data-x="send" data-i="${i}">${t('exp.send')}</button></div>`;
+    const done = now >= x.end, pics = x.ids.map(id => `<img class="px" src="${compSrc(id)}" style="border-color:${C_RARITY[COMP_BY_ID[id].r].color}">`).join('');
+    const rc = done ? 0 : rushCost(S, i);
+    return `<div class="exps ${done ? 'done' : ''}"><div class="pics">${pics}</div><div class="info"><b>${t('exp.dur', { h: EXP_DUR[x.di] })}</b><span>${done ? t('exp.back') : t('exp.left', { t: fmtLeft(x.end - now) })}</span></div>${done ? `<button class="mini hot" data-x="claim" data-i="${i}">${t('exp.claim')}</button>` : `<button class="mini" data-x="rush" data-i="${i}" ${S.stones >= rc ? '' : 'disabled'} title="${t('exp.rushT')}"><img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(rc)}</button><button class="mini" data-x="recall" data-i="${i}">${t('exp.recall')}</button>`}</div>`;
+  }).join('');
+}
+let expSel = { slot: 0, di: 1, ids: [] }, expArm = -1;
+function openExpModal(slot) {
+  expSel = { slot, di: expSel.di ?? 1, ids: expAutoPick(S) };
+  renderExpModal(); $('#expModal').classList.remove('hidden');
+}
+function renderExpModal() {
+  const free = expFree(S).sort((a, b) => expPower(S, [b]) - expPower(S, [a])), pv = expPreview(S, expSel.ids, expSel.di);
+  $('#expWin').innerHTML = `<div class="evh"><b>${t('exp.title')}</b><span>${t('exp.sub', { n: EXP_SIZE })}</span></div>
+    <div class="dsel">${EXP_DUR.map((h, i) => `<button class="mini ${expSel.di === i ? 'on' : ''}" data-xd="${i}">${t('exp.dur', { h })}</button>`).join('')}</div>
+    <div class="exppv"><div><span>${t('exp.power')}</span><b>${Math.round(pv.mult * 100)}%</b></div><div class="rw">${[t('rw.shards', { n: pv.shards }), t('rw.ess', { n: pv.ess }), pv.dust ? t('rune.dustN', { n: pv.dust }) : '', t('cg.n', { n: pv.gear }), t('exp.cosChance', { p: (pv.cos * 100).toFixed(1) })].filter(Boolean).join(' · ')}</div></div>
+    <div class="expgrid">${free.length ? free.map(id => { const c = COMP_BY_ID[id], on = expSel.ids.includes(id); return `<div class="eg ${on ? 'on' : ''}" data-xc="${id}" style="border-color:${C_RARITY[c.r].color}"><img class="px" src="${compSrc(id)}"><i>${C_RARITY[c.r].name}</i></div>`; }).join('') : `<div class="qx">${t('exp.noFree')}</div>`}</div>
+    <div class="grow"><button class="mini" data-xa="auto">${t('exp.auto')}</button><button class="big sm" data-xa="go" ${expSel.ids.length ? '' : 'disabled'}>${t('exp.go', { n: expSel.ids.length, m: EXP_SIZE })}</button></div>
+    <button class="mini wide" data-xa="close">${t('ui.close')}</button>`;
+}
+function openCgModal() { renderCgModal(); $('#cgModal').classList.remove('hidden'); }
+function renderCgModal() {
+  const bag = cgBag(S).map((it, i) => [it, i]).sort((a, b) => cgScore(b[0]) - cgScore(a[0]));
+  const low = cgBag(S).filter(x => x.r <= 1).length;
+  $('#cgWin').innerHTML = `<div class="evh"><b>${t('cg.title')}</b><span>${cgBag(S).length}/${CG_BAG}</span></div><div class="qx">${t('cg.desc2')}</div><div class="qx">${t('cg.desc')} · <b>${basicXText()}</b></div>
+    <div class="grow"><label class="chk cgauto"><input type="checkbox" data-cga="toggle" ${S.cgAuto !== false ? 'checked' : ''}><span>${t('cg.autoOn')}</span></label><button class="mini" data-cga="auto">${t('cg.autoNow')}</button><button class="mini" data-cga="merge">${t('cg.merge')}</button><button class="mini" data-cga="dis" ${low ? '' : 'disabled'}>${t('cg.disLow', { n: low })}</button></div>
+    <div class="cglist">${bag.length ? bag.map(([it]) => `<div class="cgi">${cgName(it)}<i>${t('rar.' + it.r)} · ${it.q}%</i></div>`).join('') : `<div class="qx c">${t('cg.none')}</div>`}</div>
+    <button class="mini wide" data-cga="close">${t('ui.close')}</button>`;
+}
+// ================= 영혼무기 =================
+let soulDraft = null;   // 만들기 화면: { look, name, k }
+const soulName = () => (S.soul && S.soul.name) || t('soul.title');
+const soulFxText = (k, v) => { const r1 = x => Math.round(x * 10) / 10; return t('sfx.d.' + k, { v: k === 'cut' ? Math.round(v * 1000) / 1000 : r1(v), h: r1(v * 3), m: r1(v * 200), c: r1(Math.min(v * 200, v * (S.soulKills || 0))) }); };
+function drawSoulPv(look) { const cv = $('#soulPv'); if (!cv) return; const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.clearRect(0, 0, 96, 96); for (const k of heroLayers(S.cls, { soul: look, slot: 'weapon', v: 'auto' })) { const im = A[k]; if (im) x.drawImage(im, 0, 0, 32, 32, 0, 0, 96, 96); } }
+function openSoulModal() { if (soulUnlocked(S) && !soulMade(S)) soulDraft = soulDraft || { look: SOUL_LOOKS[0], name: '', k: 'atk' }; renderSoulModal(); $('#soulModal').classList.remove('hidden'); }
+function renderSoulModal() {
+  const box = $('#soulWin'); const fxOpts = sel => SOUL_FX_KEYS.map(k => `<option value="${k}" ${k === sel ? 'selected' : ''}>${t('sfx.n.' + k)}</option>`).join('');
+  const looks = cur => `<div class="soullooks">${SOUL_LOOKS.map(w => `<button class="cosopt ${w === cur ? 'on' : ''}" data-sl="${w}"><img class="px" src="assets/soul/${w}.png"></button>`).join('')}</div>`;
+  if (!soulUnlocked(S)) { box.innerHTML = `<div class="evh"><b>${t('soul.title')}</b></div><div class="qx">${t('soul.locked', { n: SOUL_REINC })}</div><button class="mini wide" data-sw="close">${t('ui.close')}</button>`; return; }
+  if (!soulMade(S)) { const d = soulDraft;
+    box.innerHTML = `<div class="evh"><b>${t('soul.make')}</b></div><div class="qx">${t('soul.desc')}</div>
+      <div class="soulhead"><canvas id="soulPv" width="96" height="96"></canvas><div class="sh">
+        <label>${t('soul.name')}<input class="pinp" id="soulNm" maxlength="16" placeholder="${t('soul.title')}" value="${(d.name || '').replace(/"/g, '')}"></label>
+        <label>${t('soul.opt1')}<select id="soulK">${fxOpts(d.k)}</select></label><span class="sod">${soulFxText(d.k, soulVal(d.k, soulCap(S)))} <i class="mut2">(Lv.${soulCap(S)})</i></span>
+        <span class="mut2">${t('soul.slotsNote', { a: SOUL_SLOT_AT[1], b: SOUL_SLOT_AT[2] })}</span></div></div>
+      <div class="sech">${t('soul.look')}</div>${looks(d.look)}
+      <div class="grow"><button class="big sm" data-sw="craft">${t('soul.craft')}</button><button class="mini" data-sw="close">${t('ui.close')}</button></div>`;
+    drawSoulPv(d.look); return; }
+  const w = S.soul, cap = soulCap(S), nS = soulSlots(S), fc = soulFeedCost(S);
+  box.innerHTML = `<div class="evh"><b>${soulName()} <button class="pren" data-sw="ren" title="${t('ui.presetRen')}"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5l2 2L6 12l-3 1 1-3z"/><path d="M10 4l2 2"/></svg></button></b><span>Lv.${w.lv}/${cap}</span></div>
+    <div class="soulhead"><canvas id="soulPv" width="96" height="96"></canvas><div class="sh">
+      <div class="clvbar soulbar"><i style="width:${w.lv >= cap ? 100 : w.xp / soulNeed(w.lv) * 100}%"></i></div>
+      <span class="mut2">${w.lv >= cap ? (w.lv >= SOUL_MAXLV ? 'MAX' : t('soul.capped', { f: w.lv + 1 })) : t('soul.how', { x: Math.floor(w.xp), n: soulNeed(w.lv) })}</span>
+      ${fc ? `<button class="mini ${(S.ess || 0) >= fc ? 'hot' : ''}" data-sw="feed" ${(S.ess || 0) >= fc ? '' : 'disabled'} title="${t('pet.lvT')}">${t('soul.feed')} <img src="assets/ui/rune.png" class="px i14" alt=""> ${fmt(fc)}</button>` : ''}
+      <label class="chk"><input type="checkbox" data-sw="show" ${w.show ? 'checked' : ''}><span>${t('soul.show')}</span></label></div></div>
+    <div class="soulopts">${SOUL_SLOT_AT.map((at, i) => i < nS ? `<div class="sorow"><b>${i + 1}</b><select data-so="${i}">${fxOpts(w.opt[i] || '')}${w.opt[i] ? '' : `<option value="" selected>${t('soul.pick')}</option>`}</select><span>${w.opt[i] ? soulFxText(w.opt[i], soulVal(w.opt[i], w.lv)) : ''}</span></div>` : `<div class="sorow off"><b>${i + 1}</b><span class="mut2">${t('soul.slotAt', { n: at })}</span></div>`).join('')}</div>
+    <div class="qx">${t('soul.optNote')}</div>
+    <details class="sofx"><summary>${t('soul.allFx')}</summary>${SOUL_FX_KEYS.map(k => `<div><b>${t('sfx.n.' + k)}</b> ${soulFxText(k, soulVal(k, w.lv))}</div>`).join('')}</details>
+    <div class="sech">${t('soul.look')}</div>${looks(w.look)}
+    <button class="mini wide" data-sw="close">${t('ui.close')}</button>`;
+  drawSoulPv(w.look);
+  const fb = box.querySelector('[data-sw="feed"]'); if (fb && !fb.disabled) holdRepeat(fb, () => soulFeed(S), n => { if (n) { st = stats(S); save(S); renderSoulModal(); drawDoll(); } });
+}
+function bindSoul() {
+  $('#soulModal').onclick = e => { if (e.target.id === 'soulModal') $('#soulModal').classList.add('hidden'); };
+  const box = $('#soulWin');
+  box.addEventListener('mouseover', e => { const b = e.target.closest('[data-sl]'); if (b) drawSoulPv(b.dataset.sl); });
+  box.addEventListener('mouseleave', () => drawSoulPv(soulMade(S) ? S.soul.look : soulDraft && soulDraft.look));
+  box.addEventListener('input', e => { if (e.target.id === 'soulNm' && soulDraft) soulDraft.name = e.target.value; });
+  box.addEventListener('change', e => { const el = e.target;
+    if (el.id === 'soulK' && soulDraft) { soulDraft.k = el.value; renderSoulModal(); return; }
+    if (el.dataset.so != null && el.value) { if (soulSetOpt(S, +el.dataset.so, el.value)) { st = stats(S); save(S); } renderSoulModal(); return; }
+    if (el.dataset.sw === 'show') { soulShow(S, el.checked); save(S); drawDoll(); } });
+  box.addEventListener('click', e => { const l = e.target.closest('[data-sl]'); if (l) { if (soulMade(S)) { soulSetLook(S, l.dataset.sl); save(S); drawDoll(); } else soulDraft.look = l.dataset.sl; renderSoulModal(); return; }
+    const b = e.target.closest('[data-sw]'); if (!b || b.disabled || b.tagName === 'INPUT') return; const a = b.dataset.sw;
+    if (a === 'close') $('#soulModal').classList.add('hidden');
+    else if (a === 'craft') { const d = soulDraft; if (soulCraft(S, d.look, d.name, d.k)) { soulDraft = null; st = stats(S); save(S); addLog('<b style="color:#9fe3ff">' + t('soul.made', { w: soulName() }) + '</b>'); toast(t('soul.made', { w: soulName() })); renderSoulModal(); drawDoll(); } }
+    else if (a === 'ren') { const h = box.querySelector('.evh b'); h.innerHTML = `<input class="pinp" maxlength="16" placeholder="${t('soul.title')}">`; const inp = h.querySelector('input'); inp.value = S.soul.name || ''; inp.focus(); inp.select(); let done = false;
+      const fin = ok => { if (done) return; done = true; if (ok && soulRename(S, inp.value)) save(S); renderSoulModal(); }; inp.onkeydown = ev => { if (ev.key === 'Enter') fin(true); else if (ev.key === 'Escape') fin(false); }; inp.onblur = () => fin(true); } });
+}
+// ================= 펫 =================
+const PET_COL = ['#b8b8c8', '#6bd66b', '#5aa9ff', '#c77dff', '#ffb347'];
+const petFxText = (k, v) => t('pet.fx.' + k, { v: Math.round(v * 10) / 10 });
+const goldIc = '<img src="assets/ui/gold.png" class="px i14" alt="">';
+let petSel = null;
+// 자동 다시 뽑기 (원하는 효과·등급이 나올 때까지)
+let petAuto = null; const petAutoPref = {};
+function petAutoStop(msg) { if (!petAuto) return; clearTimeout(petAuto.timer); const a = petAuto; petAuto = null; if (a.rolls) { save(S); addLog(msg || t('pet.autoStop', { n: fmtN(a.rolls) })); } st = stats(S); if (!$('#petModal').classList.contains('hidden')) renderPetModal(); $('#petBox').dataset.sig = ''; renderPetBox(); }
+function petAutoTick() {
+  const a = petAuto; if (!a) return;
+  if ($('#petModal').classList.contains('hidden') || !S.pets.own[a.id]) { petAutoStop(); return; }
+  const r = petAutoRoll(S, a.id, a.k, a.r, 25); if (!r) { petAutoStop(); return; }
+  a.rolls += r.rolls; a.spent += r.spent;
+  if (r.hit) { const nm = t('pet.n.' + a.id), fx = `${t('rar.' + r.r)} · ${petFxText(r.k, petVal(S.pets.own[a.id]))}`; toast(t('pet.autoHit', { p: nm, f: fx })); petAutoStop('<b>' + t('pet.autoHitLog', { p: nm, f: fx, n: fmtN(a.rolls) }) + '</b>'); return; }
+  if (r.out) { petAutoStop(t('pet.autoOut', { n: fmtN(a.rolls) })); return; }
+  const ln = $('#petAutoLine'); if (ln) ln.textContent = t('pet.autoRun', { n: fmtN(a.rolls), g: fmt(a.spent) });
+  a.timer = setTimeout(petAutoTick, 40);
+}
+function renderPetBox() {
+  const box = $('#petBox'); if (!box) return;
+  const on = petUnlocked(S), own = on ? petOwned(S) : [], act = S.pets && S.pets.act, ag = petAgg(S);
+  const top = PET_FX_KEYS.filter(k => ag[k] > 0).sort((a, b) => ag[b] / PET_FX[b].v - ag[a] / PET_FX[a].v).slice(0, 3);
+  const sig = [on, own.length, act, top.map(k => k + Math.round(ag[k])).join(','), getLang(), petPot(S) >= (on && petLeft(S).length ? petDrawCost(S) : Infinity)].join('|');
+  if (box.dataset.sig === sig) return; box.dataset.sig = sig;
+  box.innerHTML = !on ? `<div class="peth"><b>${t('pet.title')}</b><span class="mut2">${t('pet.locked', { n: PET_UNLOCK })}</span></div>`
+    : `<div class="peth">${act ? `<img class="px" src="assets/pet/${act}.png">` : ''}<div class="pt"><b>${t('pet.title')} ${own.length}/${PETS.length}</b><span>${top.length ? top.map(k => petFxText(k, ag[k])).join(' · ') : t('pet.none')}</span></div><button class="mini ${petLeft(S).length && petPot(S) >= petDrawCost(S) ? 'hot' : ''}" data-p="open">${t('pet.manage')}</button></div>`;
+}
+function petAutoHtml(id, p) {
+  const pr = petAutoPref[id] || (petAutoPref[id] = { k: p.k, r: Math.min(4, p.r + 1) });
+  const run = petAuto && petAuto.id === id, done = petWant(p, pr.k, pr.r), odds = petAutoOdds(pr.k, pr.r);
+  return `<div class="pauto"><b>${t('pet.auto')}</b><select data-pa="k" ${run ? 'disabled' : ''}><option value="any" ${pr.k === 'any' ? 'selected' : ''}>${t('pet.anyFx')}</option>${PET_FX_KEYS.map(k => `<option value="${k}" ${pr.k === k ? 'selected' : ''}>${t('fx.n.' + k)}</option>`).join('')}</select>
+    <select data-pa="r" ${run ? 'disabled' : ''}>${[0, 1, 2, 3, 4].map(r => `<option value="${r}" ${pr.r === r ? 'selected' : ''}>${t('pet.rUp', { r: t('rar.' + r) })}</option>`).join('')}</select>
+    ${run ? `<button class="mini hot" data-p="astop">${t('ui.aStop')}</button>` : `<button class="mini" data-p="astart" ${done || petPot(S) < petRollCost(S) ? 'disabled' : ''}>${t('pet.autoGo')}</button>`}
+    <span id="petAutoLine" class="mut2">${run ? t('pet.autoRun', { n: fmtN(petAuto.rolls), g: fmt(petAuto.spent) }) : done ? t('pet.autoDone') : t('pet.autoOdds', { n: fmtN(Math.round(1 / odds)), g: fmt(petRollCost(S) / odds) })}</span></div>`;
+}
+function openPetModal() { if (!petUnlocked(S)) return; if (!petSel || !S.pets.own[petSel]) petSel = S.pets.act || petOwned(S)[0] || null; renderPetModal(); $('#petModal').classList.remove('hidden'); }
+function renderPetModal() {
+  const own = S.pets.own, cap = petCap(S), left = petLeft(S), ag = petAgg(S), dc = left.length ? petDrawCost(S) : 0;
+  const sel = petSel && own[petSel] ? petSel : null, p = sel && own[sel], cand = S.pets.cand && S.pets.cand.id === sel ? S.pets.cand : null;
+  const fxLine = q => `<span style="color:${PET_COL[q.r]}">${t('rar.' + q.r)} · ${petFxText(q.k, petVal(q))}</span>`;
+  const pot = petPot(S);
+  $('#petWin').innerHTML = `<div class="evh"><b>${t('pet.title')} ${Object.keys(own).length}/${PETS.length}</b><span>${t('pet.pot')} ${goldIc} <b>${fmt(pot)}</b></span></div>
+    <div class="petpot"><span>${t('pet.potRate', { n: fmt(S.pets.ppm || 0) })}</span><button class="mini" data-p="dep" ${S.gold > 0 ? '' : 'disabled'} title="${t('pet.depT')}">${t('pet.dep', { n: fmt(S.gold) })}</button></div>
+    <div class="qx">${t('pet.desc', { c: cap, f: cap * 2 })}</div>
+    <div class="petdraw">${left.length ? `<button class="big sm ${pot >= dc ? '' : 'off'}" data-p="draw" ${pot >= dc ? '' : 'disabled'}>${t('pet.draw')} ${goldIc} ${fmt(dc)}</button><span>${t('pet.drawNote', { n: left.length })}</span>` : `<span>${t('pet.all')}</span>`}</div>
+    <div class="petsum">${PET_FX_KEYS.filter(k => ag[k] > 0).map(k => `<em>${petFxText(k, ag[k])}</em>`).join('') || `<span class="mut2">${t('pet.none')}</span>`}</div>
+    <div class="petgrid">${PETS.map(id => { const q = own[id]; return q ? `<div class="pcell ${id === sel ? 'on' : ''} ${S.pets.act === id ? 'act' : ''}" data-ps="${id}" style="border-color:${PET_COL[q.r]}" title="${t('pet.n.' + id)}"><img class="px" src="assets/pet/${id}.png"><i>Lv.${q.lv}</i></div>` : `<div class="pcell none" title="?"><img class="px" src="assets/pet/${id}.png"><i>?</i></div>`; }).join('')}</div>
+    ${p ? `<div class="petdet"><img class="px" src="assets/pet/${sel}.png"><div class="pd">
+      <b>${t('pet.n.' + sel)} <span class="mut2">Lv.${p.lv}/${cap}</span></b>
+      <div>${fxLine(p)}${p.lv < PET_MAX ? ` <span class="mut2">→ Lv.${PET_MAX} ${petFxText(p.k, petVal({ ...p, lv: PET_MAX }))}</span>` : ''}</div>
+      <div class="pbtn"><button class="mini ${p.lv < cap && pot >= petLvCost(S, p.lv) ? 'hot' : ''}" data-p="lv" ${p.lv < cap ? '' : 'disabled'} title="${t('pet.lvT')}">${p.lv >= cap ? (p.lv >= PET_MAX ? 'MAX' : t('pet.capped', { f: (p.lv + 1) * 2 })) : t('pet.lvUp') + ' ' + goldIc + ' ' + fmt(petLvCost(S, p.lv))}</button>
+        <button class="mini" data-p="roll" ${pot >= petRollCost(S) ? '' : 'disabled'}>${t('pet.roll')} ${goldIc} ${fmt(petRollCost(S))}</button>
+        ${S.pets.act === sel ? `<span class="pact">${t('pet.acting')}</span>` : `<button class="mini" data-p="act">${t('pet.act')}</button>`}</div>
+      ${petAutoHtml(sel, p)}
+      ${cand ? `<div class="pcand">${t('pet.cand')} ${fxLine({ ...cand, lv: p.lv })}<button class="mini hot" data-p="take">${t('pet.take')}</button><button class="mini" data-p="keep">${t('pet.keep')}</button></div>` : ''}
+    </div></div>` : ''}
+    <button class="mini wide" data-p="close">${t('ui.close')}</button>`;
+  const lb = $('#petWin [data-p="lv"]');
+  if (lb && p && p.lv < cap) holdRepeat(lb, () => { if (!petLevelUp(S, sel)) return false; st = stats(S); const q = S.pets.own[sel]; lb.innerHTML = q.lv >= petCap(S) ? 'MAX' : t('pet.lvUp') + ' ' + goldIc + ' ' + fmt(petLvCost(S, q.lv)); return true; }, n => { if (n) { save(S); renderPetModal(); $('#petBox').dataset.sig = ''; renderPetBox(); } });
+}
+function bindPets() {
+  $('#petBox').addEventListener('click', e => { if (e.target.closest('[data-p="open"]')) openPetModal(); });
+  $('#petModal').onclick = e => { if (e.target.id === 'petModal') { $('#petModal').classList.add('hidden'); petAutoStop(); } };
+  holdDelegate($('#petWin'), '[data-p="draw"]', () => { const r = petDraw(S); if (!r) return false; petSel = r.id; addLog('<b>' + t('pet.got', { p: t('pet.n.' + r.id) }) + '</b> ' + t('rar.' + r.r) + ' · ' + petFxText(r.k, petVal(r))); st = stats(S); renderPetModal(); return true; }, n => { if (n) { toast(t('pet.drawN', { n })); $('#petBox').dataset.sig = ''; renderPetBox(); } });
+  $('#petWin').addEventListener('change', e => { const el = e.target.closest('[data-pa]'); if (!el || !petSel) return; const pr = petAutoPref[petSel] || (petAutoPref[petSel] = { k: 'any', r: 0 }); if (el.dataset.pa === 'k') pr.k = el.value; else pr.r = +el.value; renderPetModal(); });
+  $('#petWin').addEventListener('click', e => { const c = e.target.closest('[data-ps]'); if (c) { if (petAuto && petAuto.id !== c.dataset.ps) petAutoStop(); petSel = c.dataset.ps; renderPetModal(); return; }
+    const b = e.target.closest('[data-p]'); if (!b || b.disabled) return; const a = b.dataset.p;
+    if (a === 'close') { $('#petModal').classList.add('hidden'); petAutoStop(); return; }
+    if (a === 'draw') { const r = petDraw(S); if (r) { petSel = r.id; addLog('<b>' + t('pet.got', { p: t('pet.n.' + r.id) }) + '</b> ' + t('rar.' + r.r) + ' · ' + petFxText(r.k, petVal(r))); toast(t('pet.got', { p: t('pet.n.' + r.id) })); } }
+    else if (a === 'astart') { if (!petAuto) { const pr = petAutoPref[petSel]; petAuto = { id: petSel, k: pr.k, r: pr.r, rolls: 0, spent: 0, timer: null }; renderPetModal(); petAutoTick(); } return; }
+    else if (a === 'astop') { petAutoStop(); return; }
+    else if (a === 'roll') petRoll(S, petSel);
+    else if (a === 'dep') { const g = petDeposit(S); if (g) addLog(t('pet.depLog', { n: fmt(g) })); }
+    else if (a === 'take') petKeep(S, true);
+    else if (a === 'keep') petKeep(S, false);
+    else if (a === 'act') petSetAct(S, petSel);
+    else return;
+    st = stats(S); save(S); renderPetModal(); $('#petBox').dataset.sig = ''; renderPetBox(); });
+}
+function openCosModal() { renderCosModal(); $('#cosModal').classList.remove('hidden'); drawCosPv(); }
+// 옷장 미리보기: 커서를 올린 코스튬을 입혀서 보여 주고, 벗어나면 지금 모습으로 돌아온다
+function drawCosPv(ov) { const cv = $('#cosPv'); if (!cv) return; const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.clearRect(0, 0, 96, 96); for (const k of heroLayers(S.cls, ov)) { const im = A[k]; if (im) x.drawImage(im, 0, 0, 32, 32, 0, 0, 96, 96); }
+  const n = $('#cosPvN'); if (n) n.textContent = ov ? (COS_BY_ID[ov.v] ? t('cos.n.' + ov.v) : ov.v === 'auto' ? t('slot.' + ov.slot) + ' · ' + t(ov.slot === 'hair' || ov.slot === 'offhand' ? 'cos.none' : 'cos.auto') : ov.v === 'hide' ? t('slot.' + ov.slot) + ' · ' + t('cos.hide') : t('slot.' + ov.slot) + ' · ' + t('cos.tier', { n: +ov.v.slice(1) + 1 })) : t('cos.pvNow'); }
+function renderCosModal() {
+  const c = S.cls || 'war';
+  const baseSrc = (() => { const b = lookOf(S, 'base'); return b && b !== 'auto' ? 'cos/' + b : 'cls/' + c; })();
+  const thumb = (slot, v) => slot === 'hair' && v !== 'auto' ? `<span class="cstk"><img class="px" src="assets/${baseSrc}.png"><img class="px" src="assets/cos/${v}.png"></span>` : v === 'auto' ? (slot === 'base' ? `<img class="px" src="assets/cls/${c}.png">` : `<span class="ctxt">${t(slot === 'hair' || slot === 'offhand' ? 'cos.none' : 'cos.auto')}</span>`) : v === 'hide' ? `<span class="ctxt">${t('cos.hide')}</span>` : `<img class="px" src="assets/${v[0] === 't' && /^t\d$/.test(v) ? itemDoll(slot, +v.slice(1), c) : 'cos/' + v}.png">`;
+  $('#cosWin').innerHTML = `<div class="evh"><b>${t('cos.title')}</b><span>${t('cos.count', { n: cosCount(S), m: COSTUMES.length })}</span></div><div class="cospv"><canvas id="cosPv" width="96" height="96"></canvas><div class="cospvt"><b id="cosPvN">${t('cos.pvNow')}</b><span>${t('cos.pvHint')}</span></div></div><div class="qx">${t('cos.desc')}</div>
+    ${COS_SLOTS.map(slot => `<div class="cosrow"><b>${t('slot.' + slot)}</b><div class="coslist">${lookOptions(S, slot).map(v => `<button class="cosopt ${lookOf(S, slot) === v ? 'on' : ''} ${COS_BY_ID[v] ? 'sp' : ''}" data-cs="${slot}" data-cv="${v}" title="${COS_BY_ID[v] ? t('cos.n.' + v) : ''}">${thumb(slot, v)}</button>`).join('')}</div></div>`).join('')}
+    <button class="mini wide" data-csa="close">${t('ui.close')}</button>`;
+}
+// 여러 원정·상자를 한 번에 받았을 때 보상을 합쳐서 보여 준다
+function showBulkReward(title, tot) {
+  const rows = []; if (tot.shards) rows.push([t('rw.shards', { n: fmtN(tot.shards) }), null]); if (tot.ess) rows.push([t('rw.ess', { n: fmtN(tot.ess) }), null]); if (tot.dust) rows.push([t('rune.dustN', { n: fmtN(tot.dust) }), null]);
+  const g = (tot.gear || []).slice().sort((a, b) => b.r - a.r || cgScore(b) - cgScore(a)); if (g.length) { const by = {}; for (const it of g) by[it.r] = (by[it.r] || 0) + 1; rows.push(['<b>' + t('cg.n', { n: g.length }) + '</b> · ' + Object.keys(by).sort((a, b) => b - a).map(r => `<span style="color:${CG_COL[r]}">${t('rar.' + r)} ${by[r]}</span>`).join(' · '), null]); for (const it of g.slice(0, 12)) rows.push([cgName(it) + ' <i>' + t('rar.' + it.r) + '</i>', null]); if (g.length > 12) rows.push([t('ss.more', { n: g.length - 12 }), null]); }
+  for (const c of tot.cos || []) rows.push(['<b class="hi">' + t('cos.got', { c: t('cos.n.' + c) }) + '</b>', null]);
+  showReward(title, rows);
+}
+function bindCompExtras() {
+  $('#expBox').addEventListener('click', e => { const b = e.target.closest('[data-x]'); if (!b) return; const i = +b.dataset.i, a = b.dataset.x;
+    if (a === 'alldi') return;
+    if (a === 'bag') openCgModal();
+    else if (a === 'send') openExpModal(i);
+    else if (a === 'sendAll') { const n = expSendAll(S, expSel.di); if (n) { addLog('<b>' + t('exp.sentAll', { n, h: EXP_DUR[expSel.di] }) + '</b>'); save(S); } }
+    else if (a === 'rushAll' || a === 'claimAll') { if (a === 'rushAll') { const r = shopBuy(S, 'rushAll'); if (!r) return; addLog(t('exp.rushAllLog', { n: fmtN(r.cost) })); } const tot = expClaimAll(S); if (tot.n) { showBulkReward(t('exp.resultN', { n: tot.n }), tot); addLog('<b>' + t('exp.log') + ' ×' + tot.n + '</b> · ' + t('rw.shards', { n: fmtN(tot.shards) }) + ' · ' + t('cg.n', { n: tot.gear.length }) + (tot.cos.length ? ' · ' + tot.cos.map(c => t('cos.got', { c: t('cos.n.' + c) })).join(', ') : '')); } st = stats(S); save(S); }
+    else if (a === 'rush') { if (shopBuy(S, 'rush', i)) { addLog(t('exp.rushLog')); save(S); } }
+    else if (a === 'recall') { if (expArm !== i) { expArm = i; b.textContent = t('exp.recallAgain'); setTimeout(() => { expArm = -1; $('#expBox').dataset.sig = ''; renderExped(); }, 3000); return; } expArm = -1; expRecall(S, i); save(S); }
+    else if (a === 'claim') { const r = expClaim(S, i); if (r) { const rows = [[t('rw.shards', { n: r.shards }), null], [t('rw.ess', { n: r.ess }), null]]; if (r.dust) rows.push([t('rune.dustN', { n: r.dust }), null]); for (const it of r.gear) rows.push([cgName(it) + ' <i>' + t('rar.' + it.r) + '</i>', null]); if (r.cos && r.cos !== 'dup') rows.push(['<b class="hi">' + t('cos.got', { c: t('cos.n.' + r.cos) }) + '</b>', null]); showReward(t('exp.result'), rows); addLog('<b>' + t('exp.log') + '</b> · ' + t('rw.shards', { n: r.shards }) + ' · ' + t('cg.n', { n: r.gear.length }) + (r.cos && r.cos !== 'dup' ? ' · ' + t('cos.got', { c: t('cos.n.' + r.cos) }) : '')); st = stats(S); save(S); } }
+    $('#expBox').dataset.sig = ''; renderExped(); buildComps(); });
+  $('#expBox').addEventListener('change', e => { if (e.target.dataset.x === 'alldi') { expSel.di = +e.target.value; $('#expBox').dataset.sig = ''; renderExped(); } });
+  $('#expWin').addEventListener('click', e => { const d = e.target.closest('[data-xd],[data-xc],[data-xa]'); if (!d) return;
+    if (d.dataset.xd != null) expSel.di = +d.dataset.xd;
+    else if (d.dataset.xc) { const id = d.dataset.xc, k = expSel.ids.indexOf(id); if (k >= 0) expSel.ids.splice(k, 1); else if (expSel.ids.length < EXP_SIZE) expSel.ids.push(id); }
+    else if (d.dataset.xa === 'auto') expSel.ids = expAutoPick(S);
+    else if (d.dataset.xa === 'close') { $('#expModal').classList.add('hidden'); return; }
+    else if (d.dataset.xa === 'go') { if (expStart(S, expSel.slot, expSel.ids, expSel.di)) { addLog('<b>' + t('exp.sent', { h: EXP_DUR[expSel.di] }) + '</b>'); save(S); $('#expModal').classList.add('hidden'); $('#expBox').dataset.sig = ''; renderExped(); buildComps(); } return; }
+    renderExpModal(); });
+  $('#cgWin').addEventListener('click', e => { const b = e.target.closest('[data-cga]'); if (!b || b.disabled) return; const a = b.dataset.cga;
+    if (a === 'close') { $('#cgModal').classList.add('hidden'); return; }
+    if (a === 'toggle') { S.cgAuto = b.checked; if (S.cgAuto) { const n = cgAutoEquip(S); cgTakeMoved(); if (n) toast(t('cg.autoLog', { n })); } }
+    if (a === 'auto') { const n = cgAutoEquip(S); cgTakeMoved(); toast(t('cg.autoLog', { n })); }
+    else if (a === 'merge') { const n = cgMerge(S); toast(t('cg.mergeLog', { n })); }
+    else if (a === 'dis') { const r = cgDismantle(S, x => x.r <= 1); toast(t('cg.disLog', { n: r.n, s: r.shards })); }
+    st = stats(S); save(S); renderCgModal(); $('#expBox').dataset.sig = ''; renderExped(); buildComps(); });
+  $('#cosBtn').onclick = openCosModal;
+  $('#soulBtn').onclick = openSoulModal;
+  $('#cosWin').addEventListener('click', e => { const b = e.target.closest('[data-cs],[data-csa]'); if (!b) return; if (b.dataset.csa) { $('#cosModal').classList.add('hidden'); return; } if (setLook(S, b.dataset.cs, b.dataset.cv)) { save(S); renderCosModal(); drawCosPv(); drawDoll(); } });
+  $('#cosWin').addEventListener('mouseover', e => { const b = e.target.closest('[data-cs]'); if (b) drawCosPv({ slot: b.dataset.cs, v: b.dataset.cv }); });
+  $('#cosWin').addEventListener('mouseleave', () => drawCosPv());
+  $('#cosWin').addEventListener('mouseout', e => { const b = e.target.closest('[data-cs]'); if (b && !b.contains(e.relatedTarget)) drawCosPv(); });
+  for (const m of ['expModal', 'cgModal', 'cosModal']) $('#' + m).onclick = e => { if (e.target.id === m) $('#' + m).classList.add('hidden'); };
+}
 function buildComps() {
+  renderExped();
   // 픽업 배너
   const bs = $('#bannerSel');
   bs.innerHTML = [['all', t('ui.all')], ...CLASS_IDS.map(c => [c, t('ui.pickup', { c: CLASSES[c].name })])].map(([k, n]) => `<button class="mini ${S.banner === k ? 'on' : ''}" data-b="${k}">${n}</button>`).join('');
@@ -1290,7 +1562,7 @@ function buildComps() {
       const c = COMP_BY_ID[id], cs = S.comp[id];
       d.className = 'tslot on';
       d.style.borderColor = C_RARITY[c.r].color;
-      d.innerHTML = `<img class="px" src="${compSrc(id)}"><div class="n">${c.name}</div><div class="e">${effTxt(c.team.k, teamValue(S, c, cs.aw))}</div>${c.cls === S.cls ? `<div class="syn">${t('ui.synOn')}</div>` : ''}`;
+      d.innerHTML = `<img class="px" src="${compSrc(id)}"><div class="n">${c.name}</div><div class="e">${effTxt(c.team.k, teamValue(S, c, cs.aw))}</div>${c.cls === S.cls ? `<div class="syn">${t('ui.synOn')}</div>` : ''}${onExped(S, id) ? `<div class="syn" style="background:#3a8f6a">${t('exp.away')}</div>` : ''}${MR_POW[id] ? `<div class="syn mrsyn">${t('mrp.short', { l: mrpLv(S, id) })}</div>` : ''}`;
       d.onclick = () => openComp(id);
     } else { d.className = 'tslot'; d.textContent = t('ui.emptySlot'); }
     tm.appendChild(d);
@@ -1302,9 +1574,13 @@ function buildComps() {
     const p = (S.presets || [])[i];
     const d = document.createElement('div');
     d.className = 'preset' + (p && JSON.stringify(p.team) === JSON.stringify(S.team) ? ' on' : '');
-    d.innerHTML = `<div class="pn">${p && p.name ? p.name : t('ui.preset', { n: i + 1 })}</div>
+    d.innerHTML = `<div class="pn"><span class="pnt">${p && p.name ? p.name : t('ui.preset', { n: i + 1 })}</span>${p ? `<button class="pren" data-a="ren" title="${t('ui.presetRen')}"><svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11.5 2.5l2 2L6 12l-3 1 1-3z"/><path d="M10 4l2 2"/></svg></button>` : ''}</div>
       <div class="pm">${p && p.team.length ? p.team.map(id => `<img class="px" src="${compSrc(id)}" title="${COMP_BY_ID[id]?.name || ''}">`).join('') : `<span>${t('ui.empty')}</span>`}</div>
       <div class="pb"><button class="mini" data-a="load" ${p ? '' : 'disabled'}>${t('ui.load')}</button><button class="mini" data-a="save">${t('ui.saveParty')}</button></div>`;
+    const rb = d.querySelector('[data-a="ren"]'); if (rb) rb.onclick = e => { e.stopPropagation(); const pn = d.querySelector('.pn'); const cur = S.presets[i].name || '';
+      pn.innerHTML = `<input class="pinp" maxlength="24" placeholder="${t('ui.preset', { n: i + 1 })}">`; const inp = pn.querySelector('input'); inp.value = cur; inp.focus(); inp.select(); let done = false;
+      const fin = ok => { if (done) return; done = true; if (ok && renamePreset(S, i, inp.value)) save(S); buildComps(); };
+      inp.onkeydown = ev => { if (ev.key === 'Enter') fin(true); else if (ev.key === 'Escape') fin(false); }; inp.onblur = () => fin(true); };
     d.querySelector('[data-a="load"]').onclick = () => { if (applyPreset(S, i)) { save(S); addLog(t('ui.presetLoaded', { p: `<b>${S.presets[i].name || t('ui.preset', { n: i + 1 })}</b>` })); buildComps(); } };
     d.querySelector('[data-a="save"]').onclick = () => { savePreset(S, i); save(S); addLog(t('ui.presetSaved', { p: `<b>${S.presets[i].name || t('ui.preset', { n: i + 1 })}</b>` })); buildComps(); };
     pr.appendChild(d);
@@ -1343,7 +1619,7 @@ function buildComps() {
     const own = S.comp[c.id];
     const rr = C_RARITY[c.r], cl = CLASSES[c.cls];
     const d = document.createElement('div');
-    d.className = 'cc' + (own ? '' : ' none') + (S.team.includes(c.id) ? ' inteam' : '');
+    d.className = 'cc' + (own ? '' : ' none') + (S.team.includes(c.id) ? ' inteam' : ''); if (own) d.title = c.name;
     d.style.borderColor = own ? rr.color + '88' : '';
     d.innerHTML = `<span class="cr" style="background:${rr.color}">${rr.name}</span>${own && own.aw ? `<span class="aw">+${own.aw}</span>` : ''}${own && own.lv ? `<span class="clv">Lv.${own.lv}</span>` : ''}
       <img class="px" src="${compSrc(c.id)}"><span class="cl" style="background:${cl.color}">${cl.name}</span><div class="cn">${own ? c.name : '???'}</div><div class="ce">${STAT_LABEL[c.team.k][0]}</div>`;
@@ -1375,11 +1651,15 @@ function openComp(id) {
         <div class="grow" style="width:100%">
       ${known ? `<button class="big sm" id="cdTeam">${inTeam ? t('ui.teamOut') : (S.team.length >= TEAM_MAX ? t('ui.teamFull') : t('ui.teamAdd'))}</button>` : ''}
       <button class="mini wide" id="cdClose">${t('ui.close')}</button></div>`;
+  if (known && MR_POW[id]) { const mr = document.createElement('div'); mr.className = 'cd-row mrprow' + ((S.team || []).includes(id) && !onExped(S, id) ? ' act' : ''); mr.innerHTML = mrpHtml(id); el.querySelector('.cd-row').after(mr); }
+  if (known) { const gr = document.createElement('div'); gr.className = 'cd-row cgrow'; gr.innerHTML = cgSlotsHtml(id); el.querySelector('.grow').before(gr); gr.onclick = e => { const b = e.target.closest('[data-cg]'); if (!b) return; const k = b.dataset.cg; if (b.dataset.off) { if (!cgUnequip(S, id, k)) toast(t('cg.bagFull')); } else { const i = +b.dataset.bi; if (i >= 0) cgEquip(S, id, i); } st = stats(S); save(S); openComp(id); }; }
+  if (known && onExped(S, id)) { const x = el.querySelector('.cd-tags'); if (x) x.insertAdjacentHTML('beforeend', `<span style="background:#3a8f6a">${t('exp.away')}</span>`); }
   $('#compModal').classList.remove('hidden');
   $('#cdClose').onclick = () => $('#compModal').classList.add('hidden');
   const tb = $('#cdTeam');
   if (tb) {
-    if (!inTeam && S.team.length >= TEAM_MAX) tb.disabled = true;
+    if (!inTeam && (S.team.length >= TEAM_MAX || onExped(S, id))) tb.disabled = true;
+    if (!inTeam && onExped(S, id)) tb.textContent = t('exp.away');
     tb.onclick = () => { toggleTeam(S, id); save(S); buildComps(); openComp(id); };
   }
   const lb = $('#cdLv');
@@ -1417,25 +1697,31 @@ function doPull(ten) {
 let auto = null;               // 진행 중인 연속 소환 상태
 const AUTO_GAP = 500;
 function autoReset(mode) {
-  auto = { mode, n: 0, spent: 0, rar: [0, 0, 0, 0, 0], newc: 0, awk: 0, shards: 0, hi: [], running: false, reason: '', timer: null, bought: 0 };
+  auto = { mode, n: 0, spent: 0, rar: C_RARITY.map(() => 0), newc: 0, awk: 0, shards: 0, hi: [], running: false, reason: '', timer: null, bought: 0 };
 }
+// 정지 등급: 예전 설정(UR 이상에서 정지 켜기/끄기)도 그대로 읽는다
+function autoStopR(opt) { if (opt.stopR != null) return opt.stopR; return opt.stopUR ? 3 : -1; }
 function autoBatch() {
   // 소환석이 모자라면 (옵션) 골드로 구매
   const opt = S.gachaOpt || {};
   if (S.stones < PULL10_COST && opt.autoBuy) {
     for (let g = 0; g < 20 && S.stones < PULL10_COST; g++) { if (!buyStone(S)) break; auto.bought += 10; }
   }
-  if (S.stones < PULL10_COST) { auto.reason = 'stones'; return false; }
-  const res = pull(S, true);
-  if (!res) { auto.reason = 'stones'; return false; }
-  auto.n += res.length; auto.spent += PULL10_COST;
+  const stopR = autoStopR(opt), reps = auto.mode === 'auto' && opt.batch === 100 ? 10 : 1;
   let stop = '';
-  for (const r of res) {
-    auto.rar[r.c.r]++;
-    if (r.isNew) auto.newc++; else if (r.shards) auto.shards += r.shards; else auto.awk++;
-    if (r.isNew || r.c.r >= 2) auto.hi.push(r);
-    if (opt.stopUR && r.c.r >= 3) stop = 'ur';
-    else if (opt.stopNew && r.isNew && !stop) stop = 'new';
+  for (let k = 0; k < reps && !stop; k++) {
+    if (S.stones < PULL10_COST && opt.autoBuy) for (let g = 0; g < 20 && S.stones < PULL10_COST; g++) { if (!buyStone(S)) break; auto.bought += 10; }
+    if (S.stones < PULL10_COST) { if (k === 0) { auto.reason = 'stones'; return false; } stop = 'stones'; break; }
+    const res = pull(S, true);
+    if (!res) { stop = 'stones'; break; }
+    auto.n += res.length; auto.spent += PULL10_COST;
+    for (const r of res) {
+      auto.rar[r.c.r]++;
+      if (r.isNew) auto.newc++; else if (r.shards) auto.shards += r.shards; else auto.awk++;
+      if (r.isNew || r.c.r >= 2) auto.hi.push(r);
+      if (stopR >= 0 && r.c.r >= stopR) stop = r.c.r >= 5 ? 'mr' : r.c.r >= 4 ? 'lr' : 'ur';
+      else if (opt.stopNew && r.isNew && !stop) stop = 'new';
+    }
   }
   if (auto.hi.length > 60) auto.hi.splice(0, auto.hi.length - 60);
   if (stop) { auto.reason = stop; return false; }
@@ -1449,32 +1735,88 @@ function autoRender() {
   $('#aSum').textContent = [t('ui.aNew', { n: auto.newc }), t('ui.aAwk', { n: auto.awk }), t('ui.aShard', { n: auto.shards })].join(' · ');
   $('#aHi').innerHTML = auto.hi.slice().reverse().map(r => { const rr = C_RARITY[r.c.r]; return `<div class="g ${r.c.r >= 3 ? 'hi' : ''}" style="border-color:${rr.color};--gc:${rr.color}"><span class="gr" style="background:${rr.color}">${rr.name}</span>${r.isNew ? '<span class="gnew">NEW</span>' : ''}<img class="px" src="${compSrc(r.c.id)}" alt=""><div class="gn">${r.c.name}</div></div>`; }).join('') || `<div class="aempty">${t('ui.aNone')}</div>`;
   $('#aReason').textContent = auto.running ? '' : t('ui.aReason.' + (auto.reason || 'stop'));
-  $('#aReason').classList.toggle('hi', auto.reason === 'ur' || auto.reason === 'new');
+  $('#aReason').classList.toggle('hi', ['ur', 'lr', 'mr', 'new'].includes(auto.reason));
   const b = $('#aStop'); b.textContent = auto.running ? t('ui.aStop') : t('ui.ok'); b.classList.toggle('armed', auto.running);
-  $('#aRestart').classList.toggle('hidden', auto.running || auto.mode !== 'auto');
+  $('#aRestart').classList.toggle('hidden', auto.running); $('#aMiniNow').classList.toggle('hidden', !auto.running);
+  $('#aRestart').textContent = auto.mode === 'auto' ? t('ui.aRestart') : t('ui.pullAuto');
   $('#aOpt').classList.toggle('hidden', auto.mode !== 'auto');
+}
+// ---------- 가챠 모드: 연속 소환 중 팝업을 주소창 높이의 막대로 줄인다 (번쩍임·큰 연출 없음) ----------
+const isMini = () => document.documentElement.classList.contains('gmini-on');
+function enterMini() { document.documentElement.classList.add('gmini-on'); $('#autoModal').classList.add('hidden'); miniRender(); }
+function exitMini() { document.documentElement.classList.remove('gmini-on'); if (auto) { autoRender(); $('#autoModal').classList.remove('hidden'); } }
+function miniRender() {
+  if (!auto) return; const run = auto.running, r = auto.rar;
+  const hi = [3, 4, 5].map(i => r[i] ? `<b style="color:${C_RARITY[i].color}">${C_RARITY[i].name} ${r[i]}</b>` : '').filter(Boolean).join(' ');
+  $('#gMiniTxt').innerHTML = (run ? t('gm.run') : t('ui.aReason.' + (auto.reason || 'stop'))) + ' · ' + t('gm.stones', { n: fmtN(S.stones) }) + ' · ' + t('gm.n', { n: fmtN(auto.n) }) + (hi ? ' · ' + hi : '');
+  $('#gMiniDot').classList.toggle('on', run);
+  $('#gMiniStop').textContent = run ? t('ui.aStop') : t('ui.aRestart'); $('#gMiniOpen').textContent = t('gm.open');
 }
 function autoFinish() {
   if (!auto) return;
   clearTimeout(auto.timer); auto.running = false;
   save(S); buildComps(); autoRender();
+  if (isMini()) { miniRender(); if (auto.n) addLog('<b>' + t('ui.autoLog', { n: fmtN(auto.n) }) + '</b> ' + C_RARITY.map((r, i) => auto.rar[i] ? `<span style="color:${r.color}">${r.name}×${auto.rar[i]}</span>` : '').filter(Boolean).join(' ')); return; }
   if (auto.n) addLog('<b>' + t('ui.autoLog', { n: fmtN(auto.n) }) + '</b> ' + C_RARITY.map((r, i) => auto.rar[i] ? `<span style="color:${r.color}">${r.name}×${auto.rar[i]}</span>` : '').filter(Boolean).join(' '));
   const best = auto.hi.reduce((m, r) => Math.max(m, r.c.r), -1);
+  if (best >= 5) banner(t('mr.got'), 'floor', 2200);
   if (best >= 3) flash(C_RARITY[best].color, .5, .6);
 }
 function autoTickPull() {
   if (!auto || !auto.running) return;
   const go = autoBatch();
-  autoRender(); render();
+  if (isMini()) miniRender(); else { autoRender(); render(); }
   if (auto.n % 50 === 0) save(S);
   if (!go) { autoFinish(); return; }
   auto.timer = setTimeout(autoTickPull, AUTO_GAP);
 }
 function startAuto() {
   autoReset('auto'); auto.running = true;
-  $('#aBuy').checked = !!S.gachaOpt.autoBuy; $('#aUR').checked = !!S.gachaOpt.stopUR; $('#aNewc').checked = !!S.gachaOpt.stopNew;
+  $('#aMini').checked = !!S.gachaOpt.mini; $('#aBuy').checked = !!S.gachaOpt.autoBuy; $('#aStopR').value = String(autoStopR(S.gachaOpt)); $('#aBatch').value = String(S.gachaOpt.batch === 100 ? 100 : 10); $('#aNewc').checked = !!S.gachaOpt.stopNew;
   $('#autoModal').classList.remove('hidden');
-  autoRender(); autoTickPull();
+  autoRender(); if (S.gachaOpt.mini) enterMini(); autoTickPull();
+}
+// ---------- 마일리지 교환 (원하는 LR·MR) ----------
+function openMile() { renderMile(); $('#mileModal').classList.remove('hidden'); }
+function renderMile() {
+  const L = COMPANIONS.filter(c => c.r >= 4).sort((a, b) => b.r - a.r);
+  $('#mileWin').innerHTML = `<div class="evh"><b>${t('mile.title')}</b><span>${t('mile.have', { n: fmtN(S.mile || 0) })}</span></div><div class="qx">${t('mile.desc', { a: fmtN(MILE_LR), b: fmtN(MILE_MR) })}</div>
+    <div class="milelist">${L.map(c => { const cost = c.r >= 5 ? MILE_MR : MILE_LR, o = S.comp[c.id]; const rr = C_RARITY[c.r]; return `<div class="mrow" style="border-color:${rr.color}"><img class="px" src="${compSrc(c.id)}"><div class="t"><b style="color:${rr.color}">${rr.name} ${c.name}</b><span>${o ? t('ui.awaken', { a: o.aw, b: AWAKEN_MAX, n: o.n }) : t('mile.notOwned')}</span></div><button class="mini ${(S.mile || 0) >= cost ? 'hot' : ''}" data-mi="${c.id}" ${(S.mile || 0) >= cost ? '' : 'disabled'}>${fmtN(cost)}</button></div>`; }).join('')}</div>
+    <button class="mini wide" data-ma="close">${t('ui.close')}</button>`;
+}
+// ---------- 소환석 상점 ----------
+function buildStoneShop() {
+  const box = $('#stoneShop'); if (!box) return;
+  const sb = S.shopBuy || {}, nSlot = sb.expSlot || 0, keyLeft = shopKeyLeft(S), cosLeft = COSTUMES.filter(z => !z.free && !((S.cos || {}).own || []).includes(z.id));
+  const nBtn = (id, n) => { const k = Math.min(n, Math.floor(S.stones / STONE_SHOP[id])); return k > 1 ? `<button class="mini" data-ssn="${id}" data-n="${k}" title="${t('ss.nT')}">×${k} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(k * STONE_SHOP[id])}</button>` : ''; };
+  const row = (id, title, desc, cost, ok, extra = '') => `<div class="ssrow"><div class="t"><b>${title}</b><span>${desc}</span></div>${extra}<button class="mini ${ok ? 'hot' : ''}" data-ss="${id}" ${ok ? '' : 'disabled'}><img src="assets/ui/stone.png" class="px i14" alt=""> ${cost}</button></div>`;
+  const sig = [Math.floor(S.stones / 2000), keyLeft, nSlot, cosLeft.length, S.stones >= STONE_SHOP.costume, S.stones >= STONE_SHOP.key, nSlot < 2 && S.stones >= STONE_SHOP.expSlot[nSlot], getLang(), shopCos].join('|');
+  if (box.dataset.sig === sig) return; box.dataset.sig = sig;
+  box.innerHTML = `<div class="ssh"><b>${t('ss.title')}</b><span>${t('ss.sub')}</span></div>` +
+    row('gearBox', t('ss.gearBox'), t('ss.gearBox.d'), fmtN(STONE_SHOP.gearBox), S.stones >= STONE_SHOP.gearBox, nBtn('gearBox', 10)) +
+    row('gearBoxHi', t('ss.gearBoxHi'), t('ss.gearBoxHi.d'), fmtN(STONE_SHOP.gearBoxHi), S.stones >= STONE_SHOP.gearBoxHi, nBtn('gearBoxHi', 10)) +
+    row('key', t('ss.key'), t('ss.key.d', { n: keyLeft, m: STONE_SHOP.keyDaily }), fmtN(STONE_SHOP.key), keyLeft > 0 && S.stones >= STONE_SHOP.key) +
+    (nSlot < EXP_MAX - 2 ? row('expSlot', t('ss.expSlot', { n: expCap(S) + 1 }), t('ss.expSlot.d'), fmtN(STONE_SHOP.expSlot[nSlot]), S.stones >= STONE_SHOP.expSlot[nSlot]) : '') +
+    (cosLeft.length ? row('costume', t('ss.cos'), t('ss.cos.d', { n: cosLeft.length }), fmtN(STONE_SHOP.costume), S.stones >= STONE_SHOP.costume && !!shopCos && cosLeft.some(z => z.id === shopCos),
+      (S.stones >= STONE_SHOP.costume ? `<button class="mini" data-ss="cosAll" title="${t('ss.cosAllT')}">${t('ss.cosAll', { n: Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) })} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) * STONE_SHOP.costume)}</button>` : '') + `<select data-sc="1"><option value="">${t('ss.cosPick')}</option>${cosLeft.map(z => `<option value="${z.id}" ${shopCos === z.id ? 'selected' : ''}>${t('slot.' + z.slot)} · ${t('cos.n.' + z.id)}</option>`).join('')}</select>`) : '') +
+    `<div class="qx">${t('ss.note')}</div>`;
+}
+let shopCos = '';
+function bindStoneShop() {
+  const box = $('#stoneShop'); if (!box) return;
+  box.addEventListener('change', e => { if (e.target.dataset.sc) { shopCos = e.target.value; box.dataset.sig = ''; buildStoneShop(); } });
+  holdDelegate(box, '[data-ss="gearBox"], [data-ss="gearBoxHi"], [data-ss="key"]', b => { const w = b.dataset.ss, r = shopBuy(S, w); if (!r) return false;
+    if (r.gear) addLog('<b>' + t('ss.gearLog') + '</b> ' + cgName(r.gear) + ' <i>' + t('rar.' + r.gear.r) + '</i>'); else if (r.keys) addLog(t('ss.keyLog'));
+    box.dataset.sig = ''; buildStoneShop(); render(); return true; }, n => { if (n) { save(S); $('#expBox') && ($('#expBox').dataset.sig = ''); } });
+  box.addEventListener('click', e => { const bn = e.target.closest('[data-ssn]'); if (bn && !bn.disabled) { const res = shopBuyN(S, bn.dataset.ssn, +bn.dataset.n); if (res.length) { const gear = res.map(r => r.gear).filter(Boolean); showBulkReward(t('ss.boxN', { n: res.length }), { gear }); addLog('<b>' + t('ss.gearLog') + ' ×' + res.length + '</b> ' + gear.filter(g => g.r >= 4).map(g => cgName(g)).join(' ')); save(S); box.dataset.sig = ''; buildStoneShop(); render(); } return; }
+    const b0 = e.target.closest('[data-ss="cosAll"]'); if (b0) { const r = shopBuy(S, 'cosAll'); if (r) { showBulkReward(t('ss.cosAllDone', { n: r.cosAll.length }), { cos: r.cosAll }); addLog('<b>' + t('ss.cosAllDone', { n: r.cosAll.length }) + '</b>'); shopCos = ''; save(S); box.dataset.sig = ''; buildStoneShop(); render(); } return; }
+    const b = e.target.closest('[data-ss]'); if (!b || b.disabled) return; const w = b.dataset.ss;
+    const r = shopBuy(S, w, w === 'costume' ? shopCos : undefined); if (!r) return;
+    if (r.gear) addLog('<b>' + t('ss.gearLog') + '</b> ' + cgName(r.gear) + ' <i>' + t('rar.' + r.gear.r) + '</i>');
+    else if (r.keys) addLog(t('ss.keyLog'));
+    else if (r.expSlot) { addLog('<b>' + t('ss.slotLog', { n: r.expSlot }) + '</b>'); toast(t('ss.slotLog', { n: r.expSlot })); }
+    else if (r.cos) { addLog('<b>' + t('cos.got', { c: t('cos.n.' + r.cos) }) + '</b>'); toast(t('cos.got', { c: t('cos.n.' + r.cos) })); shopCos = ''; }
+    save(S); box.dataset.sig = ''; buildStoneShop(); render(); $('#expBox') && ($('#expBox').dataset.sig = ''); });
 }
 function pull100() {
   if (S.stones < PULL10_COST * 10) { addLog(t('ui.noStones')); return; }
@@ -1483,6 +1825,7 @@ function pull100() {
   for (let k = 0; k < 10; k++) if (!autoBatch()) break;
   S.gachaOpt = keep;
   if (!auto.reason) auto.reason = 'done100';
+  $('#aBatch').value = '100'; S.gachaOpt = { ...(S.gachaOpt || {}), batch: 100 };
   $('#autoModal').classList.remove('hidden');
   autoFinish();
 }
@@ -1493,7 +1836,16 @@ function bindAutoPull() {
   $('#aStop').onclick = () => { if (auto && auto.running) { auto.reason = 'stop'; autoFinish(); } else $('#autoModal').classList.add('hidden'); };
   const setOpt = (k, el) => { S.gachaOpt = { ...(S.gachaOpt || {}), [k]: el.checked }; save(S); };
   $('#aBuy').onchange = e => setOpt('autoBuy', e.target);
-  $('#aUR').onchange = e => setOpt('stopUR', e.target);
+  $('#aMini').onchange = e => setOpt('mini', e.target);
+  $('#aMiniNow').onclick = () => { if (auto) enterMini(); };
+  $('#gMiniOpen').onclick = exitMini;
+  $('#gMiniStop').onclick = () => { if (auto && auto.running) { auto.reason = 'stop'; autoFinish(); } else if (auto && auto.mode === 'auto') { startAuto(); } else exitMini(); };
+  $('#aStopR').onchange = e => { S.gachaOpt = { ...(S.gachaOpt || {}), stopR: +e.target.value }; save(S); };
+  $('#aBatch').onchange = e => { S.gachaOpt = { ...(S.gachaOpt || {}), batch: +e.target.value }; save(S); };
+  $('#mileBtn').onclick = openMile;
+  $('#mileWin').addEventListener('click', e => { const b = e.target.closest('[data-mi],[data-ma]'); if (!b || b.disabled) return; if (b.dataset.ma) { $('#mileModal').classList.add('hidden'); return; }
+    const r = mileBuy(S, b.dataset.mi); if (r) { const c = r.c; addLog('<b>' + t('mile.log', { c: `<span style="color:${C_RARITY[c.r].color}">${c.name}</span>` }) + '</b>'); toast(t('mile.log', { c: c.name })); st = stats(S); save(S); buildComps(); render(); } renderMile(); });
+  $('#mileModal').onclick = e => { if (e.target.id === 'mileModal') $('#mileModal').classList.add('hidden'); };
   $('#aNewc').onchange = e => setOpt('stopNew', e.target);
   window.addEventListener('pagehide', () => { if (auto && auto.running) { auto.running = false; save(S); } });
 }
@@ -1548,6 +1900,20 @@ function holdRepeat(el, act, done) {
   });
   el.addEventListener('contextmenu', e => e.preventDefault());
 }
+// 다시 그려지는 목록용 꾹 누르기: 버튼이 새로 그려져도 같은 data-* 로 다시 찾아 계속 실행
+function holdDelegate(box, sel, run, done) {
+  let key = null, timer = null, n = 0, until = 0;
+  const keyOf = b => b.tagName + Object.entries(b.dataset).map(([k, v]) => `[data-${k.replace(/[A-Z]/g, m => '-' + m.toLowerCase())}="${CSS.escape(v)}"]`).join('');
+  const fire = () => { const b = box.querySelector(key); return !!(b && !b.disabled && run(b)); };
+  const stop = () => { if (!key) return; clearTimeout(timer); timer = null; key = null; until = performance.now() + 500; if (holdStopAll === stop) holdStopAll = null; const k = n; n = 0; if (k) save(S); if (done) done(k); };
+  const loop = gap => { timer = setTimeout(() => { if (!key) return; if (!fire()) { stop(); return; } n++; loop(gap === HOLD_DELAY ? HOLD_START : Math.max(HOLD_MIN, gap * HOLD_ACCEL)); }, gap); };
+  box.addEventListener('pointerdown', e => { if (e.button !== 0) return; const b = e.target.closest(sel); if (!b || b.disabled || !box.contains(b)) return; if (holdStopAll) holdStopAll(); key = keyOf(b); n = 0; holdStopAll = stop; if (fire()) { n++; loop(HOLD_DELAY); } else stop(); });
+  for (const ev of ['pointerup', 'pointercancel']) window.addEventListener(ev, stop);
+  box.addEventListener('pointerleave', stop);
+  box.addEventListener('contextmenu', e => { if (e.target.closest(sel)) e.preventDefault(); });
+  // 포인터로 처리한 뒤 따라오는 click 은 원래 클릭 처리기로 넘기지 않는다 (키보드 Enter/Space 는 그대로 1회)
+  box.addEventListener('click', e => { if (performance.now() < until && e.target.closest(sel)) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);
+}
 window.addEventListener('blur', () => { if (holdStopAll) holdStopAll(); });
 document.addEventListener('visibilitychange', () => { if (document.hidden && holdStopAll) holdStopAll(); });
 
@@ -1563,6 +1929,9 @@ function rewardText(r) {
   return p.join(' · ');
 }
 const fmtN = n => n < 100000 ? Math.floor(n).toLocaleString('en-US') : fmt(n);
+// 배율(×)·퍼센트(%)도 커지면 K·M·B… 단위로 줄여 보여 준다
+const fmtM = v => !isFinite(v) ? '∞' : v < 1000 ? v.toFixed(2) : fmt(v);
+const fmtP = v => !isFinite(v) ? '∞' : Math.abs(v) < 100000 ? Math.round(v).toLocaleString('en-US') : fmt(v);
 const untilMidnight = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1).getTime() - d.getTime(); };
 const essTxt = e0 => { const d = (S.ess || 0) - e0; return d > 0 ? ' · ' + t('rw.ess', { n: fmt(d) }) : ''; };
 const pips = (n, on) => '<span class="pips">' + Array.from({ length: n }, (_, i) => `<i class="${i < on ? 'on' : ''}"></i>`).join('') + '</span>';
@@ -1870,6 +2239,12 @@ function bindQuest() {
   const qb = $('#qBody');
   qb.addEventListener('pointerdown', () => { buildQuest.press = true; });
   for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) qb.addEventListener(ev, () => { buildQuest.press = false; });
+  const qRedraw = () => { st = stats(S); const p = buildQuest.press; buildQuest.press = false; buildQuest(); buildQuest.press = p; };
+  holdDelegate(qb, 'button[data-act="rup"], button[data-act="rlv"]', b => {
+    if (b.dataset.act === 'rup') { if (!runeUpgrade(S, +b.dataset.i)) return false; }
+    else { const r = riftState(S), v0 = r.lvl || 1; r.lvl = Math.max(1, Math.min((r.best || 0) + 1, v0 + (+b.dataset.d))); if (r.lvl === v0) return false; }
+    qRedraw(); return true;
+  }, n => { buildQuest.press = false; if (n) { buildQuest(); render(); } });
   $('#qBody').addEventListener('click', e => {
     const b = e.target.closest('button[data-act]'); if (!b || b.disabled) return;
     const act = b.dataset.act;
@@ -1913,7 +2288,7 @@ function buildEnch() {
       st = stats(S); refreshEnch();
       d.classList.remove('bought'); void d.offsetWidth; d.classList.add('bought');
       return true;
-    }, n => { if (n) { addLog(t('ui.enchLog', { s: `<b>${sl.name}</b>`, n: enchLv(S, sl.id) })); buildSlots(); } });
+    }, n => { if (n) { const x = enchX(S, sl.id); addLog(x ? t('ui.enchXLog', { s: `<b>${sl.name}</b>`, n: x }) : t('ui.enchLog', { s: `<b>${sl.name}</b>`, n: enchLv(S, sl.id) })); buildSlots(); } });
     box.appendChild(d);
   }
   refreshEnch();
@@ -1921,13 +2296,14 @@ function buildEnch() {
 function refreshEnch() {
   const line = $('#essLine'); if (!line) return;
   const totalEnch = SLOTS.reduce((a, sl) => a + enchLv(S, sl.id), 0), sbv = setInfo(S).best.v;
-  line.textContent = t('ui.essLine', { n: fmt(S.ess || 0) }) + ' · ' + t('ui.enchSum', { n: totalEnch }) + (sbv ? ' · ' + t('ui.setShort', { v: sbv }) : '');
+  const totalX = SLOTS.reduce((a, sl) => a + enchX(S, sl.id), 0);
+  line.textContent = t('ui.essLine', { n: fmt(S.ess || 0) }) + ' · ' + t('ui.enchSum', { n: totalEnch }) + (totalX ? ' · ' + t('ui.enchXSum', { n: totalX, p: Math.round(ENCHX_POW * totalX * 100) }) : '') + (sbv ? ' · ' + t('ui.setShort', { v: sbv }) : '');
   for (const d of document.querySelectorAll('.ench')) {
-    const id = d.dataset.slot, lv = enchLv(S, id), max = lv >= ENCH_MAX, c = enchCost(lv);
-    d.classList.toggle('no', max || (S.ess || 0) < c);
-    d.querySelector('.ed').textContent = t('ui.enchEff', { p: Math.round(ENCH_STEP * lv * 100) }) + (max ? '' : ' → +' + Math.round(ENCH_STEP * (lv + 1) * 100) + '%');
-    d.querySelector('.lvl').textContent = '+' + lv + '/' + ENCH_MAX;
-    d.querySelector('.cost b').textContent = max ? 'MAX' : fmt(c);
+    const id = d.dataset.slot, lv = enchLv(S, id), max = lv >= ENCH_MAX, x = enchX(S, id), c = enchNextCost(S, id), tot = lv + x;
+    d.classList.toggle('no', (S.ess || 0) < c); d.classList.toggle('xcend', max);
+    d.querySelector('.ed').textContent = max ? t('ui.enchXEff', { n: x }) : t('ui.enchEff', { p: Math.round(ENCH_STEP * lv * 100) }) + ' → +' + Math.round(ENCH_STEP * (lv + 1) * 100) + '%';
+    d.querySelector('.lvl').textContent = max ? t('ui.enchX', { n: x }) : '+' + lv + '/' + ENCH_MAX;
+    d.querySelector('.cost b').textContent = fmt(c);
   }
   const si = setInfo(S);
   $('#setInfo').innerHTML = `<div class="sech">${t('ui.setHead')}<span>${si.best.v ? t('ui.setOn', { v: si.best.v }) : t('ui.setOff')}</span></div>` +
@@ -1939,10 +2315,10 @@ function refreshEnch() {
 function refreshReinc() {
   const box = $('#reincBox'); if (!box || box.closest('.page').classList.contains('hidden')) return;
   const k = karmaGain(S), K = S.karma || 0;
-  $('#reincGain').textContent = k;
-  $('#karma').textContent = K; $('#reincN').textContent = S.reinc || 0; $('#cycleBest').textContent = 'B' + (S.cycleBest || 0);
-  $('#karmaEff').textContent = t('ui.karmaEff', { h: Math.round(KARMA_HONOR * K * 100), p: Math.round(KARMA_POW * K * 100) });
-  $('#reincHint').textContent = k > 0 ? t('ui.reincGain', { k, h: Math.round(KARMA_HONOR * k * 100), p: Math.round(KARMA_POW * k * 100) }) : t('ui.reincNeed', { n: REINC_FLOOR, m: S.cycleBest || 0 });
+  $('#reincGain').textContent = fmtN(k);
+  $('#karma').textContent = fmtN(K); $('#reincN').textContent = S.reinc || 0; $('#cycleBest').textContent = 'B' + (S.cycleBest || 0);
+  $('#karmaEff').textContent = t('ui.karmaEff', { h: fmtP(KARMA_HONOR * K * 100), p: fmtP(KARMA_POW * K * 100) });
+  $('#reincHint').textContent = k > 0 ? t('ui.reincGain', { k: fmtN(k), h: fmtP(KARMA_HONOR * k * 100), p: fmtP(KARMA_POW * k * 100) }) : t('ui.reincNeed', { n: REINC_FLOOR, m: S.cycleBest || 0 });
   { const cv = k > 0 ? convPreview(S) : 0; $('#reincConv').textContent = S.goldConv === false ? t('conv.off') : cv ? t('conv.pre', { n: fmtN(cv) }) : ''; }
   if (!bindReinc._armed) $('#reincBtn').disabled = k <= 0;
 }
@@ -1964,7 +2340,7 @@ function bindReinc() {
 }
 
 // ================= 유물 (환생 탭) =================
-const fmtX = m => (Math.round(m * 100) / 100).toString();
+const fmtX = m => m >= 1000 ? fmt(m) : (Math.round(m * 100) / 100).toString();
 function relicText(r, lv) {
   if (r.k === 'offline') return t('relic.' + r.id + '.d', { v: Math.round(Math.min(1, OFFLINE_RATE + r.v * lv / 100) * 100) });
   return t('relic.' + r.id + '.d', { v: fmt(r.v * lv) });
@@ -2046,7 +2422,8 @@ function bindUI() {
   $('#enchToggle').onclick = () => { const o = !eb.classList.contains('open'); setFold(o); try { localStorage.setItem('dm.enchOpen', o ? '1' : '0'); } catch (e) {} };
   $('#wOk').onclick = () => $('#welcome').classList.add('hidden');
   $('#langSel').onchange = e => changeLang(e.target.value);
-  $('#setBtn').onclick = () => { hideTip(); refreshSave(); refreshSyncLine(); refreshAutoBox(); autoNotice.dot = false; $('#setDot').classList.add('hidden'); $('#setModal').classList.remove('hidden'); };
+  $('#lowFx').checked = !!(S && S.lowFx); $('#lowFx').onchange = e => { S.lowFx = e.target.checked; applyLowFx(); save(S); };
+  $('#setBtn').onclick = () => { hideTip(); refreshSave(); refreshSyncLine(); refreshAutoBox(); autoNotice.dot = false; $('#setDot').classList.add('hidden'); $('#lowFx').checked = !!S.lowFx; $('#setModal').classList.remove('hidden'); };
   $('#setClose').onclick = () => $('#setModal').classList.add('hidden');
   const diagText = async () => {
     const o = await chrome.storage.local.get(['dm.diag.sw']);
@@ -2240,7 +2617,8 @@ function showReport(res) {
     (res.levels > 0 ? t('ui.rep.lv', { l: `<b>${res.levels}</b>` }) + '<br>' : '') +
     (res.rebirths > 0 ? t('ui.rep.rebirths', { n: `<b>${res.rebirths}</b>` }) + '<br>' : '') +
     ((S.events || []).length ? '<b class="hi">' + t('ev.waiting', { n: S.events.length }) + '</b><br>' : '') +
-    (AUTO.some(a => a.need(S) && !(S.autoSeen || []).includes(a.id)) ? '<b class="hi">' + t('auto.repNew') + '</b><br>' : '');
+    (AUTO.some(a => a.need(S) && !(S.autoSeen || []).includes(a.id)) ? '<b class="hi">' + t('auto.repNew') + '</b><br>' : '') +
+    (expSlots(S).some(x => x && Date.now() >= x.end) ? '<b class="hi">' + t('exp.repDone') + '</b><br>' : '');
   const best = res.drops.slice().sort((a, b) => (b.r * 10 + b.t) - (a.r * 10 + a.t)).slice(0, 8);
   $('#wDrops').innerHTML = best.map(it => `<div style="border-color:${RARITIES[it.r].color}"><img class="px" src="${itemIcon(it, S.cls)}"></div>`).join('');
   $('#welcome').classList.remove('hidden');
@@ -2256,8 +2634,9 @@ async function init() {
   { const off = Math.round((Date.now() - (S.lastTick || Date.now())) / 1000); (window.__dmLog || (() => {}))('save lv' + S.level + ' B' + S.floor + ' bag' + S.bag.length + ' comp' + Object.keys(S.comp || {}).length + ' from=' + S._from + ' offline=' + off + 's'); }
   const _adv0 = performance.now();
   setLang(S.lang || 'en');
-  applyI18n();
+  applyI18n(); applyLowFx();
   advance(S);
+  cgSnap = cgSnapNow(); if (S.cgAuto !== false) cgAutoEquip(S);   // 예전 세이브: 가방에 남은 장비를 한 번 정리
   if (S.pending && S.pending.seconds > 60 && (S.pending.kills > 0 || S.pending.gold > 0)) { showReport(S.pending); S.pending = null; }
   await save(S);
   st = stats(S);
@@ -2282,7 +2661,7 @@ async function init() {
   };
   window.addEventListener('pagehide', flush);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
-  bindSave(); refreshSave(); bindGuide(); bindEvents(); bindAutoBox(); bindAutoCard();
+  bindSave(); refreshSave(); bindGuide(); bindEvents(); bindAutoBox(); bindAutoCard(); bindCompExtras(); bindStoneShop(); bindPets(); bindSoul();
   window.__dmReady = true; window.__dmStep = 'ready';
   setInterval(refreshSyncLine, 1000);
   // 드라이브에 다른 기기의 더 최신 세이브가 있으면 켜자마자 가져온다

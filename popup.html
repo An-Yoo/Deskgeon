@@ -7,6 +7,7 @@
 <script src="boot.js"></script>
 </head>
 <body>
+  <div class="gmini" id="gMini"><i class="gmd" id="gMiniDot"></i><span class="gmt" id="gMiniTxt"></span><button class="mini" id="gMiniStop"></button><button class="mini" id="gMiniOpen"></button></div>
   <header class="hud">
     <div class="hudleft">
       <div class="lv"><span class="clsTag" id="clsTag">-</span>Lv.<b id="lv">1</b><i class="sp hidden" id="spTag">SP 0</i></div>
@@ -62,6 +63,7 @@
     <section class="page hidden" data-tab="gear">
       <div class="doll">
         <canvas id="dollcv" width="48" height="48"></canvas>
+        <button class="mini cosbtn" id="cosBtn" data-i18n="cos.btn">Costume</button><button class="mini cosbtn soulbtn" id="soulBtn" data-i18n="soul.btn">Soul Weapon</button>
         <div class="slots" id="slots"></div>
       </div>
       <div class="statsum" id="statsum"></div>
@@ -71,7 +73,6 @@
           <b data-i18n="ui.enchHead">Gear enhancement</b><span id="essLine"></span>
         </button>
         <div class="foldb">
-          <div class="relnote" data-i18n="ui.enchNote"></div>
           <div id="enchList"></div>
           <div id="setInfo"></div>
         </div>
@@ -117,8 +118,11 @@
         <div class="stonerow"><button class="mini" id="buyStone"><span data-i18n="ui.buyStones">Buy 10 stones</span> <b id="stoneCost">0</b><i id="stoneDisc"></i></button><button class="mini" id="buyStoneAll"><span data-i18n="ui.buyStonesAll">Buy max</span> <b id="buyAllN"></b></button></div>
         <div class="shardrow"><div class="shardline" id="shardLine"></div><button class="mini" id="lvAll" data-i18n="ui.lvAll">Level up all</button></div>
         <div class="rates"><span id="rateLine"></span> · <b id="pity"></b></div>
+        <button class="mini wide milebtn" id="mileBtn">Mileage</button>
       </div>
       <div class="ownsum" id="ownsum"></div>
+      <div class="petbox" id="petBox"></div>
+      <div class="expbox" id="expBox"></div>
       <div class="teamh" data-i18n="ui.party">Party</div>
       <div class="team" id="team"></div>
       <div class="teamh" data-i18n="ui.presets">Presets</div>
@@ -129,6 +133,7 @@
     </section>
 
     <section class="page hidden" data-tab="shop">
+      <div class="sshop" id="stoneShop"></div>
       <div class="shop" id="shop"></div>
     </section>
 
@@ -221,12 +226,22 @@
       <div class="gresult ahi" id="aHi"></div>
       <div class="areason" id="aReason"></div>
       <div class="aopt" id="aOpt">
-        <label class="chk"><input type="checkbox" id="aUR"><span data-i18n="ui.aOptUR">Stop on UR or better</span></label>
+        <label class="chk sel"><span data-i18n="ui.aOptBatch">Each round</span><select id="aBatch"><option value="10" data-i18n="ui.aB10">10 pulls</option><option value="100" data-i18n="ui.aB100">100 pulls</option></select></label>
+        <label class="chk sel"><span data-i18n="ui.aOptStop">Stop on</span><select id="aStopR"><option value="3" data-i18n="ui.aS3">UR or better</option><option value="4" data-i18n="ui.aS4">LR or better</option><option value="5" data-i18n="ui.aS5">MR only</option><option value="-1" data-i18n="ui.aSn">Never</option></select></label>
         <label class="chk"><input type="checkbox" id="aNewc"><span data-i18n="ui.aOptNew">Stop on a new ally</span></label>
         <label class="chk"><input type="checkbox" id="aBuy"><span data-i18n="ui.aOptBuy">Buy stones with gold when out</span></label>
+        <label class="chk"><input type="checkbox" id="aMini"><span data-i18n="ui.aOptMini">Gacha mode: shrink to a thin bar</span></label>
       </div>
-      <div class="grow"><button class="big sm alt hidden" id="aRestart" data-i18n="ui.aRestart">Start again</button><button class="big sm" id="aStop">Stop</button></div>
+      <div class="grow"><button class="big sm alt hidden" id="aRestart" data-i18n="ui.aRestart">Start again</button><button class="big sm alt" id="aMiniNow" data-i18n="ui.aMiniNow">Shrink</button><button class="big sm" id="aStop">Stop</button></div>
     </div>
+  </div>
+
+  <div class="modal hidden" id="soulModal">
+    <div class="win soulwin" id="soulWin"></div>
+  </div>
+
+  <div class="modal hidden" id="petModal">
+    <div class="win petwin" id="petWin"></div>
   </div>
 
   <div class="modal hidden" id="rewardModal">
@@ -253,6 +268,8 @@
           <div class="grow"><button class="mini wide" id="helpBtn" data-i18n="help.open">How to play</button><button class="mini wide" id="guideShow" data-i18n="gd.show">Show starter guide</button></div>
           <div class="sbh sm" data-i18n="ui.lang">Language</div>
           <select id="langSel" class="wide"></select>
+          <div class="sbh sm" data-i18n="fx.head">Screen</div>
+          <label class="chk"><input type="checkbox" id="lowFx"><span data-i18n="fx.low">Simplified effects (no flashes or screen shake)</span></label>
           <div class="sbh" data-i18n="ui.save">Save &amp; Sync</div>
           <div class="sbh sm" data-i18n="ui.drive">Google Drive</div>
           <div class="syncline"><i class="sdot" id="drvDot"></i><span id="drvTxt" data-i18n="ui.checking">Checking...</span></div>
@@ -278,6 +295,10 @@
       </div>
   </div>
 
+  <div class="modal hidden" id="mileModal"><div class="win evwin" id="mileWin"></div></div>
+  <div class="modal hidden" id="expModal"><div class="win evwin" id="expWin"></div></div>
+  <div class="modal hidden" id="cgModal"><div class="win evwin" id="cgWin"></div></div>
+  <div class="modal hidden" id="cosModal"><div class="win evwin" id="cosWin"></div></div>
   <div class="modal hidden" id="evModal">
     <div class="win evwin" id="evWin"></div>
   </div>

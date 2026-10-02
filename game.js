@@ -131,7 +131,9 @@ export function isBossFloor(f) { return f % BOSS_EVERY === 0; }
 export function killsNeeded(f) { return Math.min(30, 10 + Math.floor((f - 1) / 10) * 3); }
 export function monHp(f) { return 14 * Math.pow(1.4, f - 1); }
 export function bossHp(f) { return monHp(f) * 20; }
-export function bossDps(f) { return 5 * Math.pow(1.235, f - 1); }
+// 보스 공격력: B80까지는 그대로, 그 뒤로는 성장을 완만하게 (용사 체력 성장과 비슷한 속도) → 후반 벽이 "즉사"가 아니라 "화력·생존 싸움"이 되게
+export const BOSS_DPS_KNEE = 80, BOSS_DPS_G2 = 1.135;
+export function bossDps(f) { return f <= BOSS_DPS_KNEE ? 5 * Math.pow(1.235, f - 1) : 5 * Math.pow(1.235, BOSS_DPS_KNEE - 1) * Math.pow(BOSS_DPS_G2, f - BOSS_DPS_KNEE); }
 export function goldPerKill(f) { return 4 * Math.pow(1.37, f - 1); }
 export function xpPerKill(f) { return 3 * Math.pow(1.26, f - 1); }
 
@@ -194,8 +196,8 @@ export function upgradeCostN(u, n, k) { let c = 0; for (let i = 0; i < k; i++) c
 // active: 쿨타임마다 자동 시전 / passive: 공격할 때 확률 발동
 export const SKILLS = [
   // 전사
-  { id: 'war_bash',   cls: 'war', type: 'active',  name: '강타',        unlock: 1,  cd: 8,  eff: 'burst', v0: 4,  vl: 0.6, fx: 'slash',  desc: v => `DPS ${v.toFixed(1)}배 일격` },
-  { id: 'war_cry',    cls: 'war', type: 'active',  name: '전투의 함성', unlock: 8,  cd: 24, eff: 'buff', dur: 8, v0: 30, vl: 6, buff: v => ({ atkP: v }), fx: 'aura', color: '#ff7a4a', desc: v => `8초간 공격력 +${v.toFixed(0)}%` },
+  { id: 'war_bash',   cls: 'war', type: 'active',  name: '강타',        unlock: 1,  cd: 6,  eff: 'burst', v0: 6,  vl: 0.9, fx: 'slash',  desc: v => `DPS ${v.toFixed(1)}배 일격` },
+  { id: 'war_cry',    cls: 'war', type: 'active',  name: '전투의 함성', unlock: 8,  cd: 24, eff: 'buff', dur: 12, v0: 40, vl: 8, buff: v => ({ atkP: v }), fx: 'aura', color: '#ff7a4a', desc: v => `12초간 공격력 +${v.toFixed(0)}%` },
   { id: 'war_wall',   cls: 'war', type: 'active',  name: '철벽',        unlock: 20, cd: 30, eff: 'buff', dur: 10, v0: 40, vl: 3, heal: 15, buff: v => ({ def: v }), fx: 'shield', color: '#c9d6ff', desc: v => `10초간 받는 피해 -${v.toFixed(0)}% · 체력 15% 회복` },
   { id: 'war_cleave', cls: 'war', type: 'passive', name: '연속 베기',   unlock: 3,  c0: 15, cl: 1.0, eff: 'extra', m0: 1.0, ml: 0.05, fx: 'slash2', desc: (c, m) => `${c.toFixed(1)}% 확률로 ${m.toFixed(2)}배 추가 타격` },
   { id: 'war_leech',  cls: 'war', type: 'passive', name: '흡혈 일격',   unlock: 12, c0: 10, cl: 0.8, eff: 'heal',  m0: 5,   ml: 0.5,  fx: 'blood',  desc: (c, m) => `${c.toFixed(1)}% 확률로 체력 ${m.toFixed(1)}% 흡수` },
@@ -223,7 +225,7 @@ export const SKILLS = [
   { id: 'clr_fortune',cls: 'clr', type: 'passive', name: '행운의 기도', unlock: 28, c0: 12, cl: 0.8, eff: 'gold',  m0: 3.0, ml: 0.2,  fx: 'gold', desc: (c, m) => `${c.toFixed(1)}% 확률로 골드 ${m.toFixed(1)}배` },
 
   // ---- v4.2 추가 스킬 (직업당 액티브 2 + 패시브 2)
-  { id: 'war_whirl',   cls: 'war', type: 'active',  name: '회오리 베기', unlock: 32, cd: 18, eff: 'burst', v0: 8,  vl: 1.1, fx: 'whirl', desc: v => `5연속 회전 베기, 총 DPS ${v.toFixed(1)}배` },
+  { id: 'war_whirl',   cls: 'war', type: 'active',  name: '회오리 베기', unlock: 32, cd: 18, eff: 'burst', v0: 12, vl: 1.6, fx: 'whirl', desc: v => `5연속 회전 베기, 총 DPS ${v.toFixed(1)}배` },
   { id: 'war_unbreak', cls: 'war', type: 'active',  name: '불굴',        unlock: 45, cd: 40, eff: 'timer', v0: 4,  vl: 0.4, heal: 25, fx: 'unbreak', desc: v => `보스전 제한시간 +${v.toFixed(1)}초 · 체력 25% 회복` },
   { id: 'war_counter', cls: 'war', type: 'passive', name: '반격',        unlock: 38, c0: 12, cl: 0.8, eff: 'extra', m0: 1.5, ml: 0.1,  fx: 'counter', desc: (c, m) => `${c.toFixed(1)}% 확률로 ${m.toFixed(1)}배 반격` },
   { id: 'war_wisdom',  cls: 'war', type: 'passive', name: '전장의 지혜', unlock: 55, c0: 10, cl: 0.6, eff: 'xp',    m0: 2.0, ml: 0.15, fx: 'xp', desc: (c, m) => `${c.toFixed(1)}% 확률로 경험치 ${m.toFixed(1)}배` },
@@ -448,9 +450,11 @@ export const C_RARITY = [
   { name: 'R',   color: '#cfd6e6', rate: 0.60, coef: 0.18 },
   { name: 'SR',  color: '#6fb7ff', rate: 0.30, coef: 0.28 },
   { name: 'SSR', color: '#c78dff', rate: 0.085, coef: 0.42 },
-  { name: 'UR',  color: '#ffc35c', rate: 0.013, coef: 0.65 },
+  { name: 'UR',  color: '#ffc35c', rate: 0.0125, coef: 0.65 },
   { name: 'LR',  color: '#ff6fae', rate: 0.002, coef: 1.0 },
+  { name: 'MR',  color: '#ff4040', rate: 0.0005, coef: 1.6 },   // 신화 (v5.6)
 ];
+export const C_MAXR = 5;
 const C = (id, name, cls, r, tk, tv, ok, ov) => ({ id, name, cls, r, team: { k: tk, v: tv }, own: { k: ok, v: ov } });
 export const COMPANIONS = [
   C('edmund',     '에드먼드',        'war', 0, 'atkP', 6,    'hpP', 2),
@@ -492,13 +496,15 @@ export const COMPANIONS = [
 // ---- v4.5 추가 동료 (효과는 직업 성향 + 등급으로 결정)
 const CLS_KEYS = { war: ['atkP', 'hpP', 'bossP', 'def', 'critDmg'], rog: ['crit', 'spd', 'goldP', 'critDmg', 'atkP'], mag: ['skillP', 'cdr', 'atkP', 'bossP', 'xpP'], clr: ['compP', 'regen', 'hpP', 'def', 'xpP'] };
 const KEY_BASE = { atkP: 6, hpP: 12, bossP: 8, def: 4, critDmg: 15, crit: 2, spd: 6, goldP: 12, skillP: 10, cdr: 3, compP: 15, regen: 0.6, xpP: 10 };
-const R_MULT = [1, 2, 3.5, 6, 10];
+const R_MULT = [1, 2, 3.5, 6, 10, 16];
 const rnd1 = x => Math.round(x * 10) / 10;
-const NEW_COMPS = [["orc_warrior","war",0],["gnoll_sergeant","war",0],["hobgoblin","war",0],["dwarf","war",0],["deep_elf_fighter","war",0],["vault_guard","war",0],["human","war",0],["orc_knight","war",1],["deep_elf_knight","war",1],["hell_knight","war",1],["grum","war",1],["frederick","war",1],["wiglaf","war",1],["death_knight","war",2],["juggernaut","war",2],["titan","war",2],["tiamat","war",3],["halfling","rog",0],["big_kobold","rog",0],["boggart","rog",0],["satyr","rog",0],["merfolk_javelineer","rog",0],["tengu","rog",0],["faun","rog",0],["deep_elf_master_archer","rog",1],["naga_sharpshooter","rog",1],["tengu_reaver","rog",1],["yaktaur_captain","rog",1],["urug","rog",1],["robin","rog",1],["vashnia","rog",2],["sojobo","rog",2],["ilsuiw","rog",2],["rakshasa","rog",3],["orc_wizard","mag",0],["deep_elf_mage","mag",0],["gnoll_shaman","mag",0],["kobold_demonologist","mag",0],["naga_mage","mag",0],["merfolk_aquamancer","mag",0],["salamander_mystic","mag",0],["deep_elf_sorcerer","mag",1],["deep_elf_conjurer","mag",1],["ogre_mage","mag",1],["tengu_conjurer","mag",1],["salamander_stormcaller","mag",1],["erolcha","mag",1],["aizul","mag",2],["ereshkigal","mag",2],["ancient_lich","mag",2],["efreet","mag",3],["orc_priest","clr",0],["deep_elf_priest","clr",0],["deep_troll_shaman","clr",0],["water_nymph","clr",0],["dryad","clr",0],["ironheart_preserver","clr",0],["deep_dwarf","clr",0],["orc_high_priest","clr",1],["deep_elf_high_priest","clr",1],["naga_ritualist","clr",1],["margery","clr",1],["maud","clr",1],["cherub","clr",1],["angel","clr",2],["daeva","clr",2],["sphinx","clr",2],["seraph","clr",3],["balrug","war",4],["shadow_fiend","rog",4],["xtahua","mag",4],["ophan","clr",4],["iron_giant","war",3],["chuck","war",3],["giaggostuono","war",4],["jormungandr","war",4],["ijyb","rog",3],["natasha","rog",3],["lamia","rog",4],["tiamat_black","rog",4],["sigmund","mag",3],["murray","mag",3],["tiamat_red","mag",4],["geryon","mag",4],["norris","clr",3],["dissolution","clr",3],["tiamat_white","clr",4],["tiamat_purple","clr",4]];
+const NEW_COMPS = [["orc_warrior","war",0],["gnoll_sergeant","war",0],["hobgoblin","war",0],["dwarf","war",0],["deep_elf_fighter","war",0],["vault_guard","war",0],["human","war",0],["orc_knight","war",1],["deep_elf_knight","war",1],["hell_knight","war",1],["grum","war",1],["frederick","war",1],["wiglaf","war",1],["death_knight","war",2],["juggernaut","war",2],["titan","war",2],["tiamat","war",3],["halfling","rog",0],["big_kobold","rog",0],["boggart","rog",0],["satyr","rog",0],["merfolk_javelineer","rog",0],["tengu","rog",0],["faun","rog",0],["deep_elf_master_archer","rog",1],["naga_sharpshooter","rog",1],["tengu_reaver","rog",1],["yaktaur_captain","rog",1],["urug","rog",1],["robin","rog",1],["vashnia","rog",2],["sojobo","rog",2],["ilsuiw","rog",2],["rakshasa","rog",3],["orc_wizard","mag",0],["deep_elf_mage","mag",0],["gnoll_shaman","mag",0],["kobold_demonologist","mag",0],["naga_mage","mag",0],["merfolk_aquamancer","mag",0],["salamander_mystic","mag",0],["deep_elf_sorcerer","mag",1],["deep_elf_conjurer","mag",1],["ogre_mage","mag",1],["tengu_conjurer","mag",1],["salamander_stormcaller","mag",1],["erolcha","mag",1],["aizul","mag",2],["ereshkigal","mag",2],["ancient_lich","mag",2],["efreet","mag",3],["orc_priest","clr",0],["deep_elf_priest","clr",0],["deep_troll_shaman","clr",0],["water_nymph","clr",0],["dryad","clr",0],["ironheart_preserver","clr",0],["deep_dwarf","clr",0],["orc_high_priest","clr",1],["deep_elf_high_priest","clr",1],["naga_ritualist","clr",1],["margery","clr",1],["maud","clr",1],["cherub","clr",1],["angel","clr",2],["daeva","clr",2],["sphinx","clr",2],["seraph","clr",3],["balrug","war",4],["shadow_fiend","rog",4],["xtahua","mag",4],["ophan","clr",4],["iron_giant","war",3],["chuck","war",3],["giaggostuono","war",4],["jormungandr","war",4],["ijyb","rog",3],["natasha","rog",3],["lamia","rog",4],["tiamat_black","rog",4],["sigmund","mag",3],["murray","mag",3],["tiamat_red","mag",4],["geryon","mag",4],["norris","clr",3],["dissolution","clr",3],["tiamat_white","clr",4],["tiamat_purple","clr",4],["azrael","war",5],["mnoleg","rog",5],["lom_lobon","mag",5],["gloorx_vloq","clr",5]];
 const LR_FX = { balrug: ['atkP', 70, 'atkP', 15], shadow_fiend: ['critDmg', 110, 'critDmg', 28], xtahua: ['skillP', 110, 'skillP', 28], ophan: ['compP', 120, 'compP', 30],
   // v5.2 추가 LR
   giaggostuono: ['atkP', 75, 'atkP', 16], jormungandr: ['bossP', 120, 'bossP', 28], lamia: ['goldP', 120, 'goldP', 30], tiamat_black: ['atkP', 75, 'atkP', 16],
-  tiamat_red: ['bossP', 120, 'bossP', 28], geryon: ['skillP', 105, 'skillP', 26], tiamat_white: ['hpP', 140, 'hpP', 32], tiamat_purple: ['compP', 125, 'compP', 30] };
+  tiamat_red: ['bossP', 120, 'bossP', 28], geryon: ['skillP', 105, 'skillP', 26], tiamat_white: ['hpP', 140, 'hpP', 32], tiamat_purple: ['compP', 125, 'compP', 30],
+  // v5.6 신화(MR)
+  azrael: ['atkP', 120, 'atkP', 26], mnoleg: ['critDmg', 180, 'critDmg', 45], lom_lobon: ['skillP', 180, 'skillP', 45], gloorx_vloq: ['compP', 200, 'compP', 50] };
 NEW_COMPS.forEach(([id, cls, r], i) => {
   if (LR_FX[id]) { COMPANIONS.push(C(id, id, cls, r, ...LR_FX[id])); return; }
   const ks = CLS_KEYS[cls], tk = ks[i % 5], ok = ks[(i + 2) % 5];
@@ -508,8 +514,8 @@ export const COMP_BY_ID = Object.fromEntries(COMPANIONS.map(c => [c.id, c]));
 
 // ---- 동료 각성 스킬: 3각성 패시브, 5각성 액티브 (파티에 편성했을 때만 발동)
 export const CSK_AW_P = 3, CSK_AW_A = 5;
-const CSK_RS = [1, 1.4, 2, 3, 4.5];      // 패시브·폭딜 등급 배율
-const CSK_RB = [1, 1.25, 1.6, 2.1, 2.8]; // 버프·회복 등급 배율
+const CSK_RS = [1, 1.4, 2, 3, 4.5, 6.5];      // 패시브·폭딜 등급 배율
+const CSK_RB = [1, 1.25, 1.6, 2.1, 2.8, 3.6]; // 버프·회복 등급 배율
 const CSK_P = {
   war: [{ id: 'cleave', eff: 'self', v: 30 }, { id: 'guard', eff: 'stat', k: 'def', v: 4 }],
   rog: [{ id: 'precise', eff: 'self', v: 30 }, { id: 'loot', eff: 'stat', k: 'goldP', v: 15 }],
@@ -544,10 +550,10 @@ export const PULL10_COST = 90;
 export const AWAKEN_MAX = 5;
 export const PITY = 50;
 // ---- 동료 조각: 5각성 이후 중복은 등급별 조각으로 바뀌고, 조각으로 동료 레벨을 올린다
-export const SHARD_GAIN = [2, 4, 8, 20, 60];        // R · SR · SSR · UR · LR
+export const SHARD_GAIN = [2, 4, 8, 20, 60, 200];   // R · SR · SSR · UR · LR · MR
 export const CLV_MAX = 20;
 export const CLV_STEP = 0.1;                       // 레벨당 동행·보유 효과·공격력 +10% (곱연산)
-const CLV_C0 = [3, 6, 12, 24, 40];                 // 높은 등급일수록 훨씬 비싸게 (UR·LR은 효과 원값이 커서)
+const CLV_C0 = [3, 6, 12, 24, 40, 70];                 // 높은 등급일수록 훨씬 비싸게 (UR·LR은 효과 원값이 커서)
 export function compLvCost(c, lv) { return Math.ceil(CLV_C0[c.r] * Math.pow(1.25, lv || 0)); }
 export function compLvMult(lv) { return 1 + CLV_STEP * (lv || 0); }
 export function compLevelUp(s, id) {
@@ -587,12 +593,12 @@ export function stonePrice(s) { return Math.ceil(600 * Math.pow(1.28, s.stoneBuy
 
 export function rollCompanion(s, minR) {
   const x = Math.random();
-  // R 60% · SR 30% · SSR 8.5% · UR 1.3% · LR 0.2%
-  let r = x < 0.60 ? 0 : x < 0.90 ? 1 : x < 0.985 ? 2 : x < 0.998 ? 3 : 4;
+  // R 60% · SR 30% · SSR 8.5% · UR 1.25% · LR 0.2% · MR 0.05%
+  let r = x < 0.60 ? 0 : x < 0.90 ? 1 : x < 0.985 ? 2 : x < 0.9975 ? 3 : x < 0.9995 ? 4 : 5;
   if (minR != null && r < minR) {
     const y = Math.random();
-    if (minR === 1) r = y < 0.75 ? 1 : y < 0.965 ? 2 : y < 0.995 ? 3 : 4;
-    else r = y < 0.86 ? 2 : y < 0.985 ? 3 : 4;
+    if (minR === 1) r = y < 0.75 ? 1 : y < 0.965 ? 2 : y < 0.995 ? 3 : y < 0.999 ? 4 : 5;
+    else r = y < 0.86 ? 2 : y < 0.985 ? 3 : y < 0.998 ? 4 : 5;
   }
   let pool = COMPANIONS.filter(c => c.r === r);
   if (s.banner && s.banner !== 'all' && Math.random() < 0.5) {
@@ -607,7 +613,7 @@ function ownSumCached(s) {
   const comp = s.comp || {};
   if (OWN_CACHE.ref === comp && OWN_CACHE.ver === COMP_VER) return OWN_CACHE.list;
   const acc = {};
-  for (const [id, st] of Object.entries(comp)) { const c = COMP_BY_ID[id]; if (c) acc[c.own.k] = (acc[c.own.k] || 0) + ownValue(c, st.aw, st.lv); }
+  for (const [id, st] of Object.entries(comp)) { const c = COMP_BY_ID[id]; if (c) acc[c.own.k] = (acc[c.own.k] || 0) + ownValue(c, st.aw, st.lv) * cgMult(s, id, 'sigil'); }
   OWN_CACHE = { ref: comp, ver: COMP_VER, list: Object.entries(acc) };
   return OWN_CACHE.list;
 }
@@ -617,10 +623,11 @@ export function gainCompanion(s, c) {
   if (!cur) {
     s.comp[c.id] = { n: 1, aw: 0 };
     if (s.team.length < TEAM_MAX) s.team.push(c.id);
+    if (c.r >= 3) cgAutoMaybe(s);   // UR 이상 새 동료면 장비를 다시 나눔 (낮은 등급은 어차피 뒤쪽)
     return { c, isNew: true, aw: 0 };
   }
   cur.n++;
-  if (cur.aw < AWAKEN_MAX) { cur.aw++; return { c, isNew: false, aw: cur.aw }; }
+  if (cur.aw < AWAKEN_MAX) { cur.aw++; if (c.r >= 3) cgAutoMaybe(s); return { c, isNew: false, aw: cur.aw }; }
   const sh = SHARD_GAIN[c.r];
   s.shards = (s.shards || 0) + sh;
   return { c, isNew: false, aw: cur.aw, shards: sh };
@@ -639,7 +646,7 @@ export function pull(s, ten) {
     s.pity = c.r >= 2 ? 0 : (s.pity || 0) + 1;
     out.push(gainCompanion(s, c));
   }
-  s.pulls += n; qAdd(s, 'pull', n);
+  s.pulls += n; s.mile = (s.mile || 0) + n; qAdd(s, 'pull', n);
   return out;
 }
 export const PRESET_MAX = 3;
@@ -649,17 +656,293 @@ export function savePreset(s, i) {
   s.presets[i] = { name: old && !/^프리셋 \d$/.test(old) ? old : null, team: (s.team || []).slice() };
   return true;
 }
+export function renamePreset(s, i, name) {
+  const p = (s.presets || [])[i]; if (!p || i < 0 || i >= PRESET_MAX) return false;
+  const n = String(name == null ? '' : name).replace(/[<>&"'\u0000-\u001f]/g, '').trim().slice(0, 24).trim();
+  p.name = n || null; return true;
+}
 export function applyPreset(s, i) {
   const p = (s.presets || [])[i];
   if (!p || !p.team) return false;
-  s.team = p.team.filter(id => s.comp && s.comp[id]).slice(0, TEAM_MAX);
+  s.team = p.team.filter(id => s.comp && s.comp[id]).slice(0, TEAM_MAX); cgAutoMaybe(s);
   return true;
+}
+// ---------- 코스튬: 장착 장비와 상관없이 겉모습만 바꾼다 ----------
+// base(외형)·hair(머리)는 몸 자체를 바꾸는 칸, offhand(보조손)는 장비 칸이 없는 순수 꾸미기 칸
+export const COS_SLOTS = ['base', 'hair', 'head', 'body', 'cloak', 'weapon', 'offhand', 'gloves', 'boots'];
+export const COSTUMES = [{"id":"weapon_wyrmbane","slot":"weapon"},{"id":"weapon_plutoniumsword","slot":"weapon"},{"id":"weapon_majin","slot":"weapon"},{"id":"weapon_eos","slot":"weapon"},{"id":"weapon_elementalstaff","slot":"weapon"},{"id":"weapon_finisher","slot":"weapon"},{"id":"body_gandalfg","slot":"body"},{"id":"body_dragonscgold","slot":"body"},{"id":"body_dragonscshadow","slot":"body"},{"id":"body_coatred","slot":"body"},{"id":"body_robeblackred","slot":"body"},{"id":"body_karate","slot":"body"},{"id":"head_artdragonhelm","slot":"head"},{"id":"head_gandalf","slot":"head"},{"id":"head_blackhorn","slot":"head"},{"id":"head_vikinggold","slot":"head"},{"id":"head_featherred","slot":"head"},{"id":"head_wizardblackred","slot":"head"},{"id":"cloak_black","slot":"cloak"},{"id":"cloak_cyan","slot":"cloak"},{"id":"cloak_white","slot":"cloak"},{"id":"cloak_yellow","slot":"cloak"},{"id":"boots_bluegold","slot":"boots"},{"id":"boots_meshwhite","slot":"boots"},{"id":"boots_middlepurple","slot":"boots"},{"id":"gloves_glovered","slot":"gloves"},{"id":"gloves_glovewhite","slot":"gloves"},{"id":"gloves_claws","slot":"gloves"},{"id":"weapon_stafffancy","slot":"weapon"},{"id":"weapon_sceptre","slot":"weapon"},{"id":"weapon_katanaslant","slot":"weapon"},{"id":"weapon_rapier","slot":"weapon"},{"id":"weapon_greatbow","slot":"weapon"},{"id":"weapon_rodmoon","slot":"weapon"},{"id":"weapon_rodruby","slot":"weapon"},{"id":"weapon_staffruby","slot":"weapon"},{"id":"weapon_tridentelec","slot":"weapon"},{"id":"weapon_swordtwist","slot":"weapon"},{"id":"weapon_quarterstaffjester","slot":"weapon"},{"id":"weapon_enchantressdagger","slot":"weapon"},{"id":"body_dresswhite","slot":"body"},{"id":"body_dresspink","slot":"body"},{"id":"body_dressblue","slot":"body"},{"id":"body_dressblack","slot":"body"},{"id":"body_dressgreen","slot":"body"},{"id":"body_arwen","slot":"body"},{"id":"body_jessica","slot":"body"},{"id":"body_roberainbow","slot":"body"},{"id":"body_robejester","slot":"body"},{"id":"body_chinared","slot":"body"},{"id":"body_chunli","slot":"body"},{"id":"body_maxwell","slot":"body"},{"id":"body_robeofnight","slot":"body"},{"id":"body_robeclouds","slot":"body"},{"id":"body_dragonarmpearl","slot":"body"},{"id":"body_faeriedragonarmour","slot":"body"},{"id":"body_pj","slot":"body"},{"id":"body_plateblack","slot":"body"},{"id":"head_bunnypink","slot":"head"},{"id":"head_bunnywhite","slot":"head"},{"id":"head_bunnyblack","slot":"head"},{"id":"head_crowngold1","slot":"head"},{"id":"head_crowngold2","slot":"head"},{"id":"head_crowngold3","slot":"head"},{"id":"head_bear","slot":"head"},{"id":"head_healer","slot":"head"},{"id":"head_clown1","slot":"head"},{"id":"head_helmplume","slot":"head"},{"id":"head_hoodwhite","slot":"head"},{"id":"head_isildur","slot":"head"},{"id":"head_featherwhite","slot":"head"},{"id":"head_taisomagenta","slot":"head"},{"id":"cloak_pink","slot":"cloak"},{"id":"cloak_magenta","slot":"cloak"},{"id":"cloak_dragonskin","slot":"cloak"},{"id":"cloak_blue","slot":"cloak"},{"id":"boots_pink","slot":"boots"},{"id":"boots_middlegold","slot":"boots"},{"id":"boots_shortpurple","slot":"boots"},{"id":"boots_pj","slot":"boots"},{"id":"gloves_glovegold","slot":"gloves"},{"id":"gloves_glovepurple","slot":"gloves"},{"id":"gloves_glovechunli","slot":"gloves"},{"id":"gloves_gauntletblue","slot":"gloves"},{"id":"gloves_gloveshortwhite","slot":"gloves"},{"id":"offhand_bucklerspiral","slot":"offhand"},{"id":"offhand_lshieldgold","slot":"offhand"},{"id":"offhand_lshieldlouise","slot":"offhand"},{"id":"offhand_shieldknightblue","slot":"offhand"},{"id":"offhand_shieldofresistance","slot":"offhand"},{"id":"offhand_bucklerspriggan","slot":"offhand"},{"id":"base_humanf","slot":"base","free":1},{"id":"base_humanm","slot":"base","free":1},{"id":"base_elff","slot":"base","free":1},{"id":"base_elfm","slot":"base","free":1},{"id":"base_deepelff","slot":"base"},{"id":"base_demigodf","slot":"base"},{"id":"base_demigodm","slot":"base"},{"id":"base_vampiref","slot":"base"},{"id":"base_vampirem","slot":"base"},{"id":"base_gargoylem","slot":"base"},{"id":"base_tenguwingedf","slot":"base"},{"id":"base_sprigganf","slot":"base"},{"id":"base_demonspawnpink","slot":"base"},{"id":"base_draconianwhitef","slot":"base"},{"id":"hair_femyellow","slot":"hair","free":1},{"id":"hair_femred","slot":"hair","free":1},{"id":"hair_femblack","slot":"hair","free":1},{"id":"hair_femwhite","slot":"hair","free":1},{"id":"hair_arwen","slot":"hair","free":1},{"id":"hair_pigtailsyellow","slot":"hair","free":1},{"id":"hair_pigtailsbrown","slot":"hair","free":1},{"id":"hair_pigtailred","slot":"hair","free":1},{"id":"hair_ponytailyellow","slot":"hair","free":1},{"id":"hair_knotred","slot":"hair","free":1},{"id":"hair_elfblack","slot":"hair","free":1},{"id":"hair_legolas","slot":"hair","free":1},{"id":"hair_djinn1","slot":"hair","free":1},{"id":"hair_brown1","slot":"hair","free":1}];
+export const COS_BY_ID = Object.fromEntries(COSTUMES.map(c => [c.id, c]));
+const COS_TIERS = { weapon: 8, body: 8, head: 6, cloak: 5, boots: 5, gloves: 5, offhand: 0, base: 0, hair: 0 };
+const COS_NOHIDE = { body: 1, base: 1, hair: 1, offhand: 1 };   // hair·offhand는 "장비대로"가 곧 없음
+export function cosHas(s, id) { const z = COS_BY_ID[id]; return !!z && (!!z.free || ((s.cos || {}).own || []).includes(id)); }
+function cosState(s) { const c = s.cos || (s.cos = {}); c.own ||= []; c.look ||= {}; c.seen ||= {}; return c; }
+function markSeen(s, it) { if (!it || !COS_TIERS[it.s]) return; const c = cosState(s); c.seen[it.s] = Math.max(c.seen[it.s] ?? -1, it.t); }
+export function lookOf(s, slot) { const v = ((s.cos || {}).look || {})[slot]; return v || 'auto'; }
+export function lookOptions(s, slot) {
+  const c = cosState(s), out = ['auto'];
+  if (!COS_NOHIDE[slot]) out.push('hide');
+  const mx = Math.max(c.seen[slot] ?? -1, s.equip[slot] ? s.equip[slot].t : -1);
+  for (let t = 0; t <= mx && t < COS_TIERS[slot]; t++) out.push('t' + t);
+  for (const z of COSTUMES) if (z.slot === slot && (z.free || c.own.includes(z.id))) out.push(z.id);
+  return out;
+}
+export function setLook(s, slot, v) { if (!(slot in COS_TIERS) || !lookOptions(s, slot).includes(v)) return false; const c = cosState(s); if (v === 'auto') delete c.look[slot]; else c.look[slot] = v; return true; }
+export function cosCount(s) { const own = cosState(s).own; return COSTUMES.filter(z => z.free || own.includes(z.id)).length; }
+
+// ---------- 펫: 골드로 뽑고(가진 펫은 안 나옴) 골드로 키우고, 효과도 골드로 다시 뽑는다. 환생·윤회해도 남는다 ----------
+export const PETS = ['quokka', 'cat6', 'cat9', 'jackal', 'hound', 'wolf', 'hellhound', 'blackbear', 'polarbear', 'sheep', 'holyswine', 'butterfly', 'bat', 'firebat', 'raiju', 'wyvern'];
+export const PET_MAX = 100, PET_UNLOCK = 30;
+// 효과 종류: v = 전설·Lv.100 기준 수치. flat이면 그대로 더하고, 아니면 해당 배율에 따로 곱한다 (다른 보너스에 묻히지 않게)
+export const PET_FX = { atk: { v: 15 }, hp: { v: 22 }, skill: { v: 15 }, basic: { v: 40 }, comp: { v: 22 }, boss: { v: 15 }, crit: { v: 8, flat: 1 }, haste: { v: 8, flat: 1 }, gold: { v: 30 }, xp: { v: 30 } };
+export const PET_FX_KEYS = Object.keys(PET_FX);
+export const PET_TIER_W = [40, 30, 18, 9, 3], PET_TIER_M = [0.4, 0.55, 0.7, 0.85, 1];
+// 펫 저금통: 사냥으로 번 골드의 10%만큼이 따로 쌓인다 (골드에서 빼지 않음 → 자동 강화와 골드를 다투지 않음)
+// 가격 기준 petRef(f) = "그 층에서 저금통이 1분에 모이는 양" (실제 세이브 B197 실측 골드 7e37/분, 층당 ×1.57 = 시뮬 기울기)
+//  · n번째 펫 뽑기 = B(30+10n) 기준 10분어치 → 펫이 층을 따라 하나씩 풀린다 (16번째 ≈ B180)
+//  · Lv.L → L+1 = B(2L+2) 기준 5분어치 → 그 층쯤 오면 그 레벨까지 올릴 수 있다 (B200 ≈ Lv.100)
+//  · 효과 다시 뽑기 = 최고 기록 층 기준 2분어치
+//  층에 묶어 둬서 환생 직후 싸게 사는 꼼수가 없다
+export const PET_POT = 0.1, PET_DRAW_MIN = 10, PET_LV_MIN = 5, PET_ROLL_MIN = 2;
+export function petRef(f) { return Math.pow(10, 36.85 + 0.196 * (f - 197)); }
+function petState(s) { const p = s.pets || (s.pets = {}); p.own ||= {}; if (p.act === undefined) p.act = null; if (p.cand === undefined) p.cand = null; p.pot ||= 0; p.ppm ||= 0; p.peak ||= 0; p.pin ||= 0; p.pt ||= 0; return p; }
+export function petPot(s) { return petState(s).pot; }
+export function petDeposit(s) { const g = Math.max(0, s.gold || 0); if (!g || !petUnlocked(s)) return 0; petState(s).pot += g; s.gold = 0; return g; }
+function petGain(s, g) { if (!petUnlocked(s)) return; const p = petState(s), v = g * PET_POT; p.pot += v; p.pin += v; }
+function petTick(s, dt) { const p = s.pets; if (!p || !petUnlocked(s)) return; p.pt = (p.pt || 0) + dt; if (p.pt < 60) return; const m = p.pt / 60, r = (p.pin || 0) / m; p.ppm = p.ppm ? p.ppm * 0.9 + r * 0.1 : r; p.peak = Math.max(p.ppm, (p.peak || 0) * Math.pow(0.9995, m)); p.pin = 0; p.pt = 0; }
+const petBest = s => Math.max(s.bestFloor || 0, s.maxFloor || 0);
+export function petUnlocked(s) { return petBest(s) >= PET_UNLOCK; }
+export function petCap(s) { return Math.min(PET_MAX, Math.max(1, Math.floor(petBest(s) / 2))); }   // 최고 기록 B200이면 Lv.100
+export function petOwned(s) { return Object.keys(petState(s).own); }
+export function petLeft(s) { const o = petState(s).own; return PETS.filter(id => !o[id]); }
+export function petDrawCost(s) { return Math.ceil(PET_DRAW_MIN * petRef(PET_UNLOCK + 10 * Object.keys(petState(s).own).length)); }
+export function petRollCost(s) { return Math.ceil(PET_ROLL_MIN * petRef(Math.max(PET_UNLOCK, petBest(s)))); }
+export function petLvCost(s, lv) { return Math.ceil(PET_LV_MIN * petRef(2 * (lv + 1))); }
+function rollPetFx() { const k = PET_FX_KEYS[Math.floor(Math.random() * PET_FX_KEYS.length)]; let x = Math.random() * 100, r = 0; while (r < 4 && x >= PET_TIER_W[r]) { x -= PET_TIER_W[r]; r++; } return { k, r }; }
+export function petVal(p) { return p && PET_FX[p.k] ? PET_FX[p.k].v * PET_TIER_M[p.r] * (0.1 + 0.9 * Math.min(PET_MAX, p.lv) / PET_MAX) : 0; }
+export function petAgg(s) { const o = {}; for (const k of PET_FX_KEYS) o[k] = 0; const own = ((s.pets || {}).own) || {}; for (const id in own) { const p = own[id]; if (PET_FX[p.k]) o[p.k] += petVal(p); } return o; }
+export function petDraw(s) {
+  if (!petUnlocked(s)) return null; const left = petLeft(s); if (!left.length) return null;
+  const p = petState(s), c = petDrawCost(s); if (p.pot < c) return null; p.pot -= c;
+  const id = left[Math.floor(Math.random() * left.length)], fx = rollPetFx();
+  p.own[id] = { lv: 1, k: fx.k, r: fx.r }; if (!p.act) p.act = id; return { id, ...p.own[id] };
+}
+export function petLevelUp(s, id) { const ps = petState(s), p = ps.own[id]; if (!p || p.lv >= petCap(s)) return false; const c = petLvCost(s, p.lv); if (ps.pot < c) return false; ps.pot -= c; p.lv++; return true; }
+export function petRoll(s, id) { const ps = petState(s), p = ps.own[id]; if (!p) return null; const c = petRollCost(s); if (ps.pot < c) return null; ps.pot -= c; ps.cand = { id, ...rollPetFx() }; return ps.cand; }
+export function petKeep(s, accept) { const ps = petState(s), c = ps.cand; if (!c) return false; if (accept && ps.own[c.id]) { ps.own[c.id].k = c.k; ps.own[c.id].r = c.r; } ps.cand = null; return true; }
+// 자동 다시 뽑기: 원하는 효과(k, 'any'면 아무거나)·최소 등급(minR)이 나올 때까지 최대 n번 굴린다. 나오면 바로 적용
+export function petWant(p, k, minR) { return !!p && (k === 'any' || p.k === k) && p.r >= minR; }
+export function petAutoOdds(k, minR) { let w = 0; for (let r = minR; r < 5; r++) w += PET_TIER_W[r]; return (k === 'any' ? 1 : 1 / PET_FX_KEYS.length) * w / 100; }
+export function petAutoRoll(s, id, k, minR, n) {
+  const ps = petState(s), p = ps.own[id]; if (!p || (k !== 'any' && !PET_FX[k]) || !(minR >= 0 && minR <= 4)) return null;
+  let rolls = 0, spent = 0;
+  for (; rolls < n; rolls++) {
+    const c = petRollCost(s); if (ps.pot < c) return { rolls, spent, hit: false, out: true };
+    ps.pot -= c; spent += c; const fx = rollPetFx();
+    if (petWant(fx, k, minR)) { p.k = fx.k; p.r = fx.r; ps.cand = null; return { rolls: rolls + 1, spent, hit: true, k: fx.k, r: fx.r }; }
+  }
+  ps.cand = null; return { rolls, spent, hit: false };
+}
+export function petSetAct(s, id) { const ps = petState(s); if (id !== null && !ps.own[id]) return false; ps.act = id; return true; }
+
+// ---------- 영혼무기: 외형·이름·옵션을 직접 정해 만드는 나만의 무기. 장비 칸과 별개이고 윤회해도 남는다 ----------
+// 윤회를 한 번 하면 만들 수 있다. 보스를 잡거나 새 층에 처음 오르면 영혼력이 쌓여 레벨이 오르고(정수로도 채울 수 있음), 레벨 상한은 최고 기록 층과 같다
+// 옵션은 일반 능력치가 아니라 전투 방식을 바꾸는 특수 효과. v = Lv.200 기준 (레벨에 비례, Lv.300이면 1.5배)
+export const SOUL_REINC = 1, SOUL_MAXLV = 300, SOUL_ESS_XP = 20;
+export const SOUL_SLOT_AT = [1, 50, 120];   // 이 레벨에서 옵션 칸이 하나씩 열린다
+// (수치는 같은 세이브로 4직업을 직접 싸워 보고 맞춤)
+export const SOUL_FX = {
+  cut:      0.1,  // 영혼 베기: 용사 평타·동료 공격이 적중할 때마다 적 현재 체력의 v% 추가 피해 (보스·탑·균열)
+  archmage: 55,   // 마력 순환: 스킬을 쓰면 그 스킬 쿨타임의 v%만큼 다른 무작위 스킬 쿨타임을 돌려받음
+  echo:     90,   // 잔영 시전: 피해 스킬마다 잔영이 v% 위력으로 한 번 더 시전
+  awaken:   70,   // 영혼 해방: 쿨타임이 가장 긴 스킬을 쓰면 다른 스킬 쿨타임 초기화 + 6초간 스킬 피해 +v% (별도 곱)
+  enpass:   3.5,  // 급소 간파: 보스전 5초마다 급소 공격, 보스 최대 체력의 v% 피해 + 용사 체력 v×3% 회복
+  tank:     40,   // 날 선 감각: 치명타 확률만큼(최대 v%) 확률로 받는 피해 절반
+  titan:    1.2,  // 전투 고양: 보스전 0.5초마다 1중첩(최대 30), 중첩당 주는 피해 +v%·받는 피해 -v%
+  power:    0.5,  // 영혼 수확: 이번 윤회에서 보스를 잡을 때마다 스킬 피해 +v% (최대 v×200%)
+};
+export const COMP_HIT_RATE = 1 / 1.6;   // 동료 1명이 초당 공격하는 횟수 (화면 연출과 같은 간격)
+export const SOUL_FX_KEYS = Object.keys(SOUL_FX);
+export const SOUL_LOOKS = ["great_sword_slant","great_sword_slant2","long_sword_slant","long_sword_slant2","scimitar","falchion","falchion2","double_sword","double_sword2","double_sword3","triple_sword","triple_sword2","sword_black","sword_jag","sword_thief","sword_three","black_sword","heavy_sword","broadsword","rapier2","short_sword_slant2","axe_blood","axe_double","axe_executioner","battleaxe2","broad_axe","war_axe","hand_axe2","great_mace","great_mace2","large_mace","mace_ruby","morningstar2","eveningstar2","flail_great","glaive_three","halberd","pike","scythe2","trident_demon","trident_two2","lance","spear_five","d_glaive","staff_mage","staff_mage_two","staff_skull","staff_evil","staff_large","staff_organic","staff_ring_blue","staff_sceptre","great_staff","rod_aries","rod_emerald","rod_magenta","rod_hammer","bow_three","storm_bow","arbalest_three","whip2","black_whip","gandalf","saruman","aragorn","legolas","boromir","gimli","arwen","frodo"];
+function soulState(s) { const w = s.soul || (s.soul = {}); w.lv ||= 1; w.xp ||= 0; w.opt ||= []; if (w.show === undefined) w.show = true; return w; }
+export function soulUnlocked(s) { return (s.reinc || 0) >= SOUL_REINC; }
+export function soulMade(s) { return !!(s.soul && s.soul.made); }
+export function soulCap(s) { return Math.min(SOUL_MAXLV, Math.max(1, Math.max(s.bestFloor || 0, s.maxFloor || 0))); }
+export function soulNeed(lv) { return 2 + Math.floor(lv / 10); }
+export function soulSlots(s) { const lv = soulMade(s) ? s.soul.lv : 0; return SOUL_SLOT_AT.filter(x => lv >= x).length; }
+const cleanName = v => String(v == null ? '' : v).replace(/[<>&"'\u0000-\u001f]/g, '').trim().slice(0, 16).trim();
+export function soulCraft(s, look, name, k) {
+  if (!soulUnlocked(s) || soulMade(s) || !SOUL_LOOKS.includes(look) || !SOUL_FX[k]) return false;
+  const w = soulState(s); Object.assign(w, { made: true, look, name: cleanName(name) || null, lv: 1, xp: 0, opt: [k], show: true }); return true;
+}
+export function soulSetLook(s, look) { if (!soulMade(s) || !SOUL_LOOKS.includes(look)) return false; s.soul.look = look; return true; }
+export function soulRename(s, name) { if (!soulMade(s)) return false; s.soul.name = cleanName(name) || null; return true; }
+export function soulSetOpt(s, i, k) { if (!soulMade(s) || !SOUL_FX[k] || i < 0 || i >= soulSlots(s)) return false; const o = s.soul.opt; const j = o.indexOf(k); if (j >= 0 && j !== i) o[j] = o[i] || null; o[i] = k; s.soul.opt = o.filter(Boolean); return true; }
+export function soulShow(s, on) { if (!soulMade(s)) return false; s.soul.show = !!on; return true; }
+export function soulGain(s, n, ev) {
+  if (!soulMade(s)) return 0; const w = s.soul, cap = soulCap(s); if (w.lv >= cap) { w.xp = 0; return 0; }
+  w.xp += n; let up = 0; while (w.lv < cap && w.xp >= soulNeed(w.lv)) { w.xp -= soulNeed(w.lv); w.lv++; up++; }
+  if (w.lv >= cap) w.xp = 0; if (up && ev) ev.soulUp = w.lv; return up;
+}
+export function soulFeedCost(s) { return soulMade(s) && s.soul.lv < soulCap(s) ? (soulNeed(s.soul.lv) - s.soul.xp) * SOUL_ESS_XP : 0; }
+export function soulFeed(s) { const c = soulFeedCost(s); if (!c || (s.ess || 0) < c) return false; s.ess -= c; soulGain(s, c / SOUL_ESS_XP); return true; }
+export function soulVal(k, lv) { return SOUL_FX[k] * Math.min(SOUL_MAXLV, lv) / 200; }
+// 대마법사·궁극의 각성: 스킬 하나를 쓴 직후 다른 스킬 쿨타임을 줄인다
+function soulOnCast(s, st, sd) {
+  const sf = st.sfx, act = classSkills(s.cls, 'active').filter(x => x.id !== sd.id && (s.skills[x.id] || 0) > 0);
+  if (!act.length) return;
+  if (sf.archmage) { const o = act[Math.floor(Math.random() * act.length)]; s.cd[o.id] = (s.cd[o.id] ?? 0) - sd.cd * Math.min(60, sf.archmage) / 100; }
+  if (sf.awaken) { const top = classSkills(s.cls, 'active').filter(x => (s.skills[x.id] || 0) > 0).reduce((m, x) => x.cd > m.cd ? x : m, sd); if (top.id === sd.id) { for (const o of act) if ((s.cd[o.id] ?? 0) > 0) s.cd[o.id] = 0; pushBuff(s, 'soul:awaken', 6, { xskillP: sf.awaken }); } }
+}
+// 적중 1번마다 현재 체력의 p%씩 깎이는 것을 dt 동안 누적 (평타 + 동료 적중 횟수 기준)
+export function soulCutDmg(hp, st, dt) { const p = Math.min(0.5, (st.sfx.cut || 0) / 100); return hp * (1 - Math.pow(1 - p, (st.hitRate || 1) * dt)); }
+export function soulAgg(s) { const o = {}; for (const k of SOUL_FX_KEYS) o[k] = 0; if (!soulMade(s)) return o; const n = soulSlots(s); s.soul.opt.slice(0, n).forEach(k => { if (SOUL_FX[k]) o[k] += soulVal(k, s.soul.lv); }); return o; }
+
+// ---------- 원정대: 파티 밖 동료를 보내 조각·정수·동료 장비·코스튬을 가져온다 ----------
+export const EXP_SLOTS = 2, EXP_SIZE = 3, EXP_DUR = [1, 4, 8];
+const EXP_NEED = [1.5, 3, 5], EXP_GEAR = [1, 2, 4], EXP_COS = [0.02, 0.08, 0.18];
+export const EXP_MAX = 4;
+export function expCap(s) { return Math.min(EXP_MAX, EXP_SLOTS + ((s.shopBuy || {}).expSlot || 0)); }
+function expState(s) { const e = s.exped || (s.exped = {}); e.slots ||= []; const cap = expCap(s); while (e.slots.length < cap) e.slots.push(null); return e; }
+export function expSlots(s) { return expState(s).slots; }
+export function onExped(s, id) { return expState(s).slots.some(x => x && x.ids.includes(id)); }
+export function expFree(s) { return Object.keys(s.comp || {}).filter(id => COMP_BY_ID[id] && !(s.team || []).includes(id) && !onExped(s, id)); }
+export function expPower(s, ids) { return ids.reduce((a, id) => { const c = COMP_BY_ID[id], o = (s.comp || {})[id]; return a + (c && o ? compCoef(c, o.aw, o.lv) * (1 + (((((s.cg || {}).eq || {})[id] || {}).blade) ? cgExpVal(s.cg.eq[id].blade) / 100 : 0)) : 0); }, 0); }
+export function expMult(s, ids, di) { return Math.min(1.5, 0.4 + 0.6 * expPower(s, ids) / EXP_NEED[di]); }
+export function expAutoPick(s) { return expFree(s).sort((a, b) => expPower(s, [b]) - expPower(s, [a])).slice(0, EXP_SIZE); }
+export function expPreview(s, ids, di) {
+  const m = expMult(s, ids, di), h = EXP_DUR[di], bf = s.bestFloor || s.maxFloor || 1;
+  return { mult: m, shards: Math.round((4 + bf / 12) * h * m), ess: Math.round((1 + bf / 40) * h * m), dust: riftUnlocked(s) ? Math.round(3 * h * m) : 0, gear: EXP_GEAR[di], cos: Math.min(1, EXP_COS[di] * Math.min(1, m)) };
+}
+export function expStart(s, slot, ids, di, now = Date.now()) {
+  const e = expState(s); if (slot < 0 || slot >= expCap(s) || e.slots[slot] || !EXP_DUR[di]) return false;
+  ids = [...new Set(ids)].filter(id => expFree(s).includes(id)).slice(0, EXP_SIZE); if (!ids.length) return false;
+  e.slots[slot] = { ids, di, start: now, end: now + EXP_DUR[di] * 3600e3, mult: expMult(s, ids, di) };
+  qAdd(s, 'exped', 1); return true;
+}
+// 빈 자리마다 파티 밖 동료 중 강한 순으로 자동 편성해서 한 번에 보낸다
+export function expSendAll(s, di, now = Date.now()) { let n = 0; const sl = expSlots(s); for (let i = 0; i < sl.length; i++) if (!sl[i]) { const ids = expAutoPick(s); if (!ids.length) break; if (expStart(s, i, ids, di, now)) n++; } return n; }
+// 끝난 원정을 모두 받는다 (보상 합산)
+export function expClaimAll(s, now = Date.now()) { const tot = { n: 0, shards: 0, ess: 0, dust: 0, gear: [], cos: [] }; expSlots(s).forEach((x, i) => { const r = expClaim(s, i, now); if (!r) return; tot.n++; tot.shards += r.shards; tot.ess += r.ess; tot.dust += r.dust || 0; tot.gear.push(...r.gear); if (r.cos && r.cos !== 'dup') tot.cos.push(r.cos); }); return tot; }
+export function expRecall(s, slot) { const e = expState(s); if (!e.slots[slot]) return false; e.slots[slot] = null; return true; }
+export function expClaim(s, slot, now = Date.now()) {
+  const e = expState(s), x = e.slots[slot]; if (!x || now < x.end) return null;
+  const pv = expPreview(s, x.ids, x.di); const m = x.mult; pv.shards = Math.round(pv.shards / pv.mult * m); pv.ess = Math.round(pv.ess / pv.mult * m); pv.dust = Math.round(pv.dust / (pv.mult || 1) * m);
+  s.shards = (s.shards || 0) + pv.shards; s.ess = (s.ess || 0) + pv.ess; if (pv.dust) runeState(s).dust += pv.dust;
+  const gear = []; for (let i = 0; i < pv.gear; i++) { const it = rollCGear(s, m); gear.push(it); cgAdd(s, it); }
+  let cos = null; if (Math.random() < pv.cos) { const c = cosState(s); const left = COSTUMES.filter(z => !z.free && !c.own.includes(z.id)); if (left.length) { cos = left[Math.floor(Math.random() * left.length)].id; c.own.push(cos); } else { s.shards += 50; cos = 'dup'; } }
+  e.slots[slot] = null; (s.life ||= {}).exped = ((s.life || {}).exped || 0) + 1;
+  return { shards: pv.shards, ess: pv.ess, dust: pv.dust, gear, cos, ids: x.ids };
+}
+
+// ---------- 동료 장비: 동료마다 칼날(공격)·부적(동행 효과)·인장(보유 효과) ----------
+export const CG_KINDS = ['blade', 'charm', 'sigil'];
+export const CG_BASE = { blade: [30, 60, 105, 165, 240], charm: [5, 10, 18, 28, 40], sigil: [8, 15, 25, 40, 60] };
+export const CG_BAG = 80, CG_DUST = [2, 5, 12, 30, 80];
+function cgState(s) { const c = s.cg || (s.cg = {}); c.bag ||= []; c.eq ||= {}; return c; }
+export function cgVal(it) { return Math.round(CG_BASE[it.k][it.r] * it.q) / 100; }
+// 칼날: 장착한 모든 칼날 수치를 더해 용사 평타 피해를 증폭 (스킬 피해에는 안 들어감)
+export function cgBladeSum(s) { let t = 0; const eq = (s.cg || {}).eq || {}; for (const id in eq) { const it = eq[id] && eq[id].blade; if (it && (s.comp || {})[id]) t += cgVal(it); } return t; }
+// 평타 배율 = 1 + 칼날 합계 + 스킬 피해 보너스의 절반 (곱하지 않고 더해서 후반에 폭주하지 않게)
+export const BASIC_SKILL_K = 0.5;
+// 원정 전투력에는 칼날이 예전 수치(1/3)만큼만
+export function cgExpVal(it) { return cgVal(it) / 3; }
+export function cgMult(s, id, k) { const e = ((s.cg || {}).eq || {})[id]; const it = e && e[k]; return it ? 1 + cgVal(it) / 100 : 1; }
+export function cgScore(it) { return CG_BASE[it.k][it.r] * it.q; }
+function rollCGear(s, m) {
+  const bf = s.bestFloor || 1, w = [Math.max(10, 50 - bf / 4), 30, 14 + bf / 20, 4 + bf / 60 + 4 * (m - 1), 0.8 + bf / 200 + 2 * (m - 1)];
+  let x = Math.random() * w.reduce((a, b) => a + b, 0), r = 0; for (; r < 4; r++) { x -= w[r]; if (x <= 0) break; }
+  return { k: CG_KINDS[Math.floor(Math.random() * 3)], r, q: 80 + Math.floor(Math.random() * 41) };
+}
+function cgAdd(s, it) { const c = cgState(s); c.bag.push(it); if (s.cgAuto !== false) cgAutoEquip(s); if (c.bag.length > CG_BAG) { c.bag.sort((a, b) => cgScore(b) - cgScore(a)); for (const z of c.bag.splice(CG_BAG)) s.shards = (s.shards || 0) + CG_DUST[z.r]; } }
+export function cgBag(s) { return cgState(s).bag; }
+export function cgEq(s, id) { return cgState(s).eq[id] || {}; }
+export function cgEquip(s, id, bi) { const c = cgState(s), it = c.bag[bi]; if (!it || !s.comp[id]) return false; const e = c.eq[id] || (c.eq[id] = {}); const old = e[it.k]; e[it.k] = it; c.bag.splice(bi, 1); if (old) c.bag.push(old); COMP_VER++; return true; }
+export function cgUnequip(s, id, k) { const c = cgState(s), e = c.eq[id]; if (!e || !e[k] || c.bag.length >= CG_BAG) return false; c.bag.push(e[k]); delete e[k]; COMP_VER++; return true; }
+export function cgDismantle(s, pred) { const c = cgState(s); let n = 0, sh = 0; c.bag = c.bag.filter(it => { if (pred(it)) { n++; sh += CG_DUST[it.r]; return false; } return true; }); s.shards = (s.shards || 0) + sh; return { n, shards: sh }; }
+export function cgMerge(s) {   // 같은 종류·등급 3개 → 한 등급 위 1개 (전설 제외), 반복
+  const c = cgState(s); let made = 0;
+  for (let r = 0; r < 4; r++) for (const k of CG_KINDS) { let L = c.bag.filter(it => it.k === k && it.r === r).sort((a, b) => a.q - b.q); while (L.length >= 3) { const use = L.splice(0, 3); c.bag = c.bag.filter(it => !use.includes(it)); const nw = { k, r: r + 1, q: Math.round(use.reduce((a, b) => a + b.q, 0) / 3) }; c.bag.push(nw); made++; if (r + 1 < 4) L = c.bag.filter(it => it.k === k && it.r === r).sort((a, b) => a.q - b.q); } }
+  if (made) cgAutoMaybe(s);
+  return made;
+}
+// 자동 장착: 가진 장비(낀 것 + 가방)를 종류별로 점수 순으로 줄 세워, 등급 → 각성·레벨 순서의 동료에게 다시 나눠 준다
+// 부적은 파티에 있을 때만 효과가 나서 파티 3명을 먼저 챙긴다. 바뀐 칸 수를 돌려준다
+let CG_MOVED = 0;
+export function cgTakeMoved() { const n = CG_MOVED; CG_MOVED = 0; return n; }
+export function cgPriority(s) {
+  const ids = Object.keys(s.comp || {}).filter(id => COMP_BY_ID[id]);
+  const p = id => { const c = COMP_BY_ID[id], o = s.comp[id]; return c.r * 1e9 + compCoef(c, o.aw, o.lv); };
+  return ids.sort((a, b) => p(b) - p(a));
+}
+export function cgAutoEquip(s) {
+  const c = cgState(s), pool = { blade: [], charm: [], sigil: [] };
+  for (const it of c.bag) if (pool[it.k]) pool[it.k].push(it);
+  for (const id in c.eq) for (const k in c.eq[id]) if (pool[k]) pool[k].push(c.eq[id][k]);
+  const byR = cgPriority(s), team = (s.team || []).filter(id => s.comp[id] && COMP_BY_ID[id]);
+  const order = { blade: byR, sigil: byR, charm: [...team, ...byR.filter(id => !team.includes(id))] };
+  const eq = {}, bag = []; let n = 0;
+  for (const k of CG_KINDS) { const items = pool[k].sort((a, b) => cgScore(b) - cgScore(a)); order[k].forEach((id, i) => { const it = items[i]; if (!it) return; (eq[id] ||= {})[k] = it; const old = (c.eq[id] || {})[k]; if (!old || cgScore(old) !== cgScore(it)) n++; }); bag.push(...items.slice(order[k].length)); }
+  c.eq = eq; c.bag = bag; if (n) { COMP_VER++; CG_MOVED += n; } return n;
+}
+export function cgAutoMaybe(s) { return s.cgAuto !== false ? cgAutoEquip(s) : 0; }
+// ---------- 소환석 상점 (남는 소환석 사용처) ----------
+export const STONE_SHOP = {
+  gearBox: 2000,                        // 동료 장비 상자: 희귀 이상 1개
+  gearBoxHi: 20000,                     // 고급 동료 장비 상자: 영웅 이상 확정 (전설 30%), 품질 100~120%
+  key: 1500, keyDaily: 3,               // 균열 열쇠 (하루 3개)
+  rush: 10,                             // 원정 즉시 귀환: 남은 1분당
+  expSlot: [30000, 100000],             // 원정대 3·4번째 자리 (영구)
+  costume: 15000,                       // 원하는 특별 코스튬
+};
+export const MILE_LR = 5000, MILE_MR = 40000;
+// ---------- 신화 권능: MR 동료가 파티에 있으면 보스 처치·새 층 도달마다 성장 (환생·윤회에도 유지) ----------
+export const MR_POW = {
+  azrael:      { k: 'atk',   v: 2 },                      // 업화: 공격력 ×(1 + 2%·Lv)
+  mnoleg:      { k: 'crit',  v: 2.5 },                    // 광기: 치명타 확률 +2.5%·Lv (100%를 넘으면 다단 치명타)
+  lom_lobon:   { k: 'haste', v: 2, k2: 'skill', v2: 0.5 },// 대마도: 스킬 가속 +2·Lv, 스킬 피해 ×(1 + 0.5%·Lv)
+  gloorx_vloq: { k: 'comp',  v: 4.5 },                    // 그림자 군세: 동료 피해 ×(1 + 4.5%·Lv)
+};
+export const MRP_MAX = 60;
+export function mrpNeed(lv) { return 8 + 4 * lv; }   // Lv.60까지 약 8,000 (자동 진행 기준 열흘 정도)
+export function mrpLv(s, id) { return ((s.mrp || {})[id] || {}).lv || 0; }
+export function mrpXp(s, id) { return ((s.mrp || {})[id] || {}).xp || 0; }
+function mrGain(s, n, ev) {
+  for (const id of s.team || []) {
+    if (!MR_POW[id] || !(s.comp || {})[id] || onExped(s, id)) continue;
+    const p = (s.mrp ||= {})[id] || (s.mrp[id] = { lv: 0, xp: 0 });
+    if (p.lv >= MRP_MAX) continue;
+    p.xp += n;
+    while (p.lv < MRP_MAX && p.xp >= mrpNeed(p.lv)) { p.xp -= mrpNeed(p.lv); p.lv++; if (ev) (ev.mrUp ||= []).push({ id, lv: p.lv }); }
+    if (p.lv >= MRP_MAX) p.xp = 0;
+  }
+}   // 소환 마일리지로 원하는 LR·MR 동료
+export function shopKeyLeft(s, now = Date.now()) { const b = s.shopBuy || {}; return b.keyDay === localDay(now) ? Math.max(0, STONE_SHOP.keyDaily - (b.keyN || 0)) : STONE_SHOP.keyDaily; }
+export function rushAllCost(s, now = Date.now()) { return expSlots(s).reduce((a, x, i) => a + rushCost(s, i, now), 0); }
+export function cosLeftN(s) { const own = ((s.cos || {}).own) || []; return COSTUMES.filter(z => !z.free && !own.includes(z.id)).length; }
+// 같은 상품을 n번 연속으로 산다 (돈이 모자라거나 한도에 걸리면 거기서 멈춤)
+export function shopBuyN(s, what, n, now = Date.now()) { const out = []; for (let i = 0; i < n; i++) { const r = shopBuy(s, what, undefined, now); if (!r) break; out.push(r); } return out; }
+export function rushCost(s, slot, now = Date.now()) { const x = expSlots(s)[slot]; return x && now < x.end ? Math.ceil((x.end - now) / 60000) * STONE_SHOP.rush : 0; }
+export function shopBuy(s, what, arg, now = Date.now()) {
+  const b = s.shopBuy || (s.shopBuy = {}); const pay = c => { if (s.stones < c) return false; s.stones -= c; return true; };
+  if (what === 'gearBox') { if (!pay(STONE_SHOP.gearBox)) return null; let it, g2 = 0; do { it = rollCGear(s, 1.5); } while (it.r < 2 && ++g2 < 50); if (it.r < 2) it.r = 2; cgAdd(s, it); return { gear: it }; }
+  if (what === 'gearBoxHi') { if (!pay(STONE_SHOP.gearBoxHi)) return null; const it = { k: CG_KINDS[Math.floor(Math.random() * 3)], r: Math.random() < 0.3 ? 4 : 3, q: 100 + Math.floor(Math.random() * 21) }; cgAdd(s, it); return { gear: it }; }
+  if (what === 'cosAll') { const c = cosState(s), left = COSTUMES.filter(z => !z.free && !c.own.includes(z.id)), got = []; for (const z of left) { if (!pay(STONE_SHOP.costume)) break; c.own.push(z.id); got.push(z.id); } return got.length ? { cosAll: got } : null; }
+  if (what === 'rushAll') { const c = rushAllCost(s, now); if (!c || !pay(c)) return null; for (const x of expSlots(s)) if (x && now < x.end) x.end = now; return { rushAll: true, cost: c }; }
+  if (what === 'key') { if (shopKeyLeft(s, now) <= 0 || !pay(STONE_SHOP.key)) return null; if (b.keyDay !== localDay(now)) { b.keyDay = localDay(now); b.keyN = 0; } b.keyN++; const rs = riftState(s); rs.keys = Math.min(KEY_MAX + 20, rs.keys + 1); return { keys: 1 }; }
+  if (what === 'rush') { const c = rushCost(s, arg, now); if (!c || !pay(c)) return null; expSlots(s)[arg].end = now; return { rush: arg }; }
+  if (what === 'expSlot') { const n = b.expSlot || 0; if (n >= EXP_MAX - EXP_SLOTS || !pay(STONE_SHOP.expSlot[n])) return null; b.expSlot = n + 1; expState(s); return { expSlot: expCap(s) }; }
+  if (what === 'costume') { const c = cosState(s); if (!COS_BY_ID[arg] || COS_BY_ID[arg].free || c.own.includes(arg) || !pay(STONE_SHOP.costume)) return null; c.own.push(arg); return { cos: arg }; }
+  return null;
+}
+export function mileBuy(s, id) {
+  const c = COMP_BY_ID[id]; if (!c || c.r < 4) return null; const cost = c.r >= 5 ? MILE_MR : MILE_LR;
+  if ((s.mile || 0) < cost) return null; s.mile -= cost; return gainCompanion(s, c);
 }
 export function toggleTeam(s, id) {
   const k = s.team.indexOf(id);
-  if (k >= 0) { s.team.splice(k, 1); return false; }
-  if (s.team.length >= TEAM_MAX) return false;
-  s.team.push(id);
+  if (k >= 0) { s.team.splice(k, 1); cgAutoMaybe(s); return false; }
+  if (s.team.length >= TEAM_MAX || onExped(s, id)) return false;
+  s.team.push(id); cgAutoMaybe(s);
   return true;
 }
 export function ownSummary(s) {
@@ -687,9 +970,9 @@ export function newSave() {
     stones: 30, pulls: 0, pity: 0, stoneBuys: 0, shards: 0,
     honor: 0, honorPts: 0, relic: {}, bestFloor: 0, rebirths: 0,
     life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbFloor: 0 },
-    ench: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, bossFails: 0,
+    ench: {}, enchX: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, bossFails: 0,
     mastery: {}, gachaOpt: { stopUR: true, stopNew: false, autoBuy: false },
-    goldConv: true, mut: {}, events: [], ebuffs: [], evT: 0, evLog: [], bossPity: {}, sigGot: {}, daily: null, guide: { n: 0 }, autoSeen: [],
+    mrp: {}, pets: { own: {}, act: null, cand: null, pot: 0, ppm: 0, peak: 0, pin: 0, pt: 0 }, soul: null, lowFx: false, cgAuto: true, goldConv: true, cos: { own: [], look: {}, seen: {} }, exped: { slots: [null, null] }, cg: { bag: [], eq: {} }, mut: {}, events: [], ebuffs: [], evT: 0, evLog: [], bossPity: {}, sigGot: {}, daily: null, guide: { n: 0 }, autoSeen: [],
     towers: {}, rift: { keys: 2, best: 0, lvl: 1 }, runes: { eq: [null, null, null, null], bag: [], dust: 0 },
     autoEquip: true, pending: null,
     lastTick: Date.now(), createdAt: Date.now(),
@@ -737,6 +1020,7 @@ function sanitize(o, now = Date.now()) {
   o.up = pickObj(o.up, UPGRADES.map(u => u.id), v => int(v, 0, 0, 20000));
   o.relic = pickObj(o.relic, RELICS.map(r => r.id), (v, k) => int(v, 0, 0, RELIC_BY_ID[k].max || 1e5));
   o.ench = pickObj(o.ench, SLOTS.map(s => s.id), v => int(v, 0, 0, ENCH_MAX));
+  o.enchX = pickObj(o.enchX, SLOTS.map(s => s.id), v => int(v, 0, 0, ENCHX_MAX)); for (const k of Object.keys(o.enchX)) if ((o.ench[k] || 0) < ENCH_MAX || !o.enchX[k]) delete o.enchX[k];
   o.ach = pickObj(o.ach, ACH.map(a => a.id), (v, k) => int(v, 0, 0, ACH.find(a => a.id === k).t.length));
   o.skills = pickObj(o.skills, SKILLS.map(sd => sd.id), v => int(v, 0, 0, SKILL_MAX));
   o.mastery = pickObj(o.mastery, MASTERY.map(m => m.id), v => int(v, 0, 0, 1e6));
@@ -752,7 +1036,7 @@ function sanitize(o, now = Date.now()) {
   o.life = { kills: num(o.life && o.life.kills), bosses: num(o.life && o.life.bosses) };
   o.bestiary = Array.from({ length: ZONES }, (_, i) => num((o.bestiary || [])[i]));
   const q = o.quest && typeof o.quest === 'object' ? o.quest : {};
-  const cnt = src => pickObj(src, ['kill', 'boss', 'up', 'pull', 'tower', 'floor', 'rebirth', 'sell', 'clv', 'ench'], v => num(v));
+  const cnt = src => pickObj(src, ['kill', 'boss', 'up', 'pull', 'tower', 'floor', 'rebirth', 'sell', 'clv', 'ench', 'exped', 'rift'], v => num(v));
   const flags = (src, L) => pickObj(src, [...L.map(m => m.id), 'all'], v => (v ? true : null));
   o.quest = { day: isDay(q.day) ? q.day : '', d: cnt(q.d), dc: flags(q.dc, DAILY), wk: isDay(q.wk) ? q.wk : '', w: cnt(q.w), wc: flags(q.wc, WEEKLY),
     att: { last: q.att && isDay(q.att.last) ? q.att.last : '', n: int(q.att && q.att.n, 0, 0, 1e6) } };
@@ -768,8 +1052,24 @@ function sanitize(o, now = Date.now()) {
     const dl = o.daily; o.daily = dl && typeof dl === 'object' && isDay(dl.day) ? { day: dl.day, tries: int(dl.tries, DAILY_TRIES, 0, DAILY_TRIES), best: dl.best && typeof dl.best === 'object' ? { floor: int(dl.best.floor, 1, 1, 400), at: int(dl.best.at, 0, 0, DAILY_SEC), lv: int(dl.best.lv, 1, 1, 1000), cls: CLASSES[dl.best.cls] ? dl.best.cls : 'war', bless: DAILY_BLESS.some(x => x.id === dl.best.bless) ? dl.best.bless : 'power', mod: DAILY_MODS.some(x => x.id === dl.best.mod) ? dl.best.mod : DAILY_MODS[0].id, day: dl.day } : null, last: null } : null;
     o.guide = { n: int(o.guide && o.guide.n, 0, 0, GUIDE.length), hide: !!(o.guide && o.guide.hide) };
     o.autoSeen = Array.isArray(o.autoSeen) ? o.autoSeen.filter(x => AUTO.some(a => a.id === x)) : AUTO.filter(a => a.need(o)).map(a => a.id);
-    o.noEv = false; o.noSig = false; o.goldConv = o.goldConv !== false;
-    o.autoNew = (Array.isArray(o.autoNew) ? o.autoNew : []).filter((x, i, a) => AUTO.some(z => z.id === x) && a.indexOf(x) === i); }
+    o.noEv = false; o.noSig = false; o.goldConv = o.goldConv !== false; o.lowFx = o.lowFx === true; o.cgAuto = o.cgAuto !== false;
+    o.autoNew = (Array.isArray(o.autoNew) ? o.autoNew : []).filter((x, i, a) => AUTO.some(z => z.id === x) && a.indexOf(x) === i);
+    { const cs = o.cos && typeof o.cos === 'object' ? o.cos : {}; const own = [...new Set((Array.isArray(cs.own) ? cs.own : []).filter(id => COS_BY_ID[id] && !COS_BY_ID[id].free))];
+      const seen = {}; for (const k of COS_SLOTS) { const v = cs.seen && cs.seen[k]; if (v != null && COS_TIERS[k] > 0) seen[k] = int(v, 0, 0, COS_TIERS[k] - 1); }
+      o.cos = { own, seen, look: {} }; for (const k of COS_SLOTS) { const v = cs.look && cs.look[k]; if (typeof v === 'string' && (v === 'hide' && !COS_NOHIDE[k] || /^t\d$/.test(v) && +v.slice(1) <= (seen[k] ?? -1) || COS_BY_ID[v] && (own.includes(v) || COS_BY_ID[v].free) && COS_BY_ID[v].slot === k)) o.cos.look[k] = v; } }
+    { const cgs = o.cg && typeof o.cg === 'object' ? o.cg : {}; const ci = it => it && typeof it === 'object' && CG_BASE[it.k] ? { k: it.k, r: int(it.r, 0, 0, 4), q: int(it.q, 100, 80, 120) } : null;
+      o.cg = { bag: (Array.isArray(cgs.bag) ? cgs.bag : []).map(ci).filter(Boolean).slice(0, CG_BAG), eq: {} };
+      for (const [id, e] of Object.entries(cgs.eq || {})) if (o.comp[id] && e && typeof e === 'object' && !/__proto__|constructor|prototype/.test(id)) { const z = {}; for (const k of CG_KINDS) { const it = ci(e[k]); if (it && it.k === k) z[k] = it; } if (Object.keys(z).length) o.cg.eq[id] = z; } }
+    { const ex = o.exped && typeof o.exped === 'object' ? o.exped : {}; const used = new Set();
+      o.shopBuy = { expSlot: int(o.shopBuy && o.shopBuy.expSlot, 0, 0, EXP_MAX - EXP_SLOTS), keyDay: o.shopBuy && isDay(o.shopBuy.keyDay) ? o.shopBuy.keyDay : '', keyN: int(o.shopBuy && o.shopBuy.keyN, 0, 0, 99) };
+      o.mile = int(o.mile, 0, 0, 1e9);
+      { const w = o.soul; o.soul = w && typeof w === 'object' && w.made ? { made: true, look: SOUL_LOOKS.includes(w.look) ? w.look : SOUL_LOOKS[0], name: cleanName(w.name) || null, lv: Math.min(int(w.lv, 1, 1, SOUL_MAXLV), Math.max(1, num(o.bestFloor) || 1, num(o.maxFloor) || 1)), xp: Math.max(0, Math.min(1e6, Number(w.xp) || 0)), opt: [...new Set((Array.isArray(w.opt) ? w.opt : []).filter(k => SOUL_FX[k]))].slice(0, SOUL_SLOT_AT.length), show: w.show !== false } : null; if (o.soul && !o.soul.opt.length) o.soul.opt = ['cut']; o.soulKills = int(o.soulKills, 0, 0, 1e7); }
+      { const ps = o.pets && typeof o.pets === 'object' ? o.pets : {}; const own = {}; for (const id of PETS) { const p = ps.own && ps.own[id]; if (p && typeof p === 'object') own[id] = { lv: int(p.lv, 1, 1, PET_MAX), k: PET_FX[p.k] ? p.k : 'atk', r: int(p.r, 0, 0, 4) }; }
+        const c = ps.cand; const fin = v => { const x = Number(v); return Number.isFinite(x) && x > 0 ? Math.min(x, 1e300) : 0; };
+        o.pets = { own, pot: fin(ps.pot), ppm: fin(ps.ppm), peak: fin(ps.peak), pin: fin(ps.pin), pt: Math.min(600, fin(ps.pt)), act: own[ps.act] ? ps.act : (Object.keys(own)[0] || null), cand: c && typeof c === 'object' && own[c.id] && PET_FX[c.k] ? { id: c.id, k: c.k, r: int(c.r, 0, 0, 4) } : null }; }
+      delete o.resolve;
+      { const mp = o.mrp && typeof o.mrp === 'object' ? o.mrp : {}; o.mrp = {}; for (const id of Object.keys(MR_POW)) { const x = mp[id]; if (x && typeof x === 'object') { const lv = int(x.lv, 0, 0, MRP_MAX); o.mrp[id] = { lv, xp: lv >= MRP_MAX ? 0 : num(x.xp, 0, 0, mrpNeed(lv)) }; } } }
+      o.exped = { slots: Array.from({ length: expCap(o) }, (_, i) => { const x = (ex.slots || [])[i]; if (!x || typeof x !== 'object' || !EXP_DUR[x.di]) return null; const ids = [...new Set(Array.isArray(x.ids) ? x.ids : [])].filter(id => typeof id === 'string' && o.comp[id] && !used.has(id)).slice(0, EXP_SIZE); if (!ids.length) return null; ids.forEach(id => used.add(id)); const start = num(x.start, now, 0, now + 60000); return { ids, di: int(x.di, 0, 0, 2), start, end: Math.min(num(x.end, start, start, start + 8 * 3600e3), start + EXP_DUR[int(x.di, 0, 0, 2)] * 3600e3), mult: num(x.mult, 1, 0.4, 1.5) }; }) }; } }
   const clampRune = ru => (ru && typeof ru === 'object' && RUNE_STATS[ru.k]) ? Object.assign({ k: ru.k, r: int(ru.r, 0, 0, 4), t: int(ru.t, 1, 1, 1000), u: int(ru.u, 0, 0, RUNE_UP_MAX) }, (ru.k2 && RUNE_STATS[ru.k2] && ru.k2 !== ru.k && int(ru.r, 0, 0, 4) === 4) ? { k2: ru.k2 } : {}) : null;
   { const rs = o.rift || {}; o.rift = { keys: int(rs.keys, KEY_DAILY, 0, KEY_MAX + 20), best: int(rs.best, 0, 0, 1000), lvl: 1 }; o.rift.lvl = int(rs.lvl, 1, 1, o.rift.best + 1);
     const ru = o.runes || {}; o.runes = { eq: Array.from({ length: RUNE_SLOTS }, (_, i) => clampRune((ru.eq || [])[i])), bag: (Array.isArray(ru.bag) ? ru.bag : []).map(clampRune).filter(Boolean).slice(0, RUNE_BAG), dust: num(ru.dust, 0, 0, 1e15) };
@@ -827,7 +1127,7 @@ export function normalize(s) {
   o.auto = { ...b.auto, ...(s.auto || {}) };
   if (!Array.isArray(s.autoSeen)) o.autoSeen = null;
   if (!s.guide && ((s.rebirths || 0) > 0 || (s.bestFloor || s.maxFloor || 0) >= 30)) o.guide = { n: 0, hide: true };   // 이미 익숙한 플레이어는 가이드를 접어 둔다
-  o.ench = { ...(s.ench || {}) }; o.ach = { ...(s.ach || {}) };
+  o.ench = { ...(s.ench || {}) }; o.enchX = { ...(s.enchX || {}) }; o.ach = { ...(s.ach || {}) };
   o.bestiary = Array.isArray(s.bestiary) ? s.bestiary.slice(0, ZONES) : [];
   // 탑 도중 저장된 세이브: 보스 상태는 그대로 이어서 진행
   if (s.honorPts == null) o.honorPts = o.honor || 0;   // v4.6 이전 세이브: 지금까지 모은 명예를 유물 구매용으로 지급
@@ -1026,13 +1326,16 @@ export function stats(s) {
   // 보유 효과 (획득한 모든 동료) — 동료 구성이 바뀔 때만 다시 계산
   for (const [k, v] of ownSumCached(s)) add(k, v);
   // 동행 효과 (편성한 동료)
-  const team = [], selfX = {};
+  const team = [], selfX = {}, mrX = { atk: 1, comp: 1, skill: 1 };
   let pAll = 0;
   for (const id of s.team || []) {
     const c = COMP_BY_ID[id], st = (s.comp || {})[id];
-    if (!c || !st) continue;
-    add(c.team.k, teamValue(s, c, st.aw, st.lv));
+    if (!c || !st || onExped(s, id)) continue;
+    add(c.team.k, teamValue(s, c, st.aw, st.lv) * cgMult(s, id, 'charm'));
     team.push({ c, aw: st.aw, lv: st.lv || 0 });
+    { const mp = MR_POW[id], ml = mp ? mrpLv(s, id) : 0;
+      if (ml) { if (mp.k === 'atk') mrX.atk *= 1 + mp.v * ml / 100; else if (mp.k === 'crit') add('crit', mp.v * ml); else if (mp.k === 'haste') add('cdr', mp.v * ml); else if (mp.k === 'comp') mrX.comp *= 1 + mp.v * ml / 100;
+        if (mp.k2 === 'skill') mrX.skill *= 1 + mp.v2 * ml / 100; } }
     if (st.aw >= CSK_AW_P) {
       const p = compPassive(c);
       if (p.eff === 'stat') add(p.k, p.val);
@@ -1076,38 +1379,44 @@ export function stats(s) {
 
   const rt = runeTotals(s);
   add('critDmg', 4 * masteryLv(s, 'crit') + (rt.crit || 0));
+  const pa = petAgg(s); add('crit', pa.crit); add('cdr', pa.haste);
+  const sfx = soulAgg(s);
   if (mech.double) extra += 0.15;
   const crit = Math.min(1000, 5 + a.crit);   // 100% 초과분은 확률로 다단 치명타 (워프레임 방식, 기대값은 선형)
   const critMult = 2.5 + a.critDmg / 100;
   const sb = setBonus(s), ap = achPower(s), kx = 1 + KARMA_POW * (s.karma || 0);
-  const mAtk = (1 + 0.03 * masteryLv(s, 'atk')) * (1 + (rt.atk || 0) / 100), mHp = (1 + 0.03 * masteryLv(s, 'hp')) * (1 + (rt.hp || 0) / 100);
+  const xcd = 1 + ENCHX_POW * enchXSum(s), pAtkX = 1 + pa.atk / 100, pHpX = 1 + pa.hp / 100;
+  const mAtk = (1 + 0.03 * masteryLv(s, 'atk')) * (1 + (rt.atk || 0) / 100) * xcd * pAtkX, mHp = (1 + 0.03 * masteryLv(s, 'hp')) * (1 + (rt.hp || 0) / 100) * xcd * pHpX;
   const rAtk = (1 + relicVal(s, 'atk') / 100) * (1 + sb / 100) * ap.atk * kx * mAtk, rHp = (1 + relicVal(s, 'hp') / 100) * (1 + sb / 100) * ap.hp * kx * mHp;
-  const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult * rAtk * ebuffMult(s, 'atkX') * muAtk * xm.atkP;
+  const atkF = atk * Math.max(0.1, 1 + a.atkP / 100) * honorMult * rAtk * ebuffMult(s, 'atkX') * muAtk * xm.atkP * mrX.atk;
   const hpF = hp * Math.max(0.2, 1 + a.hpP / 100) * rHp * ebuffMult(s, 'hpX');
   const hit = atkF * (1 + (crit / 100) * (critMult - 1));
   const thunder = mech.thunder ? Math.min(1, crit / 100) * 0.2 * 4 : 0;
   const heroDps = hit * aps * (1 + extra) + atkF * aps * thunder;
   const heroDpsBoss = hit * aps * (1 + extra + extraBoss) + atkF * aps * thunder;
+  const basicAmp = cgBladeSum(s) / 100;   // 칼날 합계 (평타에만, 스킬은 heroDps 기준 그대로)
   // 성직자: 동료도 용사의 치명타 확률로 치명타 (동료 치명타는 고정 보너스, 100% 초과분은 여러 단계)
   const compCrit = s.cls === 'clr' ? 1 + (crit / 100) * CLR_COMP_CRIT : 1;
-  const compMult = (1 + a.compP / 100) * (1 + pComp) * (1 + pAll) * (1 + (rt.comp || 0) / 100) * compCrit * ebuffMult(s, 'compX') * muComp * xm.compP;
+  const compMult = (1 + a.compP / 100) * (1 + pComp) * (1 + pAll) * (1 + (rt.comp || 0) / 100) * compCrit * ebuffMult(s, 'compX') * muComp * xm.compP * mrX.comp * (1 + pa.comp / 100);
   let compDps = 0;
   const compHits = team.map(({ c, aw, lv }) => { const d = compCoef(c, aw, lv) * atkF * compMult * (selfX[c.id] || 1); compDps += d; return { id: c.id, dps: d }; });
   const compActs = team.filter(x => x.aw >= CSK_AW_A).map(x => x.c);
+  const skM = (1 + a.skillP / 100) * (1 + (rt.skill || 0) / 100) * ebuffMult(s, 'skillX') * muSkill * xm.skillP * mrX.skill * (1 + pa.skill / 100) * (1 + Math.min(sfx.power * 200, sfx.power * (s.soulKills || 0)) / 100);
+  const basicX = (1 + basicAmp + BASIC_SKILL_K * Math.max(0, skM - 1)) * (1 + pa.basic / 100);
   const cdr = a.cdr;                    // 스킬 가속 (롤 방식): 쿨타임 = 기본 × 100 / (100 + 가속), 상한 없음
   // 숫자가 무한대로 터지면 이후 계산이 전부 NaN이 되므로 상한을 둔다
   const cap = v => (Number.isFinite(v) ? Math.min(v, 1e300) : (v > 0 ? 1e300 : 0));
   return {
     atk: cap(atkF), hp: cap(hpF), crit, critMult, spd, aps, hit: cap(hit),
-    heroDps: cap(heroDps), compDps: cap(compDps), compHits, compActs, dps: cap(heroDps + compDps), dpsBoss: cap(heroDpsBoss + compDps),
+    heroDps: cap(heroDps), compDps: cap(compDps), compHits, compActs, dps: cap(heroDps * basicX + compDps), dpsBoss: cap(heroDpsBoss * basicX + compDps), basicAmp, basicX: cap(basicX), sfx, hitRate: aps + team.length * COMP_HIT_RATE, 
     def: 100 * (1 - (100 / (100 + ARMOR_K * Math.max(0, a.def))) * (1 - Math.min(50, pShield) / 100)), armor: a.def, cdr,
     cdRate: 1 + cdr * 1 / 100 + Math.min(cdrCap, pCdr),
     regen: (a.regen + pHeal) * ebuffMult(s, 'regenX'),
-    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100) * ap.gold * (1 + 0.03 * masteryLv(s, 'gold')) * (1 + (rt.gold || 0) / 100) * ebuffMult(s, 'goldX'),
-    bossMult: (1 + a.bossP / 100) * (1 + relicVal(s, 'boss') / 100) * (1 + (rt.boss || 0) / 100),
-    skillMult: (1 + a.skillP / 100) * (1 + (rt.skill || 0) / 100) * ebuffMult(s, 'skillX') * muSkill * xm.skillP,
+    goldMult: (1 + a.goldP / 100 + pGold) * honorMult * (1 + relicVal(s, 'gold') / 100) * ap.gold * (1 + 0.03 * masteryLv(s, 'gold')) * (1 + (rt.gold || 0) / 100) * ebuffMult(s, 'goldX') * (1 + pa.gold / 100),
+    bossMult: (1 + a.bossP / 100) * (1 + relicVal(s, 'boss') / 100) * (1 + (rt.boss || 0) / 100) * (1 + pa.boss / 100),
+    skillMult: skM,
     weak: Math.min(80, a.weak),
-    xpMult: (1 + pXp) * (1 + a.xpP / 100) * (1 + relicVal(s, 'xp') / 100) * ebuffMult(s, 'xpX'),
+    xpMult: (1 + pXp) * (1 + a.xpP / 100) * (1 + relicVal(s, 'xp') / 100) * ebuffMult(s, 'xpX') * (1 + pa.xp / 100), pet: pa,
     mech,
     extra, honorMult, raw: a,
   };
@@ -1120,7 +1429,8 @@ function cast(s, st, sd, lv, ev) {
   const v = skillVal(sd, lv), mu = mutOf(s, sd);
   if (sd.eff === 'burst') {
     const muX = mu === 'a' ? (s.boss ? 1.6 : 1.1) : mu === 'b' ? (s.boss ? 1.1 : 1.5) : 1;
-    const dmg = muX * st.heroDps * v * st.skillMult * (s.boss && sd.bossX ? sd.bossX : 1);
+    let dmg = muX * st.heroDps * v * st.skillMult * (s.boss && sd.bossX ? sd.bossX : 1);
+    if (st.sfx && st.sfx.echo) { dmg *= 1 + Math.min(135, st.sfx.echo) / 100; ev.soulEcho = (ev.soulEcho || 0) + 1; }
     if (sd.weak) pushBuff(s, sd.id, sd.dur, { weak: sd.weak });
     (ev.casts ||= []).push({ id: sd.id, dmg });
     return dmg;
@@ -1178,6 +1488,7 @@ function pushBuff(s, id, t, stats) {
 }
 
 export function step(s, dt, ev) {
+  petTick(s, dt);
   ev = ev || {};
   if (!s.cls) return ev;
   autoTick(s, dt, ev);
@@ -1203,6 +1514,7 @@ export function step(s, dt, ev) {
       const r = cast(s, st, sd, lv, ev);
       if (r >= 0) {
         burst += r; cd += sd.cd * mutCd(s, sd);
+        if (st.sfx) soulOnCast(s, st, sd);
         if (st.mech.echo) { burst += st.compDps * 3; ev.echo = true; }
       } else { cd = 0; break; }
     }
@@ -1223,16 +1535,21 @@ export function step(s, dt, ev) {
   if (s.boss && s.boss.tower) return towerStep(s, st, dt, burst, ev);
   if (s.boss) {
     s.boss.timer -= dt;
-    s.boss.hp -= (st.dpsBoss * dt + burst) * st.bossMult;
+    const sf = st.sfx || {}, tmx = s.boss.tmax || BOSS_TIME, el = tmx - s.boss.timer;
+    const titanN = sf.titan ? Math.min(30, Math.floor(el / 0.5)) : 0;
+    s.boss.hp -= (st.dpsBoss * dt + burst) * st.bossMult * (1 + titanN * sf.titan / 100);
+    if (sf.cut && s.boss.hp > 0) s.boss.hp -= soulCutDmg(s.boss.hp, st, dt);
     let h = (s.hp == null ? st.hp : s.hp);
+    if (sf.enpass) { s.boss.ep = (s.boss.ep || 0) + dt; if (s.boss.ep >= 5) { s.boss.ep -= 5; s.boss.hp -= s.boss.max * Math.min(5.25, sf.enpass) / 100; h += st.hp * Math.min(30, sf.enpass * 3) / 100; ev.soulEnpass = true; } }
     h += st.hp * (st.regen / 100) * dt;
-    const invuln = st.mech.invuln && s.boss.timer > (s.boss.tmax || BOSS_TIME) - 5;
-    if (!invuln) h -= bossDps(s.floor) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;
+    const invuln = st.mech.invuln && s.boss.timer > tmx - 5;
+    const tankCut = sf.tank ? Math.min(sf.tank, Math.min(100, st.crit)) / 100 * 0.5 : 0;
+    if (!invuln) h -= bossDps(s.floor) * (1 - st.def / 100) * (1 - st.weak / 100) * (1 - titanN * Math.min(2, sf.titan) / 100) * (1 - tankCut) * dt;
     if (h <= 0 && st.mech.revive && !s.boss.revived) { s.boss.revived = true; h = st.hp * 0.3; ev.revive = true; }
     s.hp = Math.min(st.hp, h);
     if (s.boss.hp <= 0) {
       ev.bossWin = true;
-      gainKill(s, st, true, ev, 1);
+      gainKill(s, st, true, ev, 1); mrGain(s, 1, ev); soulGain(s, 1, ev); if (soulMade(s)) s.soulKills = (s.soulKills || 0) + 1;
       const bonus = 3 + Math.floor(s.floor / 5);
       s.stones += bonus;
       ev.stones = (ev.stones || 0) + bonus;
@@ -1290,7 +1607,7 @@ export function challengeBoss(s) {
 function gainKill(s, st, boss, ev, n) {
   const f = s.floor;
   const g = goldPerKill(f) * st.goldMult * (boss ? 20 : 1) * n;
-  s.gold += g;
+  s.gold += g; petGain(s, g);
   s.xp += xpPerKill(f) * (boss ? 14 : 1) * n * (st.xpMult || 1);
   s.totalKills += n;
   if (!boss) { s.kills += n; const mi = monsterIndex(f); (s.bestiary ||= [])[mi] = (s.bestiary[mi] || 0) + n; }
@@ -1326,7 +1643,7 @@ function advanceFloor(s, ev) {
   s.floor++;
   s.kills = 0; s.prog = 0;
   if (s.floor > s.maxFloor) {
-    s.maxFloor = s.floor; s.stuckT = 0; qAdd(s, 'floor', 1);
+    s.maxFloor = s.floor; s.stuckT = 0; qAdd(s, 'floor', 1); mrGain(s, 1, ev); soulGain(s, 1, ev);
     if (s.floor > (s.bestFloor || 0)) s.bestFloor = s.floor;
     if (s.floor > (s.cycleBest || 0)) s.cycleBest = s.floor;
     const ns = 2 + relicVal(s, 'stone');
@@ -1341,7 +1658,7 @@ function advanceFloor(s, ev) {
 export const ESS_BY_R = [0, 0, 1, 3, 10];
 function sellGain(s, it, cnt = 1) { const g = sellPrice(it) * cnt; s.gold += g; s.ess = (s.ess || 0) + ESS_BY_R[it.r] * cnt; qAdd(s, 'sell', cnt); return g; }
 export function pickup(s, it, ev) {
-  ev = ev || {};
+  ev = ev || {}; markSeen(s, it);
   const cur = s.equip[it.s];
   // 자동 판매: 설정한 등급 이하이고 착용 중보다 좋지 않으면 바로 판다
   if ((s.autoSell ?? -1) >= 0 && it.r <= s.autoSell && cur && itemScore(it) <= itemScore(cur)) {
@@ -1494,8 +1811,8 @@ export function rebirth(s) {
 function persistKeep(s) {
   return {
     life: { ...(s.life || {}) }, quest: s.quest || {}, boost: { ...(s.boost || {}) }, tower: { ...(s.tower || {}), prev: null }, towers: JSON.parse(JSON.stringify(s.towers || {})), rift: { ...(s.rift || {}) }, runes: JSON.parse(JSON.stringify(s.runes || {})), auto: { ...(s.auto || {}) },
-    ench: { ...(s.ench || {}) }, ess: s.ess || 0, ach: { ...(s.ach || {}) }, bestiary: (s.bestiary || []).slice(), karma: s.karma || 0, reinc: s.reinc || 0,
-    autoSell: s.autoSell, goldConv: s.goldConv !== false, gachaOpt: { ...(s.gachaOpt || {}) }, mut: { ...(s.mut || {}) }, bossPity: { ...(s.bossPity || {}) }, sigGot: { ...(s.sigGot || {}) }, daily: s.daily ? JSON.parse(JSON.stringify(s.daily)) : null, guide: { ...(s.guide || {}) }, autoSeen: (s.autoSeen || []).slice(), autoNew: (s.autoNew || []).slice(), events: (s.events || []).slice(), evT: s.evT || 0, evLog: (s.evLog || []).slice(), bestFloor: Math.max(s.bestFloor || 0, s.maxFloor || 0), cycleBest: Math.max(s.cycleBest || 0, s.maxFloor || 0),
+    ench: { ...(s.ench || {}) }, enchX: { ...(s.enchX || {}) }, ess: s.ess || 0, ach: { ...(s.ach || {}) }, bestiary: (s.bestiary || []).slice(), karma: s.karma || 0, reinc: s.reinc || 0,
+    autoSell: s.autoSell, goldConv: s.goldConv !== false, lowFx: s.lowFx === true, cgAuto: s.cgAuto !== false, gachaOpt: { ...(s.gachaOpt || {}) }, mut: { ...(s.mut || {}) }, bossPity: { ...(s.bossPity || {}) }, sigGot: { ...(s.sigGot || {}) }, daily: s.daily ? JSON.parse(JSON.stringify(s.daily)) : null, guide: { ...(s.guide || {}) }, autoSeen: (s.autoSeen || []).slice(), autoNew: (s.autoNew || []).slice(), mrp: JSON.parse(JSON.stringify(s.mrp || {})), pets: JSON.parse(JSON.stringify(s.pets || {})), soul: s.soul ? JSON.parse(JSON.stringify(s.soul)) : null, soulKills: s.soulKills || 0, cos: JSON.parse(JSON.stringify(s.cos || {})), exped: JSON.parse(JSON.stringify(s.exped || {})), cg: JSON.parse(JSON.stringify(s.cg || {})), events: (s.events || []).slice(), evT: s.evT || 0, evLog: (s.evLog || []).slice(), bestFloor: Math.max(s.bestFloor || 0, s.maxFloor || 0), cycleBest: Math.max(s.cycleBest || 0, s.maxFloor || 0),
   };
 }
 // 환생·윤회 때 가방과 착용 장비는 사라지는 대신 정수로 분해된다
@@ -1523,7 +1840,7 @@ export function reincarnate(s) {
     comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, shards: s.shards || 0, pulls: s.pulls, pity: s.pity,
     rebirths: s.rebirths, ...persistKeep(s),
   };
-  keep.karma = (s.karma || 0) + k; keep.reinc = (s.reinc || 0) + 1; keep.cycleBest = 0;
+  keep.karma = (s.karma || 0) + k; keep.reinc = (s.reinc || 0) + 1; keep.cycleBest = 0; keep.soulKills = 0;
   keep.ess = (keep.ess || 0) + gearEssence(s);
   Object.assign(s, newSave(), keep);
   s.lastTick = Date.now();
@@ -1692,6 +2009,7 @@ function towerStep(s, st, dt, burst, ev) {
   const id = TOWER_BY_ID[b.tower] ? b.tower : 'inf', T = TOWER_BY_ID[id], ts = towerState(s, id);
   b.timer -= dt;
   let dmg = (st.dpsBoss * dt + burst) * st.bossMult * runeMult(s, 'tower');
+  if (st.sfx && st.sfx.cut) dmg += soulCutDmg(b.hp, st, dt);
   let h = (s.hp == null ? st.hp : s.hp);
   h += st.hp * (st.regen / 100) * dt;
   h -= towerDps(b.tf, id) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;
@@ -1746,6 +2064,7 @@ function riftStep(s, st, dt, burst, ev) {
   const b = s.boss, L = b.L;
   b.timer -= dt;
   let dmg = (st.dpsBoss * dt + burst) * st.bossMult * runeMult(s, 'tower');
+  if (st.sfx && st.sfx.cut) dmg += soulCutDmg(b.hp, st, dt);
   let h = (s.hp == null ? st.hp : s.hp);
   h += st.hp * (st.regen / 100) * dt;
   h -= riftDps(L) * (1 - st.def / 100) * (1 - st.weak / 100) * dt;
@@ -1820,11 +2139,20 @@ export function runeWeakest(s) { const eq = runeState(s).eq; return eq.every(Boo
 // ---------- 장비 부위 강화 (정수, 영구) · 세트 효과 ----------
 export const ENCH_MAX = 20, ENCH_STEP = 0.1;
 export function enchLv(s, slot) { return (s.ench && s.ench[slot]) || 0; }
+// 초월: +20을 다 채운 부위는 남는 정수로 계속 올린다 (단계마다 +10%, 비용은 완만하게 증가, 환생·윤회해도 유지)
+export const ENCHX_MAX = 9999, ENCHX_G = 1.08;
+// 후반엔 장비 기본 수치가 다른 배율에 묻혀서, 초월은 "모든 부위 초월 단계 합 × 1%"를 최종 공격력·체력에 곱한다
+export const ENCHX_POW = 0.01;
+export function enchXSum(s) { let t = 0; for (const sl of SLOTS) t += enchX(s, sl.id); return t; }
+export function enchX(s, slot) { return enchLv(s, slot) >= ENCH_MAX ? ((s.enchX && s.enchX[slot]) || 0) : 0; }
 export function enchMult(s, slot) { return 1 + ENCH_STEP * enchLv(s, slot); }
 export function enchCost(lv) { return Math.ceil(6 * Math.pow(1.3, lv)); }
+export function enchXCost(x) { return Math.ceil(enchCost(ENCH_MAX) * Math.pow(ENCHX_G, x)); }
+export function enchNextCost(s, slot) { const lv = enchLv(s, slot); return lv < ENCH_MAX ? enchCost(lv) : enchXCost(enchX(s, slot)); }
 export function enchant(s, slot) {
   const lv = enchLv(s, slot);
-  if (lv >= ENCH_MAX || !SLOT_BY_ID[slot]) return false;
+  if (!SLOT_BY_ID[slot]) return false;
+  if (lv >= ENCH_MAX) { const x = enchX(s, slot); if (x >= ENCHX_MAX) return false; const c = enchXCost(x); if ((s.ess || 0) < c) return false; s.ess -= c; (s.enchX ||= {})[slot] = x + 1; qAdd(s, 'ench', 1); return true; }
   const c = enchCost(lv);
   if ((s.ess || 0) < c) return false;
   s.ess -= c; (s.ench ||= {})[slot] = lv + 1; qAdd(s, 'ench', 1);
