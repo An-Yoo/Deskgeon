@@ -1,5 +1,5 @@
 // Deskgeon 웹(PWA) 오프라인 캐시. 버전이 바뀌면 캐시를 새로 만든다.
-const CACHE = 'deskgeon-web-5.6.0';
+const CACHE = 'deskgeon-web-5.7.0';
 const CORE = ['./', './index.html', './web-shim.js', './web-fit.js', './web.css', './boot.js', './popup.css', './popup.js', './game.js', './i18n.js', './manifest.webmanifest'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(CORE)).then(() => self.skipWaiting()));

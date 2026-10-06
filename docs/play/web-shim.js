@@ -4,7 +4,7 @@
 // identity(구글 드라이브)는 제공하지 않으므로 드라이브 동기화는 "지원 안 함"으로 표시된다.
 (() => {
   if (globalThis.chrome && globalThis.chrome.storage && globalThis.chrome.storage.local) return; // 실제 확장 환경이면 그대로
-  const VERSION = '5.6.0';
+  const VERSION = '5.7.0';
   const PREFIX = 'dg.web.';
   const listeners = [];
   const clone = v => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));

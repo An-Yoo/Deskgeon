@@ -623,3 +623,46 @@ html.gmini-on .gmini { display: flex; align-items: center; gap: 6px; height: 34p
 .soulhead .sod { font-size: 9.5px; color: #a8f0b2; }
 .sofx { font-size: 9.5px; color: var(--muted); } .sofx summary { cursor: pointer; color: #9fe3ff; } .sofx div { margin: 2px 0; } .sofx b { color: var(--text); }
 .sorow span { font-size: 9.5px; }
+
+/* 이펙트 간소화 */
+html.lowfx #flash { display: none !important; }
+html.lowfx #dmgs span { text-shadow: 1px 1px 0 #000 !important; }
+html.lowfx #dmgs span.crit, html.lowfx #dmgs span.crit2, html.lowfx #dmgs span.crit3 { font-size: 13px; }
+html.lowfx .bnr { animation-duration: 1.2s !important; }
+html.lowfx .gresult .g.hi::before { display: none; }
+html.lowfx .evbar .evdot, html.lowfx .sp { animation: none !important; }
+.pauto { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px; padding: 4px; border: 1px solid rgba(126,224,138,.3); border-radius: 4px; font-size: 9.5px; }
+.pauto b { color: #a8f0b2; } .pauto select { font-size: 9.5px; max-width: 92px; } .pauto #petAutoLine { flex-basis: 100%; }
+
+/* 원정 일괄 · 상점 묶음 구매 */
+.expall { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; margin: 2px 0 4px; }
+.expall:empty { display: none; }
+.expall select { font-size: 9.5px; }
+.ssrow { flex-wrap: wrap; }
+.ssrow [data-ssn], .ssrow [data-ss="cosAll"] { white-space: nowrap; }
+
+/* 동료 장비 가방 창 */
+#cgWin { width: 336px; box-sizing: border-box; padding: 10px 12px; align-items: stretch; text-align: left; gap: 7px; overflow-x: hidden; }
+#cgWin .evh span { font-size: 10.5px; }
+#cgWin .cgsum { font-size: 11px; font-weight: 700; color: #ffd98a; padding: 5px 8px; background: rgba(255,217,138,.08); border: 1px solid rgba(255,217,138,.25); border-radius: 6px; line-height: 1.4; word-break: keep-all; }
+#cgWin .cghelp { font-size: 10px; color: var(--muted); line-height: 1.5; }
+#cgWin .cghelp summary { cursor: pointer; color: #b9a6ff; }
+#cgWin .cghelp div { margin-top: 3px; word-break: keep-all; }
+#cgWin .cgauto { display: flex; align-items: center; gap: 6px; font-size: 10.5px; line-height: 1.3; }
+#cgWin .cgauto input { flex: none; margin: 0; }
+#cgWin .cgbtns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5px; }
+#cgWin .cgbtns .mini { padding: 6px 4px; font-size: 10.5px; line-height: 1.25; white-space: normal; word-break: keep-all; min-height: 0; }
+#cgWin .cgleft { font-size: 9.5px; color: var(--muted); }
+#cgWin .cglist { max-height: 230px; overflow-y: auto; overflow-x: hidden; padding-right: 2px; }
+#cgWin .cgi { align-items: center; gap: 6px; }
+#cgWin .cgi > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#cgWin .cgi i { flex: none; }
+#cgWin [data-cga="close"] { margin-top: 2px; }
+.cosfx { font-size: 10.5px; color: #a8f0b2; padding: 5px 8px; background: rgba(126,224,138,.08); border: 1px solid rgba(126,224,138,.25); border-radius: 6px; line-height: 1.45; text-align: left; word-break: keep-all; }
+.cosfx b { color: var(--text); } .cosfx span { display: block; font-size: 9.5px; color: var(--muted); }
+
+/* 스크롤바: 얇고 게임 색에 맞게 (화살표 없음) */
+* { scrollbar-width: thin; scrollbar-color: rgba(185,166,255,.38) transparent; }
+*:hover { scrollbar-color: rgba(185,166,255,.6) transparent; }
+/* 한국어 줄바꿈: 단어 중간에서 끊지 않기 (너무 긴 단어만 예외) */
+html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
