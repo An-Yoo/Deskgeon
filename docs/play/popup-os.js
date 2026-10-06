@@ -2640,7 +2640,7 @@ async function init() {
   window.__dmStep = 'advance';
   { const off = Math.round((Date.now() - (S.lastTick || Date.now())) / 1000); (window.__dmLog || (() => {}))('save lv' + S.level + ' B' + S.floor + ' bag' + S.bag.length + ' comp' + Object.keys(S.comp || {}).length + ' from=' + S._from + ' offline=' + off + 's'); }
   const _adv0 = performance.now();
-  setLang(S.lang || 'en');
+  setLang(S.lang || 'ko');
   applyI18n(); applyLowFx();
   advance(S);
   cgSnap = cgSnapNow(); if (S.cgAuto !== false) cgAutoEquip(S);   // 예전 세이브: 가방에 남은 장비를 한 번 정리
