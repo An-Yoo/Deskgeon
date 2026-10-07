@@ -19,7 +19,7 @@
 ul.feat{padding-left:20px}ul.feat li{margin:4px 0}.end{text-align:center;margin-top:40px}h3{color:#d9c9ff;margin-top:22px}ul{padding-left:20px}li{margin:3px 0}li.sub2{margin-left:18px;list-style:circle;color:#c8c1e4}hr{border:0;border-top:1px solid #2e2947;margin:36px 0}.en{background:#1b1631;border:1px solid #2e2947;border-radius:8px;padding:12px 16px;font-size:14px;color:#c8c1e4}</style></head>
 <body><div class="wrap">
 <header><img src="img/icon128.png" alt="Deskgeon icon"><b>Deskgeon 패치노트</b><nav><a href="./">Home</a><a href="https://chromewebstore.google.com/detail/deskgeon-idle-dungeon-rpg/adaoggopidkbankjinlalfnjlgncanpk">Chrome Web Store</a><a href="https://github.com/An-Yoo/Deskgeon">GitHub</a></nav></header>
-<div class="en"><b>English summary (5.7.0)</b><br>New: Soul Weapon (after your first reincarnation, forge your own weapon: 70 looks, custom name and 8 special combat options; kept through reincarnation), Pets (16 pets, a pet bank fed by 10% of hunting gold, no duplicate draws, level cap = half your best floor), 4 Mythic (MR) allies with growing Mythic Powers, Expeditions, Ally Gear (with auto-equip, highest rarity first), a 119-piece wardrobe with body/hair/off-hand slots and live preview, summon mileage, Stone Shop (premium ally gear chest, x10 chests, bulk costume purchase, send-all and recall-all expeditions), enhancement Transcend, a quiet one-line Gacha Mode for auto-summon, preset renaming, pet auto-reroll and a simplified-effects mode; large numbers are now abbreviated.<br>Balance: basic attack multiplier = 1 + blades + 50% of skill damage bonus; Warrior buffed (~+80% damage); boss damage growth softened after B80 to fix instant deaths around B100.</div>
+<div class="en"><b>English summary (5.7.0)</b><br>New: Soul Weapon (after your first reincarnation, forge your own weapon: 70 looks, custom name and 8 special combat options; kept through reincarnation), Pets (16 pets, a pet bank fed by 10% of hunting gold, no duplicate draws, level cap = half your best floor), 4 Mythic (MR) allies with growing Mythic Powers, Expeditions, Ally Gear (with auto-equip, highest rarity first), a 119-piece wardrobe (owning special costumes raises ATK, HP and armor) with body/hair/off-hand slots and live preview, summon mileage, Stone Shop (premium ally gear chest, x10 chests, bulk costume purchase, send-all and recall-all expeditions), enhancement Transcend, a quiet one-line Gacha Mode for auto-summon, preset renaming, pet auto-reroll and a simplified-effects mode; large numbers are now abbreviated.<br>Balance: basic attack multiplier = 1 + blades + 50% of skill damage bonus; Warrior buffed (~+80% damage); boss damage growth softened after B80 to fix instant deaths around B100.</div>
 <h2>5.7.0 (5.4.0 이후 변경 전체)</h2>
 <p>5.5~5.6 개발분까지 한 번에 묶은 큰 업데이트입니다. (친구 테스트용으로 돌던 5.6.0 빌드의 최종판입니다.) 새 성장 요소는 대부분 <b>환생·윤회해도 남습니다.</b></p>
 <h3>새 기능</h3>
@@ -32,7 +32,7 @@ ul.feat{padding-left:20px}ul.feat li{margin:4px 0}.end{text-align:center;margin-
 <li class="sub2">영혼 베기: 용사 평타·동료 공격이 맞을 때마다 적 현재 체력의 0.1% 추가 피해 (보스·탑·균열)</li>
 <li class="sub2">마력 순환: 스킬을 쓰면 그 스킬 쿨타임의 55%만큼 다른 무작위 스킬 쿨타임을 돌려받음</li>
 <li class="sub2">잔영 시전: 피해 스킬마다 잔영이 90% 위력으로 한 번 더 시전</li>
-<li class="sub2">영혼 해방: 쿨타임이 가장 긴 스킬을 쓰면 다른 스킬 쿨타임 초기화 + 6초간 스킬 피해 +70%</li>
+<li class="sub2">영혼 해방: 쿨타임이 가장 긴 피해 스킬(전사 회오리 베기, 도적 칼날 폭풍, 마법사 메테오, 성직자 천벌)을 쓰면 다른 스킬 쿨타임 초기화 + 6초간 스킬 피해 +70%</li>
 <li class="sub2">급소 간파: 보스전 5초마다 보스 최대 체력의 3.5% 피해, 용사 체력 10.5% 회복</li>
 <li class="sub2">날 선 감각: 치명타 확률만큼(최대 40%) 확률로 받는 피해 절반</li>
 <li class="sub2">전투 고양: 보스전 0.5초마다 1중첩(최대 30), 중첩당 주는 피해 +1.2%, 받는 피해 -1.2%</li>
@@ -83,6 +83,7 @@ ul.feat{padding-left:20px}ul.feat li{margin:4px 0}.end{text-align:center;margin-
 <li>토끼 머리띠 3종, 드레스 5색, 왕관 등이 있어서 토끼 공주 같은 룩도 만들 수 있습니다.</li>
 <li>기본 외형 4종과 머리 모양 14종은 처음부터 무료입니다.</li>
 <li>커서를 올리면 입은 모습을 미리 보여 줍니다.</li>
+<li><b>보유 효과:</b> 특별 코스튬은 입지 않고 갖고만 있어도 능력치가 오릅니다. 1개마다 무기·보조손은 공격력 +1%, 갑옷·망토·외형은 체력 +1%, 투구·신발·장갑은 방어력 +2입니다 (전부 모으면 공격력 +24%, 체력 +42%, 방어력 +70). 무료 외형·머리 모양은 해당되지 않습니다.</li>
 </ul>
 <p><b>소환 마일리지와 소환석 상점</b></p>
 <ul>
