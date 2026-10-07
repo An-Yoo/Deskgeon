@@ -748,4 +748,104 @@ comp/azrael.png  ←  mon/unique/azrael.png
 comp/mnoleg.png  ←  mon/unique/mnoleg.png
 comp/lom_lobon.png  ←  mon/unique/lom_lobon.png
 comp/gloorx_vloq.png  ←  mon/unique/gloorx_vloq.png
+comp/spriggan_berserker.png  ←  mon/spriggan/spriggan_berserker.png
+comp/spriggan_defender.png  ←  mon/spriggan/spriggan_defender.png
+comp/skeletal_warrior.png  ←  mon/undead/skeletal_warrior.png
+comp/moon_troll.png  ←  mon/vault/moon_troll.png
+comp/deformed_orc.png  ←  mon/vault/deformed_orc.png
+comp/phantasmal_warrior.png  ←  mon/undead/phantasmal_warrior.png
+comp/spectral_axe.png  ←  mon/nonliving/spectral_axe.png
+comp/spectral_mace.png  ←  mon/nonliving/spectral_mace.png
+comp/draco_knight.png  ←  mon/draco/draco-base-red.png + mon/draco/draco-job-knight.png (겹쳐 합성)
+comp/vampire_knight.png  ←  mon/undead/vampire_knight.png
+comp/revenant.png  ←  mon/undead/revenant.png
+comp/warmonger.png  ←  mon/demonspawn/warmonger.png
+comp/blork_the_orc.png  ←  mon/unique/blork_the_orc.png
+comp/flesh_golem.png  ←  mon/nonliving/flesh_golem.png
+comp/chaos_champion.png  ←  mon/demonspawn/chaos_champion.png
+comp/hell_sentinel.png  ←  mon/demons/hell_sentinel.png
+comp/guardian_golem.png  ←  mon/nonliving/guardian_golem.png
+comp/iron_elemental.png  ←  mon/nonliving/iron_elemental.png
+comp/snorg.png  ←  mon/unique/snorg.png
+comp/lernaean_hydra.png  ←  mon/unique/lernaean_hydra05.png
+comp/bone_dragon.png  ←  mon/undead/bone_dragon.png
+comp/hell_beast.png  ←  mon/demons/hell_beast.png
+comp/tiamat_grey.png  ←  mon/unique/tiamat_grey.png
+comp/serpent_geh.png  ←  mon/unique/serpent_of_hell-geh.png
+comp/pan_iron.png  ←  mon/panlord/demon_wings_bat.png + mon/panlord/demon_body_armour.png + mon/panlord/demon_head_helmet.png (겹쳐 합성)
+comp/spriggan_rider.png  ←  mon/spriggan/spriggan_rider.png
+comp/deformed_elf.png  ←  mon/vault/deformed_elf.png
+comp/crimson_imp.png  ←  mon/demons/crimson_imp.png
+comp/shadow_imp.png  ←  mon/demons/shadow_imp.png
+comp/quasit.png  ←  mon/demons/quasit.png
+comp/hungry_ghost.png  ←  mon/undead/hungry_ghost.png
+comp/vine_stalker.png  ←  mon/fungi_plants/vine_stalker.png
+comp/draco_shifter.png  ←  mon/draco/draco-base-green.png + mon/draco/draco-job-shifter.png (겹쳐 합성)
+comp/jiangshi.png  ←  mon/undead/jiangshi.png
+comp/shadow.png  ←  mon/undead/shadow.png
+comp/silent_spectre.png  ←  mon/undead/silent_spectre.png
+comp/phantom.png  ←  mon/undead/phantom.png
+comp/thorn_hunter.png  ←  mon/fungi_plants/thorn_hunter.png
+comp/purgy.png  ←  mon/unique/purgy.png
+comp/corrupter.png  ←  mon/demonspawn/corrupter.png
+comp/ignacio.png  ←  mon/unique/ignacio.png
+comp/lurking_horror.png  ←  mon/abyss/lurking_horror.png
+comp/unseen_horror.png  ←  mon/aberr/unseen_horror.png
+comp/smoke_demon.png  ←  mon/demons/smoke_demon.png
+comp/eustachio.png  ←  mon/unique/eustachio.png
+comp/neqoxec.png  ←  mon/demons/neqoxec.png
+comp/sixfirhy.png  ←  mon/demons/sixfirhy.png
+comp/tiamat_mottled.png  ←  mon/unique/tiamat_mottled.png
+comp/serpent_tar.png  ←  mon/unique/serpent_of_hell-tar.png
+comp/pan_mantis.png  ←  mon/panlord/demon_wings_torn.png + mon/panlord/demon_body_mantis.png + mon/panlord/demon_head_skull.png (겹쳐 합성)
+comp/spriggan_air_mage.png  ←  mon/spriggan/spriggan_air_mage.png
+comp/vampire_mage.png  ←  mon/undead/vampire_mage.png
+comp/white_imp.png  ←  mon/demons/white_imp.png
+comp/iron_imp.png  ←  mon/demons/iron_imp.png
+comp/insubstantial_wisp.png  ←  mon/nonliving/insubstantial_wisp.png
+comp/ball_lightning.png  ←  mon/nonliving/ball_lightning.png
+comp/fire_elemental.png  ←  mon/nonliving/fire_elemental.png
+comp/water_elemental.png  ←  mon/nonliving/water_elemental.png
+comp/draco_scorcher.png  ←  mon/draco/draco-base-yellow.png + mon/draco/draco-job-scorcher.png (겹쳐 합성)
+comp/draco_annihilator.png  ←  mon/draco/draco-base-purple.png + mon/draco/draco-job-annihilator.png (겹쳐 합성)
+comp/hell_wizard.png  ←  mon/vault/hell_wizard_100.png
+comp/air_elemental.png  ←  mon/nonliving/air_elemental.png
+comp/earth_elemental.png  ←  mon/nonliving/earth_elemental.png
+comp/electric_golem.png  ←  mon/nonliving/electric_golem.png
+comp/blizzard_demon.png  ←  mon/demons/blizzard_demon.png
+comp/ice_devil.png  ←  mon/demons/ice_devil.png
+comp/spellforged_servitor.png  ←  mon/nonliving/spellforged_servitor.png
+comp/great_orb_of_eyes.png  ←  mon/eyes/great_orb_of_eyes.png
+comp/zonguldrok_lich.png  ←  mon/vault/zonguldrok_lich.png
+comp/ice_dragon.png  ←  mon/dragons/ice_dragon.png
+comp/eye_of_devastation.png  ←  mon/eyes/eye_of_devastation.png
+comp/sun_demon.png  ←  mon/demons/sun_demon.png
+comp/tiamat_yellow.png  ←  mon/unique/tiamat_yellow.png
+comp/serpent_coc.png  ←  mon/unique/serpent_of_hell-coc.png
+comp/pan_void.png  ←  mon/panlord/demon_wings_large.png + mon/panlord/demon_body_tentacley.png + mon/panlord/demon_head_cthulhu.png (겹쳐 합성)
+comp/spriggan_druid.png  ←  mon/spriggan/spriggan_druid.png
+comp/treant.png  ←  mon/fungi_plants/treant.png
+comp/wandering_mushroom.png  ←  mon/fungi_plants/wandering_mushroom.png
+comp/wellspring.png  ←  mon/nonliving/wellspring.png
+comp/lost_soul.png  ←  mon/undead/lost_soul.png
+comp/azure_jelly.png  ←  mon/amorphous/azure_jelly.png
+comp/prince_ribbit.png  ←  mon/unique/prince_ribbit.png
+comp/draco_zealot.png  ←  mon/draco/draco-base-white.png + mon/draco/draco-job-zealot.png (겹쳐 합성)
+comp/draco_monk.png  ←  mon/draco/draco-base-pale.png + mon/draco/draco-job-monk.png (겹쳐 합성)
+comp/draco_caller.png  ←  mon/draco/draco-base-brown.png + mon/draco/draco-job-caller.png (겹쳐 합성)
+comp/blood_saint.png  ←  mon/demonspawn/blood_saint.png
+comp/eidolon.png  ←  mon/undead/eidolon.png
+comp/ushabti.png  ←  mon/nonliving/ushabti.png
+comp/apis.png  ←  mon/holy/apis.png
+comp/gelid.png  ←  mon/demonspawn/gelid.png
+comp/black_sun.png  ←  mon/demonspawn/black_sun.png
+comp/royal_jelly.png  ←  mon/unique/royal_jelly.png
+comp/nellie.png  ←  mon/unique/nellie.png
+comp/worldbinder.png  ←  mon/abyss/worldbinder.png
+comp/wretched_star.png  ←  mon/abyss/wretched_star.png
+comp/golden_eye.png  ←  mon/eyes/golden_eye.png
+comp/shining_eye.png  ←  mon/eyes/shining_eye.png
+comp/tiamat_pale.png  ←  mon/unique/tiamat_pale.png
+comp/serpent_dis.png  ←  mon/unique/serpent_of_hell-dis.png
+comp/pan_dawn.png  ←  mon/panlord/demon_wings_butterfly.png + mon/panlord/demon_body_succubus.png + mon/panlord/demon_head_incubus.png (겹쳐 합성)
 ```

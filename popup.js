@@ -1,5 +1,5 @@
 import {
-  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved,
+  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
@@ -207,7 +207,7 @@ const ZONE = [
   ['hell', 'demon', 'ember'], ['ghost', 'evil', 'wisp'], ['hell', 'idol', 'ember'], ['gold', 'dragon', 'gold'], ['void', 'evil', 'void'],
 ].map(([fire, deco, mote]) => ({ fire, deco, mote }));
 let bgX = 0;                      // 누적 스크롤 (층 돌파 때만 흐름)
-const COMP_FORM = [{ x: 27, y: 0, s: .8 }, { x: 11, y: -5, s: .7, back: true }, { x: -4, y: 0, s: .8 }];
+const COMP_FORM = [{ x: 27, y: 0, s: .8 }, { x: 11, y: -5, s: .7, back: true }, { x: -4, y: 0, s: .8 }, { x: 40, y: -8, s: .62, back: true }, { x: -17, y: -8, s: .62, back: true }];
 const motes = [];
 const hash = n => { n = (n ^ 61) ^ (n >>> 16); n = n + (n << 3); n = n ^ (n >>> 4); n = Math.imul(n, 0x27d4eb2d); return ((n ^ (n >>> 15)) >>> 0) / 4294967296; };
 function drawBackdrop(dt, now, zi) {
@@ -1102,7 +1102,7 @@ function buildSlots() {
     d.className = 'slot' + (it ? '' : ' empty');
     if (it) {
       d.style.borderColor = RARITIES[it.r].color;
-      d.innerHTML = `<div class="ic"><img class="px" src="${itemIcon(it, S.cls)}"></div><div class="tx"><div class="nm" style="color:${RARITIES[it.r].color}">${itemName(it, S.cls)}</div><div class="vl">${slotStat(sl, itemValue(it))}${it.a ? ' · ' + t('ui.affixes', { n: it.a.length }) : ''}${it.u ? ' · ' + t('ui.uniqueTag') : ''}</div></div>`;
+      d.innerHTML = `<div class="ic"><img class="px" src="${itemIcon(it, S.cls)}"></div><div class="tx"><div class="nm" style="color:${RARITIES[it.r].color}">${itemName(it, S.cls)}</div><div class="vl">${slotStat(sl, itemValue(it))}</div></div>`;
       d.onmouseenter = e => showTip(e, it); d.onmouseleave = hideTip;
     } else d.innerHTML = `<div class="ic"></div><div class="tx"><div class="nm">${sl.name}</div><div class="vl">${SLOT_STAT_NAME[sl.stat][0]}</div></div>`;
     box.appendChild(d);
@@ -1115,7 +1115,12 @@ function buildSlots() {
     [t('stat.cdr'), fmtP(st.cdr) + ' (' + t('ui.cdEff', { n: Math.round(100 - 100 / (1 + st.cdr / 100)) }) + ')'], [t('stat.skillP'), '+' + fmtP(r.skillP) + '%'], [t('stat.compP'), '+' + fmtP(r.compP) + '%'],
     [t('stat.bossP'), '+' + fmtP(r.bossP) + '%'], [t('stat.goldP'), '×' + fmtM(st.goldMult)], [t('stat.regen'), (st.regen < 1000 ? st.regen.toFixed(1) : fmt(st.regen)) + '%/s'], [t('stat.xpP'), '×' + fmtM(st.xpMult)],
   ];
-  $('#statsum').innerHTML = rows.map(([a, b]) => `<div>${a}<b>${b}</b></div>`).join('');
+  // v5.8 새 스탯 (가진 사람만 표시)
+  const fp1 = v => v < 10 ? v.toFixed(v < 1 ? 2 : 1) : fmtP(v);
+  if (st.basicP > 0) rows.push([t('stat.basicP'), '+' + fp1(st.basicP) + '%', t('stat.tip.basicP')]);
+  if (st.xdmgP > 0) rows.push([t('stat.xdmgP'), '+' + fp1(st.xdmgP) + '%', t('stat.tip.xdmgP')]);
+  if (st.mcritP > 0) rows.push([t('stat.mcritP'), '+' + fp1(st.mcritP) + '% (×' + st.mcritX.toFixed(2) + ')', t('stat.tip.mcritP')]);
+  $('#statsum').innerHTML = rows.map(([a, b, tip]) => `<div${tip ? ` title="${tip}"` : ''}>${a}<b>${b}</b></div>`).join('');
   refreshEnch();
 }
 const recentKeys = new Set();
@@ -1123,8 +1128,9 @@ let bagFilter = 'all', bagSort = 'value';
 function buildBag() {
   // 부위 필터 칩
   const bf = $('#bagFilt');
-  if (!bf.childElementCount) {
-    bf.innerHTML = [['all', t('ui.all')], ...SLOTS.map(s => [s.id, s.name]), ['up', t('ui.better')]].map(([k, n]) => `<button class="mini" data-k="${k}">${n}</button>`).join('');
+  if (!bf.childElementCount || bf.dataset.lang !== getLang()) {
+    bf.dataset.lang = getLang();
+    bf.innerHTML = [['all', t('ui.all')], ...SLOTS.map(s => [s.id, t('slot.' + s.id)]), ['up', t('ui.better')]].map(([k, n]) => `<button class="mini" data-k="${k}">${n}</button>`).join('');
     for (const b of bf.children) b.onclick = () => { bagFilter = b.dataset.k; buildBag(); };
     $('#bagSort').onchange = e => { bagSort = e.target.value; buildBag(); };
   }
@@ -1350,15 +1356,20 @@ function openCgModal() { renderCgModal(); $('#cgModal').classList.remove('hidden
 function renderCgModal() {
   const bag = cgBag(S).map((it, i) => [it, i]).sort((a, b) => cgScore(b[0]) - cgScore(a[0]));
   const low = cgBag(S).filter(x => x.r <= 1).length;
-  $('#cgWin').innerHTML = `<div class="evh"><b>${t('cg.title')}</b><span>${cgBag(S).length}/${CG_BAG}</span></div><div class="qx">${t('cg.desc2')}</div><div class="qx">${t('cg.desc')} · <b>${basicXText()}</b></div>
-    <div class="grow"><label class="chk cgauto"><input type="checkbox" data-cga="toggle" ${S.cgAuto !== false ? 'checked' : ''}><span>${t('cg.autoOn')}</span></label><button class="mini" data-cga="auto">${t('cg.autoNow')}</button><button class="mini" data-cga="merge">${t('cg.merge')}</button><button class="mini" data-cga="dis" ${low ? '' : 'disabled'}>${t('cg.disLow', { n: low })}</button></div>
+  const on = S.cgAuto !== false;
+  $('#cgWin').innerHTML = `<div class="evh"><b>${t('cg.title')}</b><span>${t('cg.bag', { n: cgBag(S).length, m: CG_BAG })}</span></div>
+    <div class="cgsum">${basicXText()}</div>
+    <details class="cghelp"><summary>${t('cg.helpT')}</summary><div>${t('cg.desc2')}</div><div>${t('cg.desc')}</div></details>
+    <label class="chk cgauto"><input type="checkbox" data-cga="toggle" ${on ? 'checked' : ''}><span>${t('cg.autoOn')}</span></label>
+    <div class="cgbtns"><button class="mini" data-cga="auto">${t('cg.autoNow')}</button><button class="mini" data-cga="merge">${t('cg.merge')}</button><button class="mini" data-cga="dis" ${low ? '' : 'disabled'}>${t('cg.disLow', { n: low })}</button></div>
+    ${on && bag.length ? `<div class="cgleft">${t('cg.bagLeft')}</div>` : ''}
     <div class="cglist">${bag.length ? bag.map(([it]) => `<div class="cgi">${cgName(it)}<i>${t('rar.' + it.r)} · ${it.q}%</i></div>`).join('') : `<div class="qx c">${t('cg.none')}</div>`}</div>
     <button class="mini wide" data-cga="close">${t('ui.close')}</button>`;
 }
 // ================= 영혼무기 =================
 let soulDraft = null;   // 만들기 화면: { look, name, k }
 const soulName = () => (S.soul && S.soul.name) || t('soul.title');
-const soulFxText = (k, v) => { const r1 = x => Math.round(x * 10) / 10; return t('sfx.d.' + k, { v: k === 'cut' ? Math.round(v * 1000) / 1000 : r1(v), h: r1(v * 3), m: r1(v * 200), c: r1(Math.min(v * 200, v * (S.soulKills || 0))) }); };
+const soulFxText = (k, v) => { const r1 = x => Math.round(x * 10) / 10; return t('sfx.d.' + k, { v: k === 'cut' ? Math.round(v * 1000) / 1000 : r1(v), h: r1(v * 3), m: r1(v * 200), c: r1(Math.min(v * 200, v * (S.soulKills || 0))), s: (() => { const sd = S && soulAwakenSkill(S); return sd ? t('sk.' + sd.id) : '-'; })() }); };
 function drawSoulPv(look) { const cv = $('#soulPv'); if (!cv) return; const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.clearRect(0, 0, 96, 96); for (const k of heroLayers(S.cls, { soul: look, slot: 'weapon', v: 'auto' })) { const im = A[k]; if (im) x.drawImage(im, 0, 0, 32, 32, 0, 0, 96, 96); } }
 function openSoulModal() { if (soulUnlocked(S) && !soulMade(S)) soulDraft = soulDraft || { look: SOUL_LOOKS[0], name: '', k: 'atk' }; renderSoulModal(); $('#soulModal').classList.remove('hidden'); }
 function renderSoulModal() {
@@ -1451,6 +1462,7 @@ function renderPetModal() {
     <div class="petpot"><span>${t('pet.potRate', { n: fmt(S.pets.ppm || 0) })}</span><button class="mini" data-p="dep" ${S.gold > 0 ? '' : 'disabled'} title="${t('pet.depT')}">${t('pet.dep', { n: fmt(S.gold) })}</button></div>
     <div class="qx">${t('pet.desc', { c: cap, f: cap * 2 })}</div>
     <div class="petdraw">${left.length ? `<button class="big sm ${pot >= dc ? '' : 'off'}" data-p="draw" ${pot >= dc ? '' : 'disabled'}>${t('pet.draw')} ${goldIc} ${fmt(dc)}</button><span>${t('pet.drawNote', { n: left.length })}</span>` : `<span>${t('pet.all')}</span>`}</div>
+    ${Object.keys(own).length ? (() => { const canAll = Object.values(own).some(q => q.lv < cap && pot >= petLvCost(S, q.lv)); return `<div class="petall"><button class="mini ${canAll ? 'hot' : ''}" data-p="lvAll" ${canAll ? '' : 'disabled'}>${t('pet.lvAll')}</button><span>${t('pet.lvAllD')}</span></div>`; })() : ''}
     <div class="petsum">${PET_FX_KEYS.filter(k => ag[k] > 0).map(k => `<em>${petFxText(k, ag[k])}</em>`).join('') || `<span class="mut2">${t('pet.none')}</span>`}</div>
     <div class="petgrid">${PETS.map(id => { const q = own[id]; return q ? `<div class="pcell ${id === sel ? 'on' : ''} ${S.pets.act === id ? 'act' : ''}" data-ps="${id}" style="border-color:${PET_COL[q.r]}" title="${t('pet.n.' + id)}"><img class="px" src="assets/pet/${id}.png"><i>Lv.${q.lv}</i></div>` : `<div class="pcell none" title="?"><img class="px" src="assets/pet/${id}.png"><i>?</i></div>`; }).join('')}</div>
     ${p ? `<div class="petdet"><img class="px" src="assets/pet/${sel}.png"><div class="pd">
@@ -1477,6 +1489,7 @@ function bindPets() {
     if (a === 'draw') { const r = petDraw(S); if (r) { petSel = r.id; addLog('<b>' + t('pet.got', { p: t('pet.n.' + r.id) }) + '</b> ' + t('rar.' + r.r) + ' · ' + petFxText(r.k, petVal(r))); toast(t('pet.got', { p: t('pet.n.' + r.id) })); } }
     else if (a === 'astart') { if (!petAuto) { const pr = petAutoPref[petSel]; petAuto = { id: petSel, k: pr.k, r: pr.r, rolls: 0, spent: 0, timer: null }; renderPetModal(); petAutoTick(); } return; }
     else if (a === 'astop') { petAutoStop(); return; }
+    else if (a === 'lvAll') { const n = petLevelUpAll(S); if (n) { addLog(t('pet.lvAllLog', { n })); toast(t('pet.lvAllLog', { n })); } }
     else if (a === 'roll') petRoll(S, petSel);
     else if (a === 'dep') { const g = petDeposit(S); if (g) addLog(t('pet.depLog', { n: fmt(g) })); }
     else if (a === 'take') petKeep(S, true);
@@ -1485,6 +1498,7 @@ function bindPets() {
     else return;
     st = stats(S); save(S); renderPetModal(); $('#petBox').dataset.sig = ''; renderPetBox(); });
 }
+const cosFxTxt = id => { const f = cosFxOf(id); return f ? t('cos.fx.' + f.k, { v: f.v }) : ''; };
 function openCosModal() { renderCosModal(); $('#cosModal').classList.remove('hidden'); drawCosPv(); }
 // 옷장 미리보기: 커서를 올린 코스튬을 입혀서 보여 주고, 벗어나면 지금 모습으로 돌아온다
 function drawCosPv(ov) { const cv = $('#cosPv'); if (!cv) return; const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.clearRect(0, 0, 96, 96); for (const k of heroLayers(S.cls, ov)) { const im = A[k]; if (im) x.drawImage(im, 0, 0, 32, 32, 0, 0, 96, 96); }
@@ -1493,8 +1507,8 @@ function renderCosModal() {
   const c = S.cls || 'war';
   const baseSrc = (() => { const b = lookOf(S, 'base'); return b && b !== 'auto' ? 'cos/' + b : 'cls/' + c; })();
   const thumb = (slot, v) => slot === 'hair' && v !== 'auto' ? `<span class="cstk"><img class="px" src="assets/${baseSrc}.png"><img class="px" src="assets/cos/${v}.png"></span>` : v === 'auto' ? (slot === 'base' ? `<img class="px" src="assets/cls/${c}.png">` : `<span class="ctxt">${t(slot === 'hair' || slot === 'offhand' ? 'cos.none' : 'cos.auto')}</span>`) : v === 'hide' ? `<span class="ctxt">${t('cos.hide')}</span>` : `<img class="px" src="assets/${v[0] === 't' && /^t\d$/.test(v) ? itemDoll(slot, +v.slice(1), c) : 'cos/' + v}.png">`;
-  $('#cosWin').innerHTML = `<div class="evh"><b>${t('cos.title')}</b><span>${t('cos.count', { n: cosCount(S), m: COSTUMES.length })}</span></div><div class="cospv"><canvas id="cosPv" width="96" height="96"></canvas><div class="cospvt"><b id="cosPvN">${t('cos.pvNow')}</b><span>${t('cos.pvHint')}</span></div></div><div class="qx">${t('cos.desc')}</div>
-    ${COS_SLOTS.map(slot => `<div class="cosrow"><b>${t('slot.' + slot)}</b><div class="coslist">${lookOptions(S, slot).map(v => `<button class="cosopt ${lookOf(S, slot) === v ? 'on' : ''} ${COS_BY_ID[v] ? 'sp' : ''}" data-cs="${slot}" data-cv="${v}" title="${COS_BY_ID[v] ? t('cos.n.' + v) : ''}">${thumb(slot, v)}</button>`).join('')}</div></div>`).join('')}
+  $('#cosWin').innerHTML = `<div class="evh"><b>${t('cos.title')}</b><span>${t('cos.count', { n: cosCount(S), m: COSTUMES.length })}</span></div><div class="cosfx">${(() => { const b = cosBonus(S), tot = COSTUMES.filter(z => !z.free).length; return `<b>${t('cos.fxHead', { n: b.n, m: tot })}</b> ${t('cos.fx.atk', { v: b.atk })} · ${t('cos.fx.hp', { v: b.hp })} · ${t('cos.fx.def', { v: b.def })}<span>${t('cos.fxRule')}</span>`; })()}</div><div class="cospv"><canvas id="cosPv" width="96" height="96"></canvas><div class="cospvt"><b id="cosPvN">${t('cos.pvNow')}</b><span>${t('cos.pvHint')}</span></div></div><div class="qx">${t('cos.desc')}</div>
+    ${COS_SLOTS.map(slot => `<div class="cosrow"><b>${t('slot.' + slot)}</b><div class="coslist">${lookOptions(S, slot).map(v => `<button class="cosopt ${lookOf(S, slot) === v ? 'on' : ''} ${COS_BY_ID[v] ? 'sp' : ''}" data-cs="${slot}" data-cv="${v}" title="${COS_BY_ID[v] ? t('cos.n.' + v) + (cosFxTxt(v) ? ' · ' + cosFxTxt(v) : '') : ''}">${thumb(slot, v)}</button>`).join('')}</div></div>`).join('')}
     <button class="mini wide" data-csa="close">${t('ui.close')}</button>`;
 }
 // 여러 원정·상자를 한 번에 받았을 때 보상을 합쳐서 보여 준다
@@ -1545,7 +1559,7 @@ function buildComps() {
   bs.innerHTML = [['all', t('ui.all')], ...CLASS_IDS.map(c => [c, t('ui.pickup', { c: CLASSES[c].name })])].map(([k, n]) => `<button class="mini ${S.banner === k ? 'on' : ''}" data-b="${k}">${n}</button>`).join('');
   for (const b of bs.children) b.onclick = () => { S.banner = b.dataset.b; save(S); buildComps(); };
   // 동료 조각
-  $('#shardLine').innerHTML = t('ui.shardLine', { n: `<b>${fmt(S.shards || 0)}</b>`, g: SHARD_GAIN.map((v, i) => C_RARITY[i].name + ' ' + v).join(' · ') });
+  $('#shardLine').innerHTML = t('ui.shardLine', { n: `<b>${fmt(S.shards || 0)}</b>` }); $('#shardLine').title = t('ui.shardTip', { g: SHARD_GAIN.map((v, i) => C_RARITY[i].name + ' ' + v).join(' · ') });
   { const canUp = Object.entries(S.comp || {}).some(([id, o]) => COMP_BY_ID[id] && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(COMP_BY_ID[id], o.lv || 0)); $('#lvAll').disabled = !canUp; }
   // 보유 효과 합계
   const os = ownSummary(S);
@@ -1555,14 +1569,16 @@ function buildComps() {
   // 파티
   const tm = $('#team');
   tm.innerHTML = '';
+  const tmx = teamMax(S);
   for (let i = 0; i < TEAM_MAX; i++) {
     const id = S.team[i];
     const d = document.createElement('div');
+    if (i >= tmx) { d.className = 'tslot lock'; d.title = t('ui.team5Lock', { f: TEAM5_FLOOR }); d.innerHTML = `<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"/></svg><div class="n">${t('ui.team5Short', { f: TEAM5_FLOOR })}</div>`; tm.appendChild(d); continue; }
     if (id && COMP_BY_ID[id]) {
       const c = COMP_BY_ID[id], cs = S.comp[id];
       d.className = 'tslot on';
       d.style.borderColor = C_RARITY[c.r].color;
-      d.innerHTML = `<img class="px" src="${compSrc(id)}"><div class="n">${c.name}</div><div class="e">${effTxt(c.team.k, teamValue(S, c, cs.aw))}</div>${c.cls === S.cls ? `<div class="syn">${t('ui.synOn')}</div>` : ''}${onExped(S, id) ? `<div class="syn" style="background:#3a8f6a">${t('exp.away')}</div>` : ''}${MR_POW[id] ? `<div class="syn mrsyn">${t('mrp.short', { l: mrpLv(S, id) })}</div>` : ''}`;
+      d.innerHTML = `<img class="px" src="${compSrc(id)}"><div class="n">${c.name}</div><div class="e">${effTxt(c.team.k, teamValue(S, c, cs.aw))}</div>${compSyn(S, c) ? `<div class="syn">${t(c.r === 5 ? 'ui.synAll' : 'ui.synOn')}</div>` : ''}${onExped(S, id) ? `<div class="syn" style="background:#3a8f6a">${t('exp.away')}</div>` : ''}${MR_POW[id] ? `<div class="syn mrsyn">${t('mrp.short', { l: mrpLv(S, id) })}</div>` : ''}`;
       d.onclick = () => openComp(id);
     } else { d.className = 'tslot'; d.textContent = t('ui.emptySlot'); }
     tm.appendChild(d);
@@ -1640,7 +1656,7 @@ function openComp(id) {
         <div style="font-size:10px;color:var(--muted)">${t('ui.awaken', { a: aw, b: AWAKEN_MAX, n: own ? own.n : 0 })}</div>
         <div class="awbar">${Array.from({ length: AWAKEN_MAX }, (_, i) => `<i class="${i < aw ? 'on' : ''}"></i>`).join('')}</div></div></div>
     <div class="cd-row ${inTeam ? 'act' : ''}"><div class="h">${t('ui.teamEff')}</div><b>${effTxt(c.team.k, teamValue(S, c, aw))}</b>
-      <div class="x">${c.cls === S.cls ? t('ui.synOn') : t('ui.synOff', { c: cl.name })}</div>
+      <div class="x">${c.r === 5 ? t('ui.synAll') : c.cls === S.cls ? t('ui.synOn') : t('ui.synOff', { c: cl.name })}</div>
       <div class="h" style="margin-top:3px">${t('ui.attack', { p: Math.round(compCoef(c, aw, lv) * 100), d: fmt(compCoef(c, aw, lv) * st.atk * (1 + st.raw.compP / 100)) })}</div></div>
     <div class="cd-row ${known ? 'act' : ''}"><div class="h">${t('ui.ownEff')}</div><b>${effTxt(c.own.k, ownValue(c, aw, lv))}</b></div>
     ${known ? `<div class="cd-row clvrow"><div class="h">${t('ui.clvHead', { l: lv, m: CLV_MAX })}</div>
@@ -1649,7 +1665,7 @@ function openComp(id) {
       <button class="mini wide" id="cdLv"></button></div>` : ''}
     ${[[compPassive(c), CSK_AW_P, 'ui.cPassive'], [compActive(c), CSK_AW_A, 'ui.cActive']].map(([sk, need, lab]) => { const open = known && aw >= need; return `<div class="cd-row csk ${open && inTeam ? 'act' : ''} ${open ? '' : 'lock'}"><div class="h">${t(lab, { n: need })}</div><b>${compSkillName(sk)}</b><div class="x">${compSkillDesc(sk)}</div><div class="x">${open ? (inTeam ? t('ui.cOn') : t('ui.cOff')) : t('ui.cLocked', { n: need })}</div></div>`; }).join('')}
         <div class="grow" style="width:100%">
-      ${known ? `<button class="big sm" id="cdTeam">${inTeam ? t('ui.teamOut') : (S.team.length >= TEAM_MAX ? t('ui.teamFull') : t('ui.teamAdd'))}</button>` : ''}
+      ${known ? `<button class="big sm" id="cdTeam">${inTeam ? t('ui.teamOut') : (S.team.length >= teamMax(S) ? t('ui.teamFull') : t('ui.teamAdd'))}</button>` : ''}
       <button class="mini wide" id="cdClose">${t('ui.close')}</button></div>`;
   if (known && MR_POW[id]) { const mr = document.createElement('div'); mr.className = 'cd-row mrprow' + ((S.team || []).includes(id) && !onExped(S, id) ? ' act' : ''); mr.innerHTML = mrpHtml(id); el.querySelector('.cd-row').after(mr); }
   if (known) { const gr = document.createElement('div'); gr.className = 'cd-row cgrow'; gr.innerHTML = cgSlotsHtml(id); el.querySelector('.grow').before(gr); gr.onclick = e => { const b = e.target.closest('[data-cg]'); if (!b) return; const k = b.dataset.cg; if (b.dataset.off) { if (!cgUnequip(S, id, k)) toast(t('cg.bagFull')); } else { const i = +b.dataset.bi; if (i >= 0) cgEquip(S, id, i); } st = stats(S); save(S); openComp(id); }; }
@@ -1658,7 +1674,7 @@ function openComp(id) {
   $('#cdClose').onclick = () => $('#compModal').classList.add('hidden');
   const tb = $('#cdTeam');
   if (tb) {
-    if (!inTeam && (S.team.length >= TEAM_MAX || onExped(S, id))) tb.disabled = true;
+    if (!inTeam && (S.team.length >= teamMax(S) || onExped(S, id))) tb.disabled = true;
     if (!inTeam && onExped(S, id)) tb.textContent = t('exp.away');
     tb.onclick = () => { toggleTeam(S, id); save(S); buildComps(); openComp(id); };
   }
@@ -1798,7 +1814,7 @@ function buildStoneShop() {
     row('key', t('ss.key'), t('ss.key.d', { n: keyLeft, m: STONE_SHOP.keyDaily }), fmtN(STONE_SHOP.key), keyLeft > 0 && S.stones >= STONE_SHOP.key) +
     (nSlot < EXP_MAX - 2 ? row('expSlot', t('ss.expSlot', { n: expCap(S) + 1 }), t('ss.expSlot.d'), fmtN(STONE_SHOP.expSlot[nSlot]), S.stones >= STONE_SHOP.expSlot[nSlot]) : '') +
     (cosLeft.length ? row('costume', t('ss.cos'), t('ss.cos.d', { n: cosLeft.length }), fmtN(STONE_SHOP.costume), S.stones >= STONE_SHOP.costume && !!shopCos && cosLeft.some(z => z.id === shopCos),
-      (S.stones >= STONE_SHOP.costume ? `<button class="mini" data-ss="cosAll" title="${t('ss.cosAllT')}">${t('ss.cosAll', { n: Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) })} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) * STONE_SHOP.costume)}</button>` : '') + `<select data-sc="1"><option value="">${t('ss.cosPick')}</option>${cosLeft.map(z => `<option value="${z.id}" ${shopCos === z.id ? 'selected' : ''}>${t('slot.' + z.slot)} · ${t('cos.n.' + z.id)}</option>`).join('')}</select>`) : '') +
+      (S.stones >= STONE_SHOP.costume ? `<button class="mini" data-ss="cosAll" title="${t('ss.cosAllT')}">${t('ss.cosAll', { n: Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) })} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) * STONE_SHOP.costume)}</button>` : '') + `<select data-sc="1"><option value="">${t('ss.cosPick')}</option>${cosLeft.map(z => `<option value="${z.id}" ${shopCos === z.id ? 'selected' : ''}>${t('slot.' + z.slot)} · ${t('cos.n.' + z.id)} (${cosFxTxt(z.id)})</option>`).join('')}</select>`) : '') +
     `<div class="qx">${t('ss.note')}</div>`;
 }
 let shopCos = '';
@@ -2330,9 +2346,10 @@ function bindReinc() {
     if (!bindReinc._armed) { bindReinc._armed = true; $('#reincBtn').textContent = t('ui.reincAgain'); $('#reincBtn').classList.add('armed'); clearTimeout(tm); tm = setTimeout(reset, 4000); return; }
     clearTimeout(tm); reset();
     await backup(S, 'reinc');
-    const k = reincarnate(S);
+    const had5 = !!S.team5; const k = reincarnate(S);
     save(S, 'force'); logLines = []; hudSig = '';
     addLog('<b>' + t('ui.reincLog', { n: k }) + '</b>');
+    if (!had5 && S.team5) { addLog('<b class="hi">' + t('ui.team5Log') + '</b>'); toast(t('ui.team5Log')); }
     if (LAST_CONV.stones) addLog(t('conv.log', { n: fmtN(LAST_CONV.stones), g: fmt(LAST_CONV.gold) }));
     flash('#ffd98a', .8, 1);
     buildSlots(); buildBag(); buildSkills(); buildComps(); buildRelics();
@@ -2673,3 +2690,67 @@ async function init() {
   setInterval(() => { driveSync(S, { push: true }).then(refreshSyncLine); }, 120000);
 }
 init().catch(e => { console.error(e); if (window.__dmFail) window.__dmFail(e); });
+
+// ================= 기록 카드 (1200×630 공유 이미지) =================
+const CARD_URL = 'an-yoo.github.io/Deskgeon';
+const cardImgs = {};
+const cardImg = src => cardImgs[src] ||= new Promise(r => { const im = new Image(); im.onload = () => r(im); im.onerror = () => r(null); im.src = src; });
+function cardData() {
+  const own = Object.keys(S.comp || {}).filter(id => COMP_BY_ID[id]);
+  const days = S.createdAt ? Math.max(1, Math.ceil((Date.now() - S.createdAt) / 864e5)) : 1;
+  const soul = S.soul && S.soul.made ? S.soul : null;
+  return { cls: S.cls, clsName: t('cls.' + S.cls), best: S.bestFloor || S.maxFloor || 1, reinc: S.reinc || 0, rebirths: S.rebirths || 0, pulls: S.pulls || 0, days,
+    comp: own.length, compMax: COMPANIONS.length, mr: own.filter(id => COMP_BY_ID[id].r === 5).length,
+    cos: cosCount(S), cosMax: COSTUMES.length, pet: Object.keys((S.pets && S.pets.own) || {}).length, petMax: PETS.length,
+    soul, team: (S.team || []).filter(id => COMP_BY_ID[id]).slice(0, TEAM_MAX), pet1: S.pets && S.pets.act };
+}
+function cardRound(x, c, y, w, h, r) { x.beginPath(); x.moveTo(c + r, y); x.arcTo(c + w, y, c + w, y + h, r); x.arcTo(c + w, y + h, c, y + h, r); x.arcTo(c, y + h, c, y, r); x.arcTo(c, y, c + w, y, r); x.closePath(); }
+async function drawCard(cv) {
+  const D = cardData(), x = cv.getContext('2d'), W = 1200, H = 630, F = '"Pretendard","Segoe UI",system-ui,sans-serif';
+  x.clearRect(0, 0, W, H); x.imageSmoothingEnabled = false;
+  let g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#221a3f'); g.addColorStop(1, '#0c0a18'); x.fillStyle = g; x.fillRect(0, 0, W, H);
+  const tile = await cardImg('assets/floor/f' + (FLOOR_TILES[monsterIndex(Math.max(1, S.floor || 1))] ?? 0) + '.png') || await cardImg('assets/floor/f0.png');
+  if (tile) { x.globalAlpha = .22; for (let ty = 410; ty < H; ty += 64) for (let tx = 0; tx < W; tx += 64) x.drawImage(tile, tx, ty, 64, 64); x.globalAlpha = 1; }
+  const glow = (cx, cy, r, col) => { const rg = x.createRadialGradient(cx, cy, 0, cx, cy, r); rg.addColorStop(0, col); rg.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = rg; x.fillRect(cx - r, cy - r, r * 2, r * 2); };
+  glow(290, 290, 300, 'rgba(150,110,255,.45)'); glow(980, 120, 260, 'rgba(255,190,90,.16)'); glow(820, 560, 280, 'rgba(90,200,255,.12)');
+  const hero = heroSprite(S.cls); x.fillStyle = 'rgba(0,0,0,.35)'; x.beginPath(); x.ellipse(290, 418, 120, 20, 0, 0, 7); x.fill();
+  x.drawImage(hero, 146, 130, 288, 288);
+  if (D.pet1) { const pi = await cardImg('assets/pet/' + D.pet1 + '.png'); if (pi) x.drawImage(pi, 40, 300, 128, 128); }
+  x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 34px ' + F; x.fillText(D.clsName, 290, 470);
+  const tw = D.team.length > 3 ? 64 : 76, tg = D.team.length > 3 ? 10 : 14, tx0 = 290 - (D.team.length * tw + (D.team.length - 1) * tg) / 2;
+  for (let i = 0; i < D.team.length; i++) { const c = COMP_BY_ID[D.team[i]], im = await cardImg(compSrc(c.id)), px = tx0 + i * (tw + tg), py = 500;
+    cardRound(x, px, py, tw, tw, 12); x.fillStyle = 'rgba(255,255,255,.07)'; x.fill(); x.lineWidth = 3; x.strokeStyle = C_RARITY[c.r].color; x.stroke(); if (im) x.drawImage(im, px + 6, py + 6, tw - 12, tw - 12); }
+  const PX = 560, PY = 48, PW = 600, PH = 534;
+  cardRound(x, PX, PY, PW, PH, 28); x.fillStyle = 'rgba(255,255,255,.07)'; x.fill(); x.lineWidth = 2; x.strokeStyle = 'rgba(255,255,255,.16)'; x.stroke();
+  x.textAlign = 'left'; x.fillStyle = 'rgba(214,204,255,.75)'; x.font = '700 22px ' + F; x.fillText('DESKGEON', PX + 40, PY + 52);
+  x.textAlign = 'right'; x.fillStyle = 'rgba(214,204,255,.55)'; x.font = '500 20px ' + F; x.fillText(new Date().toLocaleDateString(getLang()) + '  ·  ' + t('card.daysH', { n: fmtN(D.days) }), PX + PW - 40, PY + 52);
+  x.textAlign = 'left'; x.fillStyle = 'rgba(255,255,255,.7)'; x.font = '600 24px ' + F; x.fillText(t('card.best'), PX + 40, PY + 112);
+  g = x.createLinearGradient(0, PY + 120, 0, PY + 230); g.addColorStop(0, '#fff2c4'); g.addColorStop(1, '#ffb94a'); x.fillStyle = g; x.font = '900 112px ' + F; x.fillText('B' + fmtN(D.best), PX + 34, PY + 222);
+  const cells = [[t('card.reinc'), fmtN(D.reinc)], [t('card.rebirth'), fmtN(D.rebirths)], [t('card.comp'), D.comp + '/' + D.compMax + (D.mr ? '  MR ' + D.mr : '')], [t('card.pulls'), fmtN(D.pulls)],
+    [t('card.cos'), D.cos + '/' + D.cosMax], [t('card.pet'), D.pet + '/' + D.petMax], [t('card.soul'), D.soul ? 'Lv.' + D.soul.lv : '-', D.soul && (D.soul.name || ''), 1]];
+  // 칸: [이름, 값, 보조(영혼무기 이름), 한 줄 전체]
+  const half = (PW - 80 - 16) / 2, ch = 56, soulIm = D.soul ? await cardImg('assets/soul/' + D.soul.look + '.png') : null;
+  cells.forEach(([k, v, sub, full], i) => {
+    const cx = PX + 40 + (i % 2) * (half + 16), cy = PY + 250 + Math.floor(i / 2) * (ch + 10), cw = full ? half * 2 + 16 : half, right = cx + cw - 16;
+    cardRound(x, cx, cy, cw, ch, 12); x.fillStyle = 'rgba(255,255,255,.06)'; x.fill();
+    x.textAlign = 'left'; x.fillStyle = 'rgba(255,255,255,.62)'; x.font = '600 19px ' + F; x.fillText(k, cx + 16, cy + 36); const kw = x.measureText(k).width;
+    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 23px ' + F; x.fillText(v, right, cy + 36); const vw = x.measureText(v).width;
+    if (sub) { x.fillStyle = '#d9c8ff'; x.font = '600 19px ' + F; let s2 = sub; const room = cw - 32 - kw - vw - 10 - (soulIm ? 50 : 0) - 16; while (s2.length > 1 && x.measureText(s2).width > room) s2 = s2.slice(0, -2) + '…';
+      x.fillText(s2, right - vw - 10, cy + 36); if (soulIm) x.drawImage(soulIm, right - vw - 10 - x.measureText(s2).width - 46, cy + 8, 40, 40); }
+  });
+  x.textAlign = 'right'; x.fillStyle = 'rgba(214,204,255,.55)'; x.font = '500 18px ' + F; x.fillText(CARD_URL, PX + PW - 8, H - 18);
+  x.textAlign = 'left';
+}
+function cardText() { const D = cardData(); return t('card.share', { c: D.clsName, f: fmtN(D.best), r: fmtN(D.reinc), b: fmtN(D.rebirths), n: D.comp, m: D.compMax, p: D.pet, q: D.petMax, o: D.cos, w: D.cosMax }) + '\n' + 'https://' + CARD_URL + '/'; }
+const cardBlob = () => new Promise(r => $('#cardCv').toBlob(r, 'image/png'));
+async function openCard() { $('#cardModal').classList.remove('hidden'); await drawCard($('#cardCv')); }
+document.addEventListener('click', async e => {
+  const id = e.target.closest('button')?.id; if (!id || !/^card(Btn|Save|Copy|Text|Close)$/.test(id)) return;
+  if (id === 'cardBtn') return openCard();
+  if (id === 'cardClose') return $('#cardModal').classList.add('hidden');
+  try {
+    if (id === 'cardText') { await navigator.clipboard.writeText(cardText()); toast(t('card.copiedT')); }
+    else if (id === 'cardCopy') { const b = await cardBlob(); await navigator.clipboard.write([new ClipboardItem({ 'image/png': b })]); toast(t('card.copied')); }
+    else if (id === 'cardSave') { const b = await cardBlob(), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = 'deskgeon-B' + (S.bestFloor || 0) + '.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); toast(t('card.saved')); }
+  } catch (err) { toast(t('card.fail'), '#ffc35c'); }
+});

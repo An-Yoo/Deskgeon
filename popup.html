@@ -175,7 +175,7 @@
     </section>
 
     <section class="page hidden" data-tab="quest">
-      <button class="big sm qall" id="qAll" disabled data-i18n="q.claimNone">Nothing to claim</button>
+      <div class="qtop"><button class="big sm qall" id="qAll" disabled data-i18n="q.claimNone">Nothing to claim</button><button class="mini cardbtn" id="cardBtn"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1.5" y="3" width="13" height="10" rx="1.5"/><circle cx="5.5" cy="7" r="1.6"/><path d="M9 6.5h3.5M9 9h3.5M3.5 11h4"/></svg><span data-i18n="card.btn">Record card</span></button></div>
       <div class="qnav" id="qNav"></div>
       <div class="qbody" id="qBody"></div>
     </section>
@@ -238,6 +238,15 @@
 
   <div class="modal hidden" id="soulModal">
     <div class="win soulwin" id="soulWin"></div>
+  </div>
+
+  <div class="modal hidden" id="cardModal">
+    <div class="win cardwin">
+      <h2 data-i18n="card.title">My record card</h2>
+      <canvas id="cardCv" width="1200" height="630"></canvas>
+      <div class="cardbtns"><button class="mini hot" id="cardSave" data-i18n="card.save">Save image</button><button class="mini" id="cardCopy" data-i18n="card.copy">Copy image</button><button class="mini" id="cardText" data-i18n="card.text">Copy text</button></div>
+      <button class="mini" id="cardClose" data-i18n="ui.close">Close</button>
+    </div>
   </div>
 
   <div class="modal hidden" id="petModal">
