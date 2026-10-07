@@ -1,0 +1,9 @@
+node_modules/
+app/game/
+app/public/
+app/index.html
+app/dist/
+*.ait
+_npm/
+_perm-backup.json
+submit/
