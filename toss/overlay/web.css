@@ -1,0 +1,25 @@
+/* Deskgeon 앱인토스 버전 */
+html { width: 100% !important; height: 100% !important; overflow: hidden; background: #0d0b17; }
+body { margin: 0 auto !important; transform-origin: top center; }
+html.dgweb { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+html.dgweb, html.dgweb body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
+html.dgweb textarea, html.dgweb input { user-select: text; -webkit-user-select: text; }
+/* 크롬 확장 전용 기능 숨김: 구글 드라이브, 브라우저 동기화 */
+[data-i18n="ui.drive"], #drvBtn, .syncline:has(#drvDot),
+[data-i18n="ui.browserSync"], .syncline:has(#syncDot), #syncNow { display: none !important; }
+/* 앱인토스 전용 종료 확인 창 */
+#dgExit .grow { display: flex; gap: 6px; margin-top: 10px; }
+#dgExit .grow > * { flex: 1; }
+#dgAdDouble { margin-bottom: 6px; }
+
+/* 보상 받기 (광고/광고 제거권) */
+#dgRewards { margin-bottom: 8px; }
+#dgRewards .dgrw { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+#dgRewards .dgrwt { flex: 1; min-width: 0; display: flex; flex-direction: column; text-align: left; }
+#dgRewards .dgrwt b { font-size: 11px; }
+#dgRewards .dgrwt span { font-size: 9px; opacity: .7; }
+#dgRewards .dgrw button { flex: none; min-width: 112px; }
+#dgRewards .dgpass { margin-top: 6px; }
+#dgRewards .dgpass.on { font-size: 10px; color: #ffd98a; padding: 6px 0; text-align: center; }
+/* 미션 프로모션 안내 */
+#dgPromo { margin: 6px 0 8px; padding: 6px 8px; font-size: 10px; line-height: 1.45; color: #ffe9a8; background: rgba(255, 217, 138, .08); border: 1px solid rgba(255, 217, 138, .35); text-align: left; }
