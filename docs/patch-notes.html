@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Deskgeon Patch Notes | 패치노트</title>
-<meta name="description" content="Deskgeon patch notes: Soul Weapon, Pets, Mythic allies, Expeditions, Ally Gear, costumes and balance changes. 데스크젼 패치노트.">
+<meta name="description" content="Deskgeon patch notes: 224 allies and a 5-member party (5.8.0), Soul Weapon, Pets, Mythic allies, Expeditions, Ally Gear, costumes and balance changes. 데스크젼 패치노트.">
 <meta name="keywords" content="Deskgeon, idle game, idle RPG, incremental game, chrome extension game, browser game, pixel RPG, dungeon crawler, 방치형 게임, 방치형 RPG, 크롬 확장 게임, 브라우저 게임, 도트 RPG">
 <link rel="canonical" href="https://an-yoo.github.io/Deskgeon/patch-notes.html">
 <link rel="icon" href="img/icon128.png">
@@ -19,7 +19,53 @@
 ul.feat{padding-left:20px}ul.feat li{margin:4px 0}.end{text-align:center;margin-top:40px}h3{color:#d9c9ff;margin-top:22px}ul{padding-left:20px}li{margin:3px 0}li.sub2{margin-left:18px;list-style:circle;color:#c8c1e4}hr{border:0;border-top:1px solid #2e2947;margin:36px 0}.en{background:#1b1631;border:1px solid #2e2947;border-radius:8px;padding:12px 16px;font-size:14px;color:#c8c1e4}</style></head>
 <body><div class="wrap">
 <header><img src="img/icon128.png" alt="Deskgeon icon"><b>Deskgeon 패치노트</b><nav><a href="./">Home</a><a href="https://chromewebstore.google.com/detail/deskgeon-idle-dungeon-rpg/adaoggopidkbankjinlalfnjlgncanpk">Chrome Web Store</a><a href="https://github.com/An-Yoo/Deskgeon">GitHub</a></nav></header>
-<div class="en"><b>English summary (5.7.0)</b><br>New: Soul Weapon (after your first reincarnation, forge your own weapon: 70 looks, custom name and 8 special combat options; kept through reincarnation), Pets (16 pets, a pet bank fed by 10% of hunting gold, no duplicate draws, level cap = half your best floor), 4 Mythic (MR) allies with growing Mythic Powers, Expeditions, Ally Gear (with auto-equip, highest rarity first), a 119-piece wardrobe (owning special costumes raises ATK, HP and armor) with body/hair/off-hand slots and live preview, summon mileage, Stone Shop (premium ally gear chest, x10 chests, bulk costume purchase, send-all and recall-all expeditions), enhancement Transcend, a quiet one-line Gacha Mode for auto-summon, preset renaming, pet auto-reroll and a simplified-effects mode; large numbers are now abbreviated.<br>Balance: basic attack multiplier = 1 + blades + 50% of skill damage bonus; Warrior buffed (~+80% damage); boss damage growth softened after B80 to fix instant deaths around B100.</div>
+<div class="en"><b>English summary (5.8.0)</b><br>New: 100 new allies (224 in total) that grant a new stat per class (Warrior: basic attack damage, Rogue: multi-tier crit damage, Mage: bonus damage on every hit, Cleric: HP regen in boss fights), 4 new Mythic allies, a 5-member party after a reincarnation at B300+, Mythic allies always get the x1.5 class bonus, a shareable Record Card image (1200x630), Pet "Level up all", and a collection bonus for owning special costumes (up to ATK +24%, HP +42%, armor +70).<br>Fixes: UI polish (thin themed scrollbars, Korean line breaks, overflowing ally-gear, mutation and gear cards, shorter pet and wardrobe texts, untranslated bag filters), the ally-gear checkbox layout, and Soul Weapon "Soul Release" / "Battle Fervor" / option value display.</div>
+<h2>5.8.0</h2>
+<h3>새 기능</h3>
+<p><b>새 동료 100명 (총 224명)</b></p>
+<ul>
+<li>등급별로 R 30, SR 25, SSR 20, UR 13, LR 8, MR 4명이 늘었고, 직업마다 25명씩입니다.</li>
+<li>새 동료는 동행·보유 효과로 <b>새 능력치</b>를 줍니다. 직업마다 하나씩입니다.</li>
+<li class="sub2">전사: <b>평타 피해</b> (평타 배율에 따로 곱해짐, 칼날·펫 평타와 함께)</li>
+<li class="sub2">도적: <b>다단 치명 피해</b> (치명타 확률 100%를 넘는 단계마다 피해 증가)</li>
+<li class="sub2">마법사: <b>추가 피해</b> (용사가 때릴 때마다 그만큼 한 번 더, 치명타 포함)</li>
+<li class="sub2">성직자: <b>보스전 체력 회복</b></li>
+<li>새 MR 4명(강철 군주 바르가스, 칼날 군주 세르크, 심연의 군주 느그라스, 새벽의 군주 엘리아)은 신화 권능도 위 능력치로 성장합니다.</li>
+<li>장비 탭 능력치 표에 새 능력치가 생기면 함께 보입니다.</li>
+</ul>
+<p><b>파티 5명</b></p>
+<ul>
+<li><b>B300 이상에서 윤회하면</b> 동행 파티가 3명에서 5명으로 늘어납니다. 한 번 열리면 계속 유지됩니다.</li>
+<li>이미 B300 넘게 가 본 뒤 윤회한 적 있는 세이브는 바로 열립니다.</li>
+<li>잠긴 칸에는 해금 조건이 표시됩니다.</li>
+</ul>
+<p><b>MR 동료는 모든 직업에서 ×1.5</b></p>
+<ul>
+<li>MR(신화) 동료의 동행 효과는 이제 용사 직업과 상관없이 항상 같은 직업 보너스(×1.5)를 받습니다.</li>
+</ul>
+<p><b>기록 카드</b></p>
+<ul>
+<li>모험 탭 위쪽 [기록 카드] 버튼으로 내 캐릭터(코스튬·펫·영혼무기), 최고 층, 윤회·환생 횟수, 수집 현황, 파티를 한 장의 이미지(1200×630)로 만듭니다.</li>
+<li>이미지 저장, 이미지 복사, 텍스트 복사를 지원합니다. 게임 언어를 따라갑니다.</li>
+</ul>
+<p><b>펫 모두 레벨업</b></p>
+<ul>
+<li>펫 창의 [모두 레벨업]으로 레벨이 낮은 펫부터 저금통이 허락하는 만큼 고르게 올립니다.</li>
+</ul>
+<p><b>코스튬 보유 효과</b></p>
+<ul>
+<li>특별 코스튬은 입지 않고 갖고만 있어도 능력치가 오릅니다. 1개마다 무기·보조손은 공격력 +1%, 갑옷·망토·외형은 체력 +1%, 투구·신발·장갑은 방어력 +2입니다 (전부 모으면 공격력 +24%, 체력 +42%, 방어력 +70). 무료 외형·머리 모양은 해당되지 않습니다.</li>
+</ul>
+<h3>수정</h3>
+<ul>
+<li><b>UI 다듬기:</b> 스크롤바를 얇고 게임 색에 맞게 바꿨습니다. 한국어는 단어 중간에서 줄이 끊기지 않게 했고, 동료 장비 창·스킬 변이·장비 카드·강화 요약·동료 조각 줄처럼 넘치거나 잘리던 곳과 너무 긴 설명(펫, 옷장)을 정리했습니다. 영어·일본어·중국어에서 장비 가방 필터가 한국어로 남던 문제, 한국어 문구 일부가 반말이던 문제도 고쳤습니다.</li>
+<li>동료 장비 창에서 체크박스가 찌그러지고 버튼이 세로로 길어지던 배치를 고쳤습니다.</li>
+<li>영혼무기 "영혼 해방"이 마법사·전사에게 거의 발동하지 않던 문제를 고쳤습니다. 이제 쿨타임이 가장 긴 <b>피해</b> 스킬을 쓸 때 발동합니다.</li>
+<li>영혼무기 "전투 고양"이 보스전 시간이 늘어나면 오히려 약해지던 문제를 고쳤습니다.</li>
+<li>영혼무기 옵션 수치가 실제 적용 상한보다 크게 표시되던 문제를 고쳤습니다.</li>
+</ul>
+<hr>
+<details><summary>English summary (5.7.0)</summary><div class="en">New: Soul Weapon (after your first reincarnation, forge your own weapon: 70 looks, custom name and 8 special combat options; kept through reincarnation), Pets (16 pets, a pet bank fed by 10% of hunting gold, no duplicate draws, level cap = half your best floor), 4 Mythic (MR) allies with growing Mythic Powers, Expeditions, Ally Gear (with auto-equip, highest rarity first), a 119-piece wardrobe (owning special costumes raises ATK, HP and armor) with body/hair/off-hand slots and live preview, summon mileage, Stone Shop (premium ally gear chest, x10 chests, bulk costume purchase, send-all and recall-all expeditions), enhancement Transcend, a quiet one-line Gacha Mode for auto-summon, preset renaming, pet auto-reroll and a simplified-effects mode; large numbers are now abbreviated.<br>Balance: basic attack multiplier = 1 + blades + 50% of skill damage bonus; Warrior buffed (~+80% damage); boss damage growth softened after B80 to fix instant deaths around B100.</div></details>
 <h2>5.7.0 (5.4.0 이후 변경 전체)</h2>
 <p>5.5~5.6 개발분까지 한 번에 묶은 큰 업데이트입니다. (친구 테스트용으로 돌던 5.6.0 빌드의 최종판입니다.) 새 성장 요소는 대부분 <b>환생·윤회해도 남습니다.</b></p>
 <h3>새 기능</h3>
