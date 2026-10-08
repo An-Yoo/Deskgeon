@@ -682,3 +682,19 @@ html[lang="ko"] body { word-break: keep-all; overflow-wrap: anywhere; }
 .tslot .e { font-size: 8px; }
 .tslot.lock { cursor: default; color: #4f4870; border-color: #2a2540; gap: 3px; }
 .tslot.lock .n { font-weight: 600; font-size: 8px; white-space: normal; line-height: 1.25; }
+
+/* 5.8.1: 자동 환생 진행 시간 · 자동 윤회 기준 표시 */
+.rbnow { font-size: 9.5px; color: #b8b0d8; margin-top: 2px; line-height: 1.4; word-break: keep-all; }
+.riopt { flex-wrap: wrap; } .riopt input[data-act="rinum"] { width: 56px; } .riopt select { max-width: 110px; }
+#reincLast:empty { display: none; }
+/* 5.8.1: 옷장에서 아래 목록을 내려도 미리보기가 위에 붙어 있게 */
+#cosWin .cospv { align-self: stretch; position: sticky; top: -14px; z-index: 3; margin: 0 -14px 6px; padding: 8px 14px; border-radius: 0; border-width: 0 0 1px; background: radial-gradient(circle at 25% 40%, rgba(185,166,255,.22), transparent 60%), var(--panel); box-shadow: 0 4px 8px rgba(6,5,14,.6); }
+/* 5.8.1: 장비 강화 카드 2줄 고정 (이름·단계 / 효과·비용) */
+.up.ench { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: 6px; row-gap: 1px; align-items: center; padding: 5px 7px; }
+.up.ench .n { display: contents; }
+.up.ench .n b { grid-column: 1; grid-row: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.up.ench .n span { grid-column: 1; grid-row: 2; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.up.ench .lvl { grid-column: 2; grid-row: 1; justify-self: end; white-space: nowrap; }
+.up.ench .cost { grid-column: 2; grid-row: 2; justify-self: end; white-space: nowrap; }
+#enchNote:empty { display: none; }
+#enchNote { margin-top: 4px; }

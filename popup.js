@@ -1,5 +1,5 @@
 import {
-  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR,
+  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, rbFloorTarget, riTarget, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
@@ -828,6 +828,7 @@ function handleEvents(ev, prevBoss) {
   if (ev.evAuto) for (const r of ev.evAuto.slice(-3)) addLog(t('ev.autoLog', { e: t('ev.' + r.id), o: t('ev.' + r.id + '.o' + r.c) }));
   if (ev.sig) { banner(t('sig.drop', { u: UNIQUES[ev.sig.u].name }), 'floor', 1800); addLog('<b>' + t('sig.dropLog', { m: MONSTERS[ev.sig.z], u: UNIQUES[ev.sig.u].name }) + '</b>'); }
   if (ev.autoMut) refreshSkills();
+  if (ev.autoEnch) { st = stats(S); refreshEnch(); }
   if (ev.soulEnpass) popText(t('sfx.n.enpass'), 140, 34, 'proc');
   if (ev.soulUp && ev.soulUp % 10 === 0) addLog('<b style="color:#9fe3ff">' + t('soul.up', { w: soulName(), n: ev.soulUp }) + '</b>');
   if (ev.mrUp) { const last = ev.mrUp[ev.mrUp.length - 1]; const nm = COMP_BY_ID[last.id].name; addLog('<b style="color:' + C_RARITY[5].color + '">' + t('mrp.up', { c: nm, n: t('mrp.n.' + last.id), l: last.lv }) + '</b> · ' + mrpText(last.id, last.lv)); if (last.lv % 10 === 0) banner(t('mrp.up', { c: nm, n: t('mrp.n.' + last.id), l: last.lv }), 'floor', 1800); }
@@ -848,6 +849,12 @@ function handleEvents(ev, prevBoss) {
     banner(t('ui.towerEnd', { n: e.floor }), 'lose', 1600);
     addLog('<b>' + t('tw.' + (e.id || 'inf')) + ' · ' + t('ui.towerEndLog', { n: e.floor, b: e.best }) + '</b> ' + rewardText({ ess: e.ess, stones: e.stones, shards: e.shards, keys: e.keys }));
     save(S);
+  }
+  if (ev.autoReinc) {
+    logLines = []; hudSig = '';
+    addLog('<b>' + t('ui.autoReincLog', { n: fmtN(ev.autoReinc) }) + '</b>' + (ev.convStones ? ' · ' + t('conv.auto', { n: fmtN(ev.convStones) }) : ''));
+    flash('#ffd98a', .8, 1);
+    buildSlots(); buildBag(); buildSkills(); buildComps(); buildRelics();
   }
   if (ev.autoRebirth) {
     logLines = []; hudSig = '';
@@ -1504,12 +1511,13 @@ function openCosModal() { renderCosModal(); $('#cosModal').classList.remove('hid
 function drawCosPv(ov) { const cv = $('#cosPv'); if (!cv) return; const x = cv.getContext('2d'); x.imageSmoothingEnabled = false; x.clearRect(0, 0, 96, 96); for (const k of heroLayers(S.cls, ov)) { const im = A[k]; if (im) x.drawImage(im, 0, 0, 32, 32, 0, 0, 96, 96); }
   const n = $('#cosPvN'); if (n) n.textContent = ov ? (COS_BY_ID[ov.v] ? t('cos.n.' + ov.v) : ov.v === 'auto' ? t('slot.' + ov.slot) + ' · ' + t(ov.slot === 'hair' || ov.slot === 'offhand' ? 'cos.none' : 'cos.auto') : ov.v === 'hide' ? t('slot.' + ov.slot) + ' · ' + t('cos.hide') : t('slot.' + ov.slot) + ' · ' + t('cos.tier', { n: +ov.v.slice(1) + 1 })) : t('cos.pvNow'); }
 function renderCosModal() {
-  const c = S.cls || 'war';
+  const c = S.cls || 'war'; const keepY = $('#cosWin').scrollTop;
   const baseSrc = (() => { const b = lookOf(S, 'base'); return b && b !== 'auto' ? 'cos/' + b : 'cls/' + c; })();
   const thumb = (slot, v) => slot === 'hair' && v !== 'auto' ? `<span class="cstk"><img class="px" src="assets/${baseSrc}.png"><img class="px" src="assets/cos/${v}.png"></span>` : v === 'auto' ? (slot === 'base' ? `<img class="px" src="assets/cls/${c}.png">` : `<span class="ctxt">${t(slot === 'hair' || slot === 'offhand' ? 'cos.none' : 'cos.auto')}</span>`) : v === 'hide' ? `<span class="ctxt">${t('cos.hide')}</span>` : `<img class="px" src="assets/${v[0] === 't' && /^t\d$/.test(v) ? itemDoll(slot, +v.slice(1), c) : 'cos/' + v}.png">`;
   $('#cosWin').innerHTML = `<div class="evh"><b>${t('cos.title')}</b><span>${t('cos.count', { n: cosCount(S), m: COSTUMES.length })}</span></div><div class="cosfx">${(() => { const b = cosBonus(S), tot = COSTUMES.filter(z => !z.free).length; return `<b>${t('cos.fxHead', { n: b.n, m: tot })}</b> ${t('cos.fx.atk', { v: b.atk })} · ${t('cos.fx.hp', { v: b.hp })} · ${t('cos.fx.def', { v: b.def })}<span>${t('cos.fxRule')}</span>`; })()}</div><div class="cospv"><canvas id="cosPv" width="96" height="96"></canvas><div class="cospvt"><b id="cosPvN">${t('cos.pvNow')}</b><span>${t('cos.pvHint')}</span></div></div><div class="qx">${t('cos.desc')}</div>
     ${COS_SLOTS.map(slot => `<div class="cosrow"><b>${t('slot.' + slot)}</b><div class="coslist">${lookOptions(S, slot).map(v => `<button class="cosopt ${lookOf(S, slot) === v ? 'on' : ''} ${COS_BY_ID[v] ? 'sp' : ''}" data-cs="${slot}" data-cv="${v}" title="${COS_BY_ID[v] ? t('cos.n.' + v) + (cosFxTxt(v) ? ' · ' + cosFxTxt(v) : '') : ''}">${thumb(slot, v)}</button>`).join('')}</div></div>`).join('')}
     <button class="mini wide" data-csa="close">${t('ui.close')}</button>`;
+  $('#cosWin').scrollTop = keepY;
 }
 // 여러 원정·상자를 한 번에 받았을 때 보상을 합쳐서 보여 준다
 function showBulkReward(title, tot) {
@@ -2090,7 +2098,8 @@ function qAuto() {
   const au = S.auto || {};
   return `<div class="qx">${t('q.autoNote')}</div>` + AUTO.map(a => {
     const un = a.need(S), on = !!au[a.id];
-    const opt = a.id === 'rebirth' && un ? `<div class="rbopt"><select data-act="rbmode"><option value="stuck" ${au.rbMode !== 'floor' ? 'selected' : ''}>${t('auto.rb.stuck')}</option><option value="floor" ${au.rbMode === 'floor' ? 'selected' : ''}>${t('auto.rb.floor')}</option></select><input type="number" data-act="rbval" min="${au.rbMode === 'floor' ? 30 : 5}" max="999" value="${au.rbMode === 'floor' ? (au.rbFloor || Math.max(30, (S.bestFloor || 30) - 5)) : (au.rbStuck || 30)}"><span>${au.rbMode === 'floor' ? t('auto.rb.floorU') : t('auto.rb.min')}</span></div>` : '';
+    const opt = a.id === 'rebirth' && un ? `<div class="rbopt"><select data-act="rbmode"><option value="stuck" ${au.rbMode !== 'floor' ? 'selected' : ''}>${t('auto.rb.stuck')}</option><option value="floor" ${au.rbMode === 'floor' ? 'selected' : ''}>${t('auto.rb.floor')}</option></select><input type="number" data-act="rbval" min="${au.rbMode === 'floor' ? 30 : 5}" max="9999" value="${au.rbMode === 'floor' ? rbFloorTarget(S) : (au.rbStuck || 30)}"><span>${au.rbMode === 'floor' ? t('auto.rb.floorU') : t('auto.rb.min')}</span></div>${au.rbMode !== 'floor' ? `<div class="rbnow">${t('auto.rb.now', { n: Math.floor((S.stuckT || 0) / 60) })}</div>` : ''}`
+      : a.id === 'reinc' && un ? (() => { const sp = splitAmt(riTarget(S)); return `<div class="rbopt riopt"><span>${t('ui.honor')}</span><input type="number" inputmode="decimal" min="0" step="any" data-act="rinum" placeholder="${t('auto.ri.ph')}" value="${sp.m}"><select data-act="riunit">${SUF.map((u, i) => `<option value="${i}" ${i === sp.u ? 'selected' : ''}>${unitLabel(i)}</option>`).join('')}</select><span>${t('auto.ri.post')}</span></div><div class="rbnow">${t('auto.ri.now', { h: fmt(S.honor || 0) })} · ${S.lastRi ? t('auto.ri.last', { h: fmt(S.lastRi.honor), f: S.lastRi.floor, k: fmtN(S.lastRi.karma) }) : t('auto.ri.none')}${!au.riHonor && S.lastRi ? '<br>' + t('auto.ri.def') : ''}</div>`; })() : '';
     return `<div class="qrow ${un ? '' : 'lock'}"><div class="qt"><b>${t('auto.' + a.id)}</b><span>${un ? t('auto.d.' + a.id, { w: Math.round(bossRetryWait(S) / 60) }) : t('auto.lock.' + a.cond.k, { n: a.cond.n })}</span>${opt}</div><label class="tgl"><input type="checkbox" data-act="auto" data-id="${a.id}" ${on ? 'checked' : ''} ${un ? '' : 'disabled'}><i></i></label></div>`;
   }).join('');
 }
@@ -2189,6 +2198,16 @@ function bindEvents() {
     st = stats(S); save(S); $('#evBox').dataset.sig = ''; renderEvents(); render(); });
 }
 function evResText(r) { const x = { ...r }; const parts = []; if (x.gold) parts.push(t('ev.gold', { g: fmt(x.gold) })); delete x.gold; if (x.dust) parts.push(t('rune.dustN', { n: x.dust })); delete x.dust; const rt = rewardText(x); if (rt) parts.push(rt); return parts.join(' · '); }
+// 자동 환생·윤회 옵션 (환경설정·모험 탭 공통)
+// 명예 기준: 숫자 + 단위 선택 (게임 숫자 표기 K·M·B…와 같은 단위)
+const SUF = ['', 'K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp', 'Oc', 'No', 'Dc'];
+function unitLabel(i) { if (!i) return t('auto.ri.u0'); const n = t('auto.ri.units').split(','); return SUF[i] + (n[i - 1] ? ' · ' + n[i - 1] : ''); }
+function splitAmt(v) { if (!(v > 0)) return { m: '', u: 0 }; const u = Math.max(0, Math.min(SUF.length - 1, Math.floor(Math.log10(v) / 3))); return { m: Math.round(v / Math.pow(1000, u) * 100) / 100, u }; }
+function autoOpt(el, act) {
+  if (act === 'rbmode') { S.auto.rbMode = el.value; if (el.value === 'floor' && !S.auto.rbFloor) S.auto.rbFloor = rbFloorTarget(S); }
+  else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else S.auto.rbStuck = Math.max(5, v); }
+  else if (act === 'rinum' || act === 'riunit') { const box = el.closest('.riopt'); const m = +box.querySelector('[data-act="rinum"]').value, u = +box.querySelector('[data-act="riunit"]').value || 0; S.auto.riHonor = m > 0 ? m * Math.pow(1000, u) : 0; }
+}
 // ---------- 자동 진행 (환경설정) ----------
 function refreshAutoBox() { const b = $('#autoBox'); if (b) morph(b, qAuto() + `<div class="qrow"><div class="qt"><b>${t('conv.title')}</b><span>${t('conv.desc')}</span></div><label class="tgl"><input type="checkbox" data-act="conv" ${S.goldConv !== false ? 'checked' : ''}><i></i></label></div>`); }
 function bindAutoBox() {
@@ -2196,8 +2215,7 @@ function bindAutoBox() {
     const el = e.target, act = el.dataset.act; S.auto ||= {};
     if (act === 'auto') S.auto[el.dataset.id] = el.checked;
     else if (act === 'conv') S.goldConv = el.checked;
-    else if (act === 'rbmode') S.auto.rbMode = el.value;
-    else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else S.auto.rbStuck = Math.max(5, v); }
+    else autoOpt(el, act);
     save(S); el.blur(); refreshAutoBox();
   });
 }
@@ -2285,8 +2303,7 @@ function bindQuest() {
   $('#qBody').addEventListener('change', e => {
     const el = e.target, act = el.dataset.act; S.auto ||= {};
     if (act === 'auto') S.auto[el.dataset.id] = el.checked;
-    else if (act === 'rbmode') S.auto.rbMode = el.value;
-    else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else S.auto.rbStuck = Math.max(5, v); }
+    else autoOpt(el, act);
     save(S); el.blur(); buildQuest();
   });
 }
@@ -2317,8 +2334,9 @@ function refreshEnch() {
   for (const d of document.querySelectorAll('.ench')) {
     const id = d.dataset.slot, lv = enchLv(S, id), max = lv >= ENCH_MAX, x = enchX(S, id), c = enchNextCost(S, id), tot = lv + x;
     d.classList.toggle('no', (S.ess || 0) < c); d.classList.toggle('xcend', max);
-    d.querySelector('.ed').textContent = max ? t('ui.enchXEff', { n: x }) : t('ui.enchEff', { p: Math.round(ENCH_STEP * lv * 100) }) + ' → +' + Math.round(ENCH_STEP * (lv + 1) * 100) + '%';
-    d.querySelector('.lvl').textContent = max ? t('ui.enchX', { n: x }) : '+' + lv + '/' + ENCH_MAX;
+    const ed = max ? t('ui.enchXCard', { p: x }) : '+' + Math.round(ENCH_STEP * lv * 100) + '% → +' + Math.round(ENCH_STEP * (lv + 1) * 100) + '%';
+    d.querySelector('.ed').textContent = ed; d.title = max ? '' : t('ui.enchEff', { p: Math.round(ENCH_STEP * lv * 100) }) + ' → +' + Math.round(ENCH_STEP * (lv + 1) * 100) + '%';
+    d.querySelector('.lvl').textContent = max ? t('ui.enchXSum', { n: x }) : '+' + lv + '/' + ENCH_MAX;
     d.querySelector('.cost b').textContent = fmt(c);
   }
   const si = setInfo(S);
@@ -2334,6 +2352,7 @@ function refreshReinc() {
   $('#reincGain').textContent = fmtN(k);
   $('#karma').textContent = fmtN(K); $('#reincN').textContent = S.reinc || 0; $('#cycleBest').textContent = 'B' + (S.cycleBest || 0);
   $('#karmaEff').textContent = t('ui.karmaEff', { h: fmtP(KARMA_HONOR * K * 100), p: fmtP(KARMA_POW * K * 100) });
+  { const el = $('#reincLast'); if (el) el.textContent = S.lastRi ? t('ui.reincLast', { h: fmt(S.lastRi.honor), f: S.lastRi.floor, k: fmtN(S.lastRi.karma) }) : ''; }
   $('#reincHint').textContent = k > 0 ? t('ui.reincGain', { k: fmtN(k), h: fmtP(KARMA_HONOR * k * 100), p: fmtP(KARMA_POW * k * 100) }) : t('ui.reincNeed', { n: REINC_FLOOR, m: S.cycleBest || 0 });
   { const cv = k > 0 ? convPreview(S) : 0; $('#reincConv').textContent = S.goldConv === false ? t('conv.off') : cv ? t('conv.pre', { n: fmtN(cv) }) : ''; }
   if (!bindReinc._armed) $('#reincBtn').disabled = k <= 0;
