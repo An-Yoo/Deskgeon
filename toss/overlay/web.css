@@ -4,9 +4,10 @@ body { margin: 0 auto !important; transform-origin: top center; }
 html.dgweb { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
 html.dgweb, html.dgweb body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
 html.dgweb textarea, html.dgweb input { user-select: text; -webkit-user-select: text; }
-/* 크롬 확장 전용 기능 숨김: 구글 드라이브, 브라우저 동기화 */
-[data-i18n="ui.drive"], #drvBtn, .syncline:has(#drvDot),
-[data-i18n="ui.browserSync"], .syncline:has(#syncDot), #syncNow { display: none !important; }
+/* 크롬 확장 전용 기능 숨김: 구글 드라이브(구글 로그인), 브라우저 동기화
+   - :has() 를 모르는 웹뷰에서는 선택자 묶음 전체가 무시되므로 :has() 를 쓰지 않는다.
+   - 줄(.syncline)은 toss.js 가 dg-hide 클래스를 붙여 숨긴다. */
+[data-i18n="ui.drive"], #drvBtn, #drvDot, #drvTxt, [data-i18n="ui.browserSync"], #syncDot, #syncTxt, #syncNow, .dg-hide { display: none !important; }
 /* 앱인토스 전용 종료 확인 창 */
 #dgExit .grow { display: flex; gap: 6px; margin-top: 10px; }
 #dgExit .grow > * { flex: 1; }
