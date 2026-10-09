@@ -26,7 +26,14 @@ function patch(src, find, repl, name) {
 
 // 1) 게임 코드 → app/game
 rm(path.join(APP, 'game'));
-for (const f of ['i18n.js', 'popup.css']) fs.cpSync(path.join(SRC, f), path.join(APP, 'game', f));
+fs.cpSync(path.join(SRC, 'popup.css'), path.join(APP, 'game', 'popup.css'));
+// 도움말의 '크롬 동기화·구글 드라이브' 안내를 뺀다 (앱인토스는 토스 로그인 외 로그인 수단 금지)
+let ij = rd(path.join(SRC, 'i18n.js'));
+ij = patch(ij, 'Saves sync through Chrome Sync, or connect Google Drive in Settings. Save codes and automatic backups are there too.', 'Your progress is saved automatically on this device. Save codes and automatic backups are in Settings.', 'help-save-en');
+ij = patch(ij, '세이브는 크롬 동기화로 저장되고, 환경설정에서 구글 드라이브를 연결할 수도 있어요. 세이브 코드와 자동 백업도 거기 있어요.', '진행 상황은 이 기기에 자동으로 저장돼요. 세이브 코드와 자동 백업은 환경설정에 있어요.', 'help-save-ko');
+ij = patch(ij, 'セーブはChrome同期、設定でGoogleドライブ連携も可能。セーブコードと自動バックアップもそこに。', '進行はこの端末に自動保存。セーブコードと自動バックアップは設定に。', 'help-save-ja');
+ij = patch(ij, '存档通过Chrome同步保存，也可在设置中连接Google云端硬盘，存档码和自动备份也在那里。', '进度会自动保存在本设备上，存档码和自动备份在设置中。', 'help-save-zh');
+wr(path.join(APP, 'game', 'i18n.js'), ij);
 let gj = rd(path.join(SRC, 'game.js'));
 // 앱인토스는 국내 서비스: 새 세이브의 기본 언어를 한국어로
 gj = patch(gj, "autoSell: -1, lang: 'en',", "autoSell: -1, lang: 'ko',", 'new-save-ko');
