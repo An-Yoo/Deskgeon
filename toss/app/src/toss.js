@@ -91,9 +91,17 @@ function applySafeArea() {
   } catch (e) { log('safearea ' + (e && e.message)); }
 }
 
+// ---------- 구글 로그인(드라이브)·브라우저 동기화 UI 제거 ----------
+// 앱인토스는 토스 로그인 외 다른 로그인 수단을 두면 안 된다. CSS 숨김에 더해 줄 자체를 숨기고 버튼을 비활성화한다.
+function hideGoogleLogin() {
+  for (const sel of ['#drvDot', '#syncDot']) { const el = document.querySelector(sel); const line = el && el.closest('.syncline'); if (line) line.classList.add('dg-hide'); }
+  for (const sel of ['[data-i18n="ui.drive"]', '#drvBtn', '[data-i18n="ui.browserSync"]', '#syncNow']) { const el = document.querySelector(sel); if (el) { el.classList.add('dg-hide'); el.setAttribute('aria-hidden', 'true'); if (el.tagName === 'BUTTON') el.disabled = true; } }
+}
+
 // ---------- 시작 ----------
 (async () => {
   window.__dmStep = 'toss-init';
+  hideGoogleLogin();
   const key = await resolveUserKey();
   const prefix = 'dg.t.' + key.replace(/[^a-zA-Z0-9]/g, '').slice(0, 24) + '.';
   window.__dgPrefix = prefix;
