@@ -43,9 +43,12 @@
       <div class="battle">
         <div class="mline"><span id="mname"></span><span id="mcount"></span></div>
         <div class="bar mon"><i id="mbar"></i></div>
-        <div class="bar hero hidden" id="heroWrap"><i id="hbar"></i><span id="hlabel"></span></div>
-        <button class="bossbtn hidden" id="bossBtn"><span data-i18n="ui.bossChallenge">Challenge Boss</span> <b>B5F</b></button>
-        <div class="bosstimer hidden" id="bossTimer"><span data-i18n="ui.boss">Boss</span> <b id="btime">30.0</b>s</div>
+        <div class="bslot" id="bSlot">
+          <div class="bar hero hidden" id="heroWrap"><i id="hbar"></i><span id="hlabel"></span></div>
+          <button class="bossbtn hidden" id="bossBtn"><span data-i18n="ui.bossChallenge">Challenge Boss</span> <b>B5F</b></button>
+          <div class="bosstimer hidden" id="bossTimer"><span data-i18n="ui.boss">Boss</span> <b id="btime">30.0</b>s</div>
+          <div class="bnext hidden" id="bNext"></div>
+        </div>
       </div>
       <button class="evbar hidden" id="evBox"></button>
       <div class="ebrow hidden" id="ebRow"></div>
@@ -54,9 +57,11 @@
         <div><span data-i18n="stat.hp">HP</span><b id="s_hp">0</b></div>
         <div><span data-i18n="stat.crit">Crit</span><b id="s_crit">0%</b></div>
         <div><span data-i18n="ui.allyDps">Ally DPS</span><b id="s_comp">0</b></div>
+        <button class="sgbtn" id="dpsBtn"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 14h12"/><path d="M4 11V8M7 11V4M10 11V6.5M13 11V2.5"/></svg><span data-i18n="dps.btn">DPS</span></button>
       </div>
       <div class="guidebox autocard hidden" id="autoCard"></div>
       <div class="guidebox hidden" id="guideBox"></div>
+      <div class="guidebox growbox hidden" id="growBox"></div>
       <div class="log" id="log"></div>
     </section>
 
@@ -133,6 +138,7 @@
     </section>
 
     <section class="page hidden" data-tab="shop">
+      <div class="townbox" id="townBox"></div>
       <div class="sshop" id="stoneShop"></div>
       <div class="shop" id="shop"></div>
     </section>
@@ -241,6 +247,23 @@
     <div class="win soulwin" id="soulWin"></div>
   </div>
 
+  <div class="modal hidden" id="growModal">
+    <div class="win growwin" id="growWin"></div>
+  </div>
+
+  <div class="modal hidden" id="townModal">
+    <div class="win townwin" id="townWin"></div>
+  </div>
+
+  <div class="modal hidden" id="dpsModal">
+    <div class="win dpswin">
+      <div class="evh"><b data-i18n="dps.title">DPS analysis</b><span id="dpsWin"></span></div>
+      <div class="dpsmode"><button class="mini" data-dm="boss" data-i18n="dps.boss">Boss</button><button class="mini" data-dm="hunt" data-i18n="dps.hunt">Hunting</button></div>
+      <div id="dpsBody" class="dpsbody"></div>
+      <div class="dpsbtns"><button class="mini" id="dpsReset" data-i18n="dps.reset">Reset</button><button class="mini" id="dpsClose" data-i18n="ui.close">Close</button></div>
+    </div>
+  </div>
+
   <div class="modal hidden" id="cardModal">
     <div class="win cardwin">
       <h2 data-i18n="card.title">My record card</h2>
@@ -276,6 +299,7 @@
           <div class="autobox" id="autoBox"></div>
           <div class="sbh" data-i18n="help.title">Guide</div>
           <div class="grow"><button class="mini wide" id="helpBtn" data-i18n="help.open">How to play</button><button class="mini wide" id="guideShow" data-i18n="gd.show">Show starter guide</button></div>
+          <button class="mini wide" id="growShow" data-i18n="gr.open">Growth checklist</button>
           <div class="sbh sm" data-i18n="ui.lang">Language</div>
           <select id="langSel" class="wide"></select>
           <div class="sbh sm" data-i18n="fx.head">Screen</div>

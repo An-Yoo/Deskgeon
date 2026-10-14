@@ -748,6 +748,59 @@ comp/azrael.png  ←  mon/unique/azrael.png
 comp/mnoleg.png  ←  mon/unique/mnoleg.png
 comp/lom_lobon.png  ←  mon/unique/lom_lobon.png
 comp/gloorx_vloq.png  ←  mon/unique/gloorx_vloq.png
+town/fl_stone.png  ←  dngn/floor/limestone0.png
+town/fl_dirt.png  ←  dngn/floor/dirt0.png
+town/fl_sand.png  ←  dngn/floor/sand1.png
+town/fl_marble.png  ←  dngn/floor/white_marble0.png
+town/fl_bmarble.png  ←  dngn/floor/marble_floor1.png
+town/fl_slate.png  ←  dngn/floor/rect_gray0.png
+town/fl_cobble.png  ←  dngn/floor/cobble_blood1.png
+town/fl_mosaic.png  ←  dngn/floor/mosaic0.png
+npc/smith.png  ←  player/base/dwarf_m.png + player/legs/pants_brown.png + player/body/leather_heavy.png + player/hand1/rod_hammer.png (겹쳐 합성)
+npc/guard.png  ←  player/base/human_m.png + player/legs/metal_gray.png + player/body/half_plate.png + player/head/helm_red.png + player/hand1/spear.png + player/hand2/shield_kite1.png (겹쳐 합성)
+npc/coach.png  ←  player/base/human_m.png + player/legs/pants_black.png + player/body/leather_stud.png + player/hair/brown1.png + player/head/band_red.png + player/hand1/short_sword.png (겹쳐 합성)
+npc/mage.png  ←  player/base/elf_f.png + player/legs/skirt_blue.png + player/body/robe_purple.png + player/hair/fem_black.png + player/head/wizard_purple.png + player/hand1/staff_mage.png (겹쳐 합성)
+npc/soldier.png  ←  player/base/human_m.png + player/legs/leg_armour02.png + player/body/green_chain.png + player/head/helm_green.png + player/hand1/long_sword_slant.png + player/hand2/shield_knight_gray.png (겹쳐 합성)
+npc/priest.png  ←  player/base/human_f.png + player/legs/skirt_white.png + player/body/robe_white.png + player/hair/fem_yellow.png + player/head/hood_white.png + player/hand1/sceptre.png + player/hand2/misc/book_white.png (겹쳐 합성)
+npc/veteran.png  ←  player/base/human_m.png + player/legs/metal_gray.png + player/body/armour_blue_gold.png + player/head/viking_gold.png + player/hand1/battleaxe.png (겹쳐 합성)
+npc/merchant.png  ←  player/base/halfling_m.png + player/legs/pants_brown.png + player/body/shirt_vest.png + player/hair/frodo.png + player/head/straw.png + player/hand1/misc/box.png (겹쳐 합성)
+npc/scholar.png  ←  player/base/gnome_m.png + player/legs/pants_blue.png + player/body/robe_blue.png + player/head/cap_blue.png + player/hand2/misc/book_blue.png (겹쳐 합성)
+npc/alchemist.png  ←  player/base/human_f.png + player/legs/pants_darkgreen.png + player/body/robe_green.png + player/hair/pigtails_brown.png + player/hand1/misc/bottle.png (겹쳐 합성)
+npc/summoner.png  ←  player/base/deep_elf_m.png + player/body/robe_black_hood.png + player/head/hood_black2.png + player/hand1/staff_ring_blue.png (겹쳐 합성)
+npc/keeper.png  ←  player/base/halfling_f.png + player/legs/pants_short_brown.png + player/body/leather_green.png + player/hair/ponytail_yellow.png + player/hand1/whip.png (겹쳐 합성)
+npc/soulsmith.png  ←  player/base/human_m.png + player/legs/pants_black.png + player/body/robe_black_red.png + player/head/hood_red.png + player/hand1/misc/bone_lantern.png (겹쳐 합성)
+npc/v1.png  ←  player/base/human_m.png + player/legs/pants_blue.png + player/body/shirt_white1.png + player/hair/brown1.png (겹쳐 합성)
+npc/v2.png  ←  player/base/human_f.png + player/body/dress_green.png + player/hair/fem_red.png (겹쳐 합성)
+npc/v3.png  ←  player/base/dwarf_f.png + player/legs/pants_brown.png + player/body/jacket2.png (겹쳐 합성)
+npc/v4.png  ←  player/base/halfling_m.png + player/legs/pants_short_brown.png + player/body/shirt_check.png + player/hair/merry.png (겹쳐 합성)
+npc/v5.png  ←  player/base/elf_m.png + player/legs/pants_l_white.png + player/body/shirt_blue.png + player/hair/legolas.png (겹쳐 합성)
+npc/v6.png  ←  player/base/human_f.png + player/legs/skirt_red.png + player/body/shirt_white_yellow.png + player/hair/pigtail_red.png (겹쳐 합성)
+npc/v7.png  ←  player/base/gnome_f.png + player/legs/pants_orange.png + player/body/shirt_hawaii.png + player/head/straw.png (겹쳐 합성)
+npc/v8.png  ←  player/base/human_m.png + player/legs/pants_short_gray.png + player/body/shirt_black.png + player/hair/sam.png + player/head/cap_black1.png (겹쳐 합성)
+town/road.png  ←  dngn/floor/limestone0.png
+town/tree.png  ←  dngn/trees/mangrove1.png
+town/statue.png  ←  dngn/statues/statue_angel.png
+town/pond.png  ←  dngn/blue_fountain.png
+town/forge.png  ←  dngn/altars/makhleb_flame1.png
+town/wall.png  ←  dngn/gateways/enter_vaults_closed.png
+town/drill.png  ←  mon/statues/training_dummy.png
+town/arcane.png  ←  dngn/altars/vehumet1.png
+town/barracks.png  ←  dngn/altars/okawaru.png
+town/chapel.png  ←  dngn/altars/shining_one.png
+town/arena.png  ←  dngn/statues/statue_dragon.png
+town/market.png  ←  dngn/shops/shop_gadgets.png
+town/library.png  ←  dngn/altars/sif_muna.png
+town/alchemy.png  ←  dngn/altars/jiyva01.png
+town/circle.png  ←  dngn/gateways/starry_portal.png
+town/kennel.png  ←  dngn/statues/statue_cat.png
+town/foundry.png  ←  dngn/altars/yredelemnul.png
+town/plaza.png  ←  dngn/sparkling_fountain.png
+town/grass0.png  ←  dngn/floor/grass/grass0.png
+town/grass1.png  ←  dngn/floor/grass/grass1.png
+town/grass2.png  ←  dngn/floor/grass/grass2.png
+town/tree1.png  ←  dngn/trees/tree1_yellow.png
+town/tree2.png  ←  dngn/trees/tree2_red.png
+town/tree3.png  ←  dngn/trees/tree1_lightred.png
 comp/spriggan_berserker.png  ←  mon/spriggan/spriggan_berserker.png
 comp/spriggan_defender.png  ←  mon/spriggan/spriggan_defender.png
 comp/skeletal_warrior.png  ←  mon/undead/skeletal_warrior.png
@@ -849,3 +902,6 @@ comp/tiamat_pale.png  ←  mon/unique/tiamat_pale.png
 comp/serpent_dis.png  ←  mon/unique/serpent_of_hell-dis.png
 comp/pan_dawn.png  ←  mon/panlord/demon_wings_butterfly.png + mon/panlord/demon_body_succubus.png + mon/panlord/demon_head_incubus.png (겹쳐 합성)
 ```
+
+## 직접 그린 도트 (Deskgeon 오리지널)
+마을의 집(빨간 지붕·파란 지붕), 우물, 밭, 가로등, 울타리, 꽃밭 그림(assets/town/house.png, house2.png, well.png, farm.png, lamp.png, fence.png, flowers.png)은 이 게임을 위해 직접 그린 도트입니다.

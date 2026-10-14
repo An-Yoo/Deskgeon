@@ -1,5 +1,5 @@
 import {
-  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, rbFloorTarget, riTarget, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR,
+  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, rbFloorTarget, riTarget, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR, METER, meterReset, TITLES, TITLE_BY_ID, titleState, titleNeed, titleOwned, titleEquip, titleBonus, TITLE_KEYS, TOWN_N, TOWN_B, TOWN_BY_ID, TOWN_MAXLV, TOWN_PAIR, townState, townCount, townCopies, townCopyMax, townTileCost, townBuildCost, townUpCost, townCanOpen, townOpen, townBuild, townUp, townMove, townSell, townTileMult, townAgg, townVal, dl2State, dl2Cur, dl2Start, dl2Pick, dl2Buy, dlWeekSum, DL_WEEK, DL_SHOP, DL_EVERY, towerBestAll, masterySpent, canTowerSweep, towerSweep, towerSweepAll, canRiftSweep, riftSweep, riftSweepAll, townUsed, townRes, townResMult, townCostOf, TOWN_RES_PCT, TOWN_RES_CAP, townOpenable, townOpenNext, townOpenMany, townOpenAffordable, TOWN_FLOORS, TOWN_FLOOR_BY_ID, TOWN_RESERVES, townFloor, townPaint, townCheapest, townUpCheap, BOSS_EVERY,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
@@ -124,7 +124,10 @@ function cutin(sd) {
   $('#banners').appendChild(b);
   setTimeout(() => b.remove(), 1000);
 }
+// 획득 연출(금화·소환석·장비가 위쪽 칸으로 날아감)은 던전 탭에서 창이 열려 있지 않을 때만
+const flyOk = () => !document.querySelector('.page[data-tab="dungeon"]')?.classList.contains('hidden') && !document.querySelector('.modal:not(.hidden)');
 function flyTo(src, cxp, cyp, target, n = 1) {
+  if (!target || !flyOk()) return;
   const fl = $('#flyer'), sr = $('#screen').getBoundingClientRect(), tr = target.getBoundingClientRect();
   for (let i = 0; i < n; i++) {
     const im = document.createElement('img');
@@ -830,6 +833,8 @@ function handleEvents(ev, prevBoss) {
   if (ev.autoMut) refreshSkills();
   if (ev.autoEnch) { st = stats(S); refreshEnch(); }
   if (ev.soulEnpass) popText(t('sfx.n.enpass'), 140, 34, 'proc');
+  if (ev.townAuto) { townAutoN += ev.townAuto; if (performance.now() - townAutoLogT > 30000) { townAutoLogT = performance.now(); addLog(t('town.autoLog', { n: townAutoN })); townAutoN = 0; } if (!$('#townModal').classList.contains('hidden')) renderTown(); }
+  if (ev.titles) { for (const id of ev.titles) addLog('<b style="color:#ffd98a">' + t('ttl.got', { n: t('ttl.n.' + id) }) + '</b> · ' + ttlFx(id)); toast(t('ttl.got', { n: t('ttl.n.' + ev.titles[0]) }) + (ev.titles.length > 1 ? ' +' + (ev.titles.length - 1) : '')); }
   if (ev.soulUp && ev.soulUp % 10 === 0) addLog('<b style="color:#9fe3ff">' + t('soul.up', { w: soulName(), n: ev.soulUp }) + '</b>');
   if (ev.mrUp) { const last = ev.mrUp[ev.mrUp.length - 1]; const nm = COMP_BY_ID[last.id].name; addLog('<b style="color:' + C_RARITY[5].color + '">' + t('mrp.up', { c: nm, n: t('mrp.n.' + last.id), l: last.lv }) + '</b> · ' + mrpText(last.id, last.lv)); if (last.lv % 10 === 0) banner(t('mrp.up', { c: nm, n: t('mrp.n.' + last.id), l: last.lv }), 'floor', 1800); }
   if (ev.casts) for (const c of ev.casts.slice(-3)) castFx(c);
@@ -982,6 +987,8 @@ let cgSnap = null;
 const cgSnapNow = () => { const m = {}; const eq = (S.cg || {}).eq || {}; for (const id in eq) for (const k in eq[id]) m[id + '|' + k] = cgScore(eq[id][k]); return m; };
 function noteCgMoved() { if (!cgTakeMoved()) return; const now = cgSnapNow(), old = cgSnap || {}; let n = 0; for (const key of new Set([...Object.keys(now), ...Object.keys(old)])) if (now[key] !== old[key]) n++; cgSnap = now; if (n) { addLog(t('cg.autoMoved', { e: Object.keys(now).length, b: cgBag(S).length })); const eb = $('#expBox'); if (eb) eb.dataset.sig = ''; } }
 function render() {
+  if (S && S.townRefund) townRefundNotice();
+  if (document.querySelector('.page[data-tab="shop"]:not(.hidden)')) renderTownBox();
   noteCgMoved();
   const cl = CLASSES[S.cls || 'war'];
   const tag = $('#clsTag');
@@ -1021,9 +1028,12 @@ function render() {
     $('#heroWrap').classList.add('hidden');
     $('#bossTimer').classList.add('hidden');
   }
-  const cb = $('#bossBtn');
-  if (canChallenge(S)) { cb.classList.remove('hidden'); cb.querySelector('b').textContent = 'B' + (S.floor + 1) + 'F'; }
+  const cb = $('#bossBtn'), cc = canChallenge(S);
+  if (cc) { cb.classList.remove('hidden'); cb.querySelector('b').textContent = 'B' + (S.floor + 1) + 'F'; }
   else cb.classList.add('hidden');
+  // 높이가 고정된 보스 칸: 보스전 = 체력 줄 + 시간, 도전 가능 = 보스 버튼, 사냥 중 = 다음 보스 안내
+  { const nx = $('#bNext'), show = !S.boss && !cc; nx.classList.toggle('hidden', !show);
+    if (show) { const nb = Math.ceil((S.floor + 1) / BOSS_EVERY) * BOSS_EVERY, left = nb - S.floor, tx = left <= 1 ? t('ui.nextBoss1', { b: nb }) : t('ui.nextBoss', { b: nb, n: left }); if (nx.textContent !== tx) nx.textContent = tx; } }
   $('#s_atk').textContent = fmt(st.atk);
   $('#s_hp').textContent = fmt(st.hp);
   $('#s_crit').textContent = st.crit.toFixed(1) + '%';
@@ -1041,7 +1051,7 @@ function render() {
   }
   $('#shopDot').classList.toggle('hidden', autoOn(S, 'upgrade') || !UPGRADES.some(u => S.gold >= upgradeCost(u, S.up[u.id] || 0)));
   $('#skillDot').classList.toggle('hidden', autoOn(S, 'skill') || (S.sp <= 0 && !mutPending(S)));
-  renderGuide(); renderEvents(); autoNotice();
+  renderGuide(); renderGrowBox(); renderEvents(); autoNotice();
   if (!document.querySelector('[data-tab="comp"]').classList.contains('hidden')) { renderExped(); renderPetBox(); }
   $('#compDot').classList.toggle('hidden', !expSlots(S).some(x => x && Date.now() >= x.end) && S.stones < PULL_COST && !(S.team || []).some(id => { const c = COMP_BY_ID[id], o = S.comp[id]; return c && o && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(c, o.lv || 0); }));
   if (!render._gd || performance.now() - render._gd > 1000) {
@@ -1428,6 +1438,7 @@ function bindSoul() {
 const PET_COL = ['#b8b8c8', '#6bd66b', '#5aa9ff', '#c77dff', '#ffb347'];
 const petFxText = (k, v) => t('pet.fx.' + k, { v: Math.round(v * 10) / 10 });
 const goldIc = '<img src="assets/ui/gold.png" class="px i14" alt="">';
+const stoneIc = '<img src="assets/ui/stone.png" class="px i14" alt="">';
 let petSel = null;
 // 자동 다시 뽑기 (원하는 효과·등급이 나올 때까지)
 let petAuto = null; const petAutoPref = {};
@@ -1962,7 +1973,7 @@ const pips = (n, on) => '<span class="pips">' + Array.from({ length: n }, (_, i)
 
 // ================= 모험 탭 (미션 · 탑 · 업적 · 도감 · 자동) =================
 let qTab = 'mission';
-const QTABS = ['mission', 'tower', 'rift', 'daily', 'ach', 'book'];
+const QTABS = ['mission', 'tower', 'rift', 'daily', 'ach', 'title', 'book'];
 function missionClaimable(kind) {
   const L = kind === 'd' ? DAILY : WEEKLY;
   if (L.some(m => { const ms = missionState(S, kind, m); return !ms.claimed && ms.v >= ms.need; })) return true;
@@ -1972,7 +1983,8 @@ function qDot(k) {
   if (k === 'mission') return canAttend(S) || missionClaimable('d') || missionClaimable('w');
   if (k === 'tower') return TOWERS.some(x => canTower(S, x.id));
   if (k === 'rift') return canRift(S);
-  if (k === 'daily') return !!S.cls && dailyState(S).tries === DAILY_TRIES;
+  if (k === 'daily') { const o = dl2State(S); return !!S.cls && (o.tries === DAILY_TRIES || !!o.cur); }
+  if (k === 'title') return false;
   if (k === 'ach') return ACH.some(a => achClaimed(S, a.id) < achMet(S, a));
   return false;
 }
@@ -2042,9 +2054,10 @@ function qTower() {
     return `<div class="qcard twc tw-${T.id}"><div class="qh"><b>${t('tw.' + T.id)}</b><span>${t('q.towerBest')} <b>${ts.best || 0}F</b> · ${t('q.towerTries')} <b>${tries}/${TOWER_TRIES}</b></span></div>
       <div class="qx">${t('tw.d.' + T.id, { t: T.time })}</div>
       <div class="qx rw">${t('tw.r.' + T.id)}</div>
-      <button class="big sm" data-act="tower" data-id="${T.id}" ${canTower(S, T.id) ? '' : 'disabled'}>${t('q.towerBtn')}</button></div>`;
+      <div class="twbtns"><button class="big sm" data-act="tower" data-id="${T.id}" ${canTower(S, T.id) ? '' : 'disabled'}>${t('q.towerBtn')}</button><button class="big sm sweep" data-act="tsweep" data-id="${T.id}" ${canTowerSweep(S, T.id) ? '' : 'disabled'} title="${t('sw.towerT', { n: ts.best || 0 })}">${t('sw.btn', { n: (ts.best || 0) + 'F' })}</button></div></div>`;
   }).join('');
-  return now + (busy ? `<div class="qx c">${t('q.towerBusy')}</div>` : '') + cards + `<div class="qx c">${t('tw.note', { c: fmtClock(untilMidnight()) })}</div>`;
+  const nAll = TOWERS.reduce((a, T) => a + (canTowerSweep(S, T.id) ? (towerState(S, T.id).tries ?? TOWER_TRIES) : 0), 0);
+  return now + (nAll ? `<button class="big sm sweep" data-act="tsweepAll">${t('sw.all', { n: nAll })}</button>` : '') + (busy ? `<div class="qx c">${t('q.towerBusy')}</div>` : '') + cards + `<div class="qx c">${t('tw.note', { c: fmtClock(untilMidnight()) })}</div>`;
 }
 // ---------- 차원 균열 · 룬 ----------
 const RUNE_COL = ['#b8b8c8', '#6bd66b', '#5aa9ff', '#c77dff', '#ffb347'];
@@ -2061,7 +2074,8 @@ function qRift() {
     <div class="rlv"><button class="mini" data-act="rlv" data-d="-1" ${L <= 1 ? 'disabled' : ''}>-</button><div><b>${t('rift.lv', { n: L })}</b><span>${t('rift.lvSub', { f: riftFloor(L) })}</span></div><button class="mini" data-act="rlv" data-d="1" ${L > (r.best || 0) ? 'disabled' : ''}>+</button></div>
     ${inRift() ? `<div class="qx hi">${t('rift.now', { n: S.boss.tf, m: RIFT_WAVES, s: Math.max(0, S.boss.timer).toFixed(1) })}</div>` : ''}
     ${busy ? `<div class="qx">${t('q.towerBusy')}</div>` : ''}
-    <button class="big" data-act="rift" ${canRift(S) ? '' : 'disabled'}>${t('rift.btn')}</button>
+    <div class="twbtns"><button class="big" data-act="rift" ${canRift(S) ? '' : 'disabled'}>${t('rift.btn')}</button><button class="big sweep" data-act="rsweep" ${canRiftSweep(S) ? '' : 'disabled'} title="${t('sw.riftT', { n: r.best || 0 })}">${t('sw.btn', { n: t('rift.lv', { n: r.best || 0 }) })}</button></div>
+    ${canRiftSweep(S) && r.keys > 1 ? `<button class="big sm sweep" data-act="rsweepAll">${t('sw.allRift', { n: r.keys, l: r.best })}</button>` : ''}
     <div class="qx">${t('rift.rule')}</div></div>`;
   const sum = runeSum(S), sumTxt = Object.keys(sum).map(k => t('rune.k.' + k) + ' +' + Math.round(sum[k] * 10) / 10 + '%').join(' · ') || t('rune.none');
   const slots = R.eq.map((ru, i) => ru
@@ -2108,21 +2122,34 @@ const dSel = { cls: null, bless: 'power' };
 const STORE_URL = 'https://chromewebstore.google.com/detail/deskgeon-idle-dungeon-rpg/adaoggopidkbankjinlalfnjlgncanpk';
 const mmss = s => Math.floor(s / 60) + ':' + String(Math.floor(s % 60)).padStart(2, '0');
 function dailyShareText() {
-  const ds = dailyState(S), b = ds.best; if (!b) return '';
-  return `Deskgeon Daily #${ds.day.replace(/-/g, '')} | ${CLASSES[b.cls].name} | B${b.floor}F (Lv.${b.lv}, ${mmss(b.at)}) | ${t('dl.m.' + b.mod)} | ${t('dl.b.' + b.bless)}\n${t('dl.cta')} ${STORE_URL}`;
+  const o = dl2State(S), b = o.best; if (!b) return '';
+  return `Deskgeon Daily #${o.day.replace(/-/g, '')} | ${CLASSES[b.cls].name} | B${b.floor}F (${mmss(b.at)}) | ${t('dl.m.' + dailyMod(o.day).id)} | ${(b.picks || []).map(id => t('dl2.c.' + id)).join(' > ')}\n${t('dl.cta')} ${STORE_URL}`;
 }
+let dlCache = { key: '', r: null };
+function dlCur() { const o = dl2State(S); if (!o.cur) return null; const key = o.day + '|' + o.cur.cls + '|' + o.cur.picks.join(','); if (dlCache.key !== key) dlCache = { key, r: dl2Cur(S) }; return dlCache.r; }
+const dlCardTx = id => `<b>${t('dl2.c.' + id)}</b><span>${t('dl2.c.' + id + '.d')}</span>`;
 function qDaily() {
-  const ds = dailyState(S), mod = dailyMod(ds.day); dSel.cls ||= S.cls || 'war';
-  const res = r => r ? `<div class="rbstats"><div><span>${t('dl.floor')}</span><b>B${r.floor}F</b></div><div><span>${t('dl.time')}</span><b>${mmss(r.at)}</b></div><div><span>${t('dl.cls')}</span><b>${CLASSES[r.cls].name}</b></div></div><div class="qx">${t('dl.b.' + r.bless)} · Lv.${r.lv}</div>` : `<div class="qx">${t('dl.none')}</div>`;
-  return `<div class="qcard ctr"><div class="qh c"><b>${t('dl.title')}</b><span>#${ds.day.replace(/-/g, '')}</span></div>
-    <div class="qx">${t('dl.desc')}</div>
-    <div class="dmod"><b>${t('dl.m.' + mod.id)}</b><span>${t('dl.m.' + mod.id + '.d')}</span></div>
-    <div class="dsel"><span>${t('dl.pickCls')}</span>${CLASS_IDS.map(c => `<button class="mini ${dSel.cls === c ? 'on' : ''}" data-act="dcls" data-v="${c}">${CLASSES[c].name}</button>`).join('')}</div>
-    <div class="dsel"><span>${t('dl.pickBless')}</span>${DAILY_BLESS.map(x => `<button class="mini ${dSel.bless === x.id ? 'on' : ''}" data-act="dbless" data-v="${x.id}" title="${t('dl.b.' + x.id + '.d')}">${t('dl.b.' + x.id)}</button>`).join('')}</div>
-    <button class="big" data-act="drun" ${ds.tries > 0 && S.cls ? '' : 'disabled'}>${t('dl.run', { n: ds.tries, m: DAILY_TRIES })}</button>
-    <div class="qx">${t('dl.rule')}</div></div>
-    <div class="qcard"><div class="qh"><b>${t('dl.best')}</b>${ds.best ? `<button class="mini" data-act="dshare">${t('dl.share')}</button>` : ''}</div>${res(ds.best)}</div>
-    ${ds.last && ds.last !== ds.best ? `<div class="qcard"><div class="qh"><b>${t('dl.last')}</b></div>${res(ds.last)}</div>` : ''}`;
+  const o = dl2State(S), mod = dailyMod(o.day); dSel.cls ||= S.cls || 'war'; const cur = dlCur();
+  const logHtml = r => r && r.log && r.log.length ? `<div class="dllog">${r.log.filter(x => x.pick).map(x => `<span>B${x.f} · ${mmss(x.T)} · ${t('dl2.c.' + x.pick)}</span>`).join('')}</div>` : '';
+  const chain = p => (p || []).map(id => t('dl2.c.' + id)).join(' → ');
+  let run;
+  if (cur && cur.pause) run = `<div class="qcard"><div class="qh"><b>${t('dl2.running', { c: CLASSES[o.cur.cls].name })}</b><span>${o.cur.picks.length ? 'B' + cur.floor + ' · ' + mmss(cur.T) : t('dl2.startPick')}</span></div>
+      <div class="rbstats"><div><span>Lv</span><b>${cur.lv}</b></div><div><span>DPS</span><b>${fmt(cur.dps)}</b></div><div><span>${t('stat.hp')}</span><b>${fmt(cur.hp)}</b></div></div>
+      ${o.cur.picks.length ? `<div class="qx">${t('dl2.picked')}: ${chain(o.cur.picks)}</div>` : ''}
+      <div class="qx"><b>${t('dl2.pickNow')}</b></div>
+      <div class="dlcards">${cur.offer.map(id => `<button class="mini dlcard" data-act="dpick" data-v="${id}">${dlCardTx(id)}</button>`).join('')}</div></div>`;
+  else run = `<div class="dsel"><span>${t('dl.pickCls')}</span>${CLASS_IDS.map(c => `<button class="mini ${dSel.cls === c ? 'on' : ''}" data-act="dcls" data-v="${c}">${CLASSES[c].name}</button>`).join('')}</div>
+      <button class="big" data-act="dstart" ${o.tries > 0 && S.cls ? '' : 'disabled'}>${t('dl.run', { n: o.tries, m: DAILY_TRIES })}</button>`;
+  const last = o.last ? `<div class="qcard"><div class="qh"><b>${t('dl.last')}</b><span>+${fmtN(o.last.tok)} ${t('dl2.tok')}</span></div><div class="rbstats"><div><span>${t('dl.floor')}</span><b>B${o.last.floor}F</b></div><div><span>${t('dl.time')}</span><b>${mmss(o.last.at)}</b></div><div><span>${t('dl.cls')}</span><b>${CLASSES[o.last.cls].name}</b></div></div><div class="qx">${chain(o.last.picks)}</div>${(o.last.wk || []).length ? `<div class="qx">${t('dl2.wkGot')}</div>` : ''}</div>` : '';
+  const best = `<div class="qcard"><div class="qh"><b>${t('dl.best')}</b>${o.best ? `<button class="mini" data-act="dshare">${t('dl.share')}</button>` : ''}</div>${o.best ? `<div class="rbstats"><div><span>${t('dl.floor')}</span><b>B${o.best.floor}F</b></div><div><span>${t('dl.time')}</span><b>${mmss(o.best.at)}</b></div><div><span>${t('dl.cls')}</span><b>${CLASSES[o.best.cls].name}</b></div></div><div class="qx">${chain(o.best.picks)}</div>` : `<div class="qx">${t('dl.none')}</div>`}</div>`;
+  const sum = dlWeekSum(S), top = DL_WEEK[DL_WEEK.length - 1].f;
+  const week = `<div class="qcard"><div class="qh"><b>${t('dl2.week')}</b><span>${t('dl2.weekSum', { n: fmtN(sum) })}</span></div><div class="qbar dlwk"><i style="width:${Math.min(100, sum / top * 100)}%"></i>${DL_WEEK.map(w => `<em style="left:${w.f / top * 100}%"></em>`).join('')}</div>
+    <div class="dlwkr">${DL_WEEK.map((w, k) => `<span class="${o.wk.got > k ? 'ok' : ''}">${t('dl2.weekTier', { f: w.f, r: w.r })}</span>`).join('')}</div><div class="qx">${t('dl2.weekNote')}</div></div>`;
+  const shop = `<div class="qcard"><div class="qh"><b>${t('dl2.shop')}</b><span>${t('dl2.tok')} <b>${fmtN(o.tok)}</b></span></div>${DL_SHOP.map(it => { const own = it.title && titleOwned(S, it.id); const nm = it.title ? t('dl2.s.title', { n: t('ttl.n.' + it.id), f: ttlFx(it.id) }) : t('dl2.s.' + it.id, { n: fmtN(it.n) });
+      return `<div class="qrow ${own ? 'claimed' : ''}"><div class="qt"><b>${nm}</b></div><button class="mini" data-act="dbuy" data-v="${it.id}" ${!own && o.tok >= it.c ? '' : 'disabled'}>${own ? t('q.claimed') : t('dl2.cost', { n: fmtN(it.c) })}</button></div>`; }).join('')}</div>`;
+  return `<div class="qcard ctr"><div class="qh c"><b>${t('dl.title')}</b><span>#${o.day.replace(/-/g, '')}</span></div>
+    <div class="qx">${t('dl2.desc', { n: DL_EVERY })}</div>
+    <div class="dmod"><b>${t('dl.m.' + mod.id)}</b><span>${t('dl.m.' + mod.id + '.d')}</span></div>${cur && cur.pause ? '' : run}</div>${cur && cur.pause ? run : ''}${last}${best}${week}${shop}`;
 }
 // ---------- 초보자 가이드 ----------
 function goTo(where) { if (where === 'settings') { $('#setBtn').click(); return; } const b = document.querySelector(`.tabs button[data-go="${where}"]`); if (b) b.click(); }
@@ -2257,7 +2284,7 @@ function buildQuest() {
   const cc = claimCount(), qa = $('#qAll');
   qa.disabled = !cc; qa.textContent = cc ? t('q.claimAll', { n: cc }) : t('q.claimNone');
   morph($('#qNav'), QTABS.map(k => `<button class="mini ${qTab === k ? 'on' : ''}" data-q="${k}">${t('q.tab.' + k)}${qDot(k) ? '<i class="dot"></i>' : ''}</button>`).join(''));
-  morph(body, qTab === 'mission' ? qMission() : qTab === 'tower' ? qTower() : qTab === 'rift' ? qRift() : qTab === 'daily' ? qDaily() : qTab === 'ach' ? qAch() : qTab === 'book' ? qBook() : qAuto());
+  morph(body, qTab === 'mission' ? qMission() : qTab === 'tower' ? qTower() : qTab === 'rift' ? qRift() : qTab === 'daily' ? qDaily() : qTab === 'ach' ? qAch() : qTab === 'title' ? qTitle() : qTab === 'book' ? qBook() : qAuto());
 }
 // 바뀐 줄만 교체 (버튼이 매초 새로 만들어져 클릭이 씹히는 것 방지)
 function morph(el, html) {
@@ -2287,10 +2314,14 @@ function bindQuest() {
     else if (act === 'claim') { const r = claimMission(S, b.dataset.k, b.dataset.id); if (r) addLog(t('q.claimLog') + ' · ' + rewardText(r)); }
     else if (act === 'ach') { const r = claimAch(S, b.dataset.id); if (r) addLog(t('q.achLog', { a: t('ach.' + b.dataset.id) }) + ' · ' + rewardText({ stones: r })); }
     else if (act === 'tower') { const id = b.dataset.id || 'inf'; if (towerStart(S, id)) { addLog('<b>' + t('tw.start', { t: t('tw.' + id) }) + '</b>'); document.querySelector('.tabs button[data-go="dungeon"]').click(); } }
+    else if (act === 'tsweep' || act === 'tsweepAll') { const r = act === 'tsweep' ? towerSweep(S, b.dataset.id) : towerSweepAll(S); if (r) { const txt = rewardText(r.gain); addLog('<b>' + (act === 'tsweep' ? t('sw.towerLog', { t: t('tw.' + r.id), n: r.floor }) : t('sw.allLog', { n: r.n })) + '</b> · ' + txt); toast(txt || t('sw.done')); save(S); } }
+    else if (act === 'rsweep' || act === 'rsweepAll') { const r = act === 'rsweep' ? riftSweep(S) : riftSweepAll(S); if (r) { const n = r.n || 1, cnt = [0, 0, 0, 0, 0]; for (const ru of r.runes) cnt[ru.r]++; const rt = cnt.map((c, i) => c ? '<span style="color:' + RUNE_COL[i] + '">' + t('rune.r' + i) + ' ' + c + '</span>' : '').filter(Boolean).join(' · '); addLog('<b>' + t('sw.riftLog', { l: r.L, n }) + '</b> · ' + t('sw.runes', { n: r.runes.length }) + (rt ? ' (' + rt + ')' : '') + ' · ' + t('sw.dust', { n: fmtN(r.dust) })); toast(t('sw.runes', { n: r.runes.length }) + ' · ' + t('sw.dust', { n: fmtN(r.dust) })); st = stats(S); save(S); } }
     else if (act === 'rift') { const L = riftState(S).lvl; if (riftStart(S, L)) { addLog('<b>' + t('rift.startLog', { n: S.boss.L }) + '</b>'); document.querySelector('.tabs button[data-go="dungeon"]').click(); } }
+    else if (act === 'ttl') { const id = b.dataset.v; titleEquip(S, titleState(S).eq === id ? null : id); save(S); }
     else if (act === 'dcls') dSel.cls = b.dataset.v;
-    else if (act === 'dbless') dSel.bless = b.dataset.v;
-    else if (act === 'drun') { const r = dailyRun(S, dSel.cls, dSel.bless); if (r) { addLog('<b>' + t('dl.log', { f: r.floor, c: CLASSES[r.cls].name }) + '</b>' + (r.reward ? ' · ' + rewardText({ stones: r.reward }) : '')); banner(t('dl.result', { f: r.floor }), 'floor', 1500); } }
+    else if (act === 'dstart') { const r = dl2Start(S, dSel.cls); if (r) addLog('<b>' + t('dl2.startLog', { c: CLASSES[dSel.cls].name }) + '</b>'); save(S); }
+    else if (act === 'dpick') { const r = dl2Pick(S, b.dataset.v); if (r && r.done) { addLog('<b>' + t('dl.log', { f: r.floor, c: CLASSES[r.cls].name }) + '</b> · +' + fmtN(r.tok) + ' ' + t('dl2.tok')); banner(t('dl.result', { f: r.floor }), 'floor', 1500); toast('+' + fmtN(r.tok) + ' ' + t('dl2.tok')); } save(S); }
+    else if (act === 'dbuy') { if (dl2Buy(S, b.dataset.v)) { toast(t('dl2.bought')); st = stats(S); save(S); } }
     else if (act === 'dshare') { const txt = dailyShareText(); (async () => { try { await navigator.clipboard.writeText(txt); toast(t('dl.copied')); } catch (e) { toast(t('dl.copyFail'), '#ffc35c'); } })(); }
     else if (act === 'rlv') { const r = riftState(S); r.lvl = Math.max(1, Math.min((r.best || 0) + 1, (r.lvl || 1) + (+b.dataset.d))); }
     else if (act === 'ron') runeEquip(S, +b.dataset.i);
@@ -2692,7 +2723,8 @@ async function init() {
     if (Date.now() - flushedAt < 1500) return;
     flushedAt = Date.now();
     (window.__dmLog || (() => {}))('flush');
-    try { const c = serialize(S); chrome.runtime.sendMessage({ type: 'flush', save: c }).catch(() => {}); } catch (e) {}
+    // 개발용 테스트 화면에서는 백그라운드로 세이브를 넘기지 않는다 (진짜 저장소 오염 방지)
+    if (!/harness/i.test(location.pathname)) { try { const c = serialize(S); chrome.runtime.sendMessage({ type: 'flush', save: c }).catch(() => {}); } catch (e) {} }
     save(S, 'local').catch(() => {});
   };
   window.addEventListener('pagehide', flush);
@@ -2718,7 +2750,7 @@ function cardData() {
   const own = Object.keys(S.comp || {}).filter(id => COMP_BY_ID[id]);
   const days = S.createdAt ? Math.max(1, Math.ceil((Date.now() - S.createdAt) / 864e5)) : 1;
   const soul = S.soul && S.soul.made ? S.soul : null;
-  return { cls: S.cls, clsName: t('cls.' + S.cls), best: S.bestFloor || S.maxFloor || 1, reinc: S.reinc || 0, rebirths: S.rebirths || 0, pulls: S.pulls || 0, days,
+  return { cls: S.cls, clsName: t('cls.' + S.cls), best: S.bestFloor || S.maxFloor || 1, reinc: S.reinc || 0, karma: S.karma || 0, rift: (S.rift && S.rift.best) || 0, towers: TOWERS.map(T => [T.id, towerState(S, T.id).best || 0]), rebirths: S.rebirths || 0, pulls: S.pulls || 0, days,
     comp: own.length, compMax: COMPANIONS.length, mr: own.filter(id => COMP_BY_ID[id].r === 5).length,
     cos: cosCount(S), cosMax: COSTUMES.length, pet: Object.keys((S.pets && S.pets.own) || {}).length, petMax: PETS.length,
     soul, team: (S.team || []).filter(id => COMP_BY_ID[id]).slice(0, TEAM_MAX), pet1: S.pets && S.pets.act };
@@ -2735,9 +2767,11 @@ async function drawCard(cv) {
   const hero = heroSprite(S.cls); x.fillStyle = 'rgba(0,0,0,.35)'; x.beginPath(); x.ellipse(290, 418, 120, 20, 0, 0, 7); x.fill();
   x.drawImage(hero, 146, 130, 288, 288);
   if (D.pet1) { const pi = await cardImg('assets/pet/' + D.pet1 + '.png'); if (pi) x.drawImage(pi, 40, 300, 128, 128); }
-  x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 34px ' + F; x.fillText(D.clsName, 290, 470);
-  const tw = D.team.length > 3 ? 64 : 76, tg = D.team.length > 3 ? 10 : 14, tx0 = 290 - (D.team.length * tw + (D.team.length - 1) * tg) / 2;
-  for (let i = 0; i < D.team.length; i++) { const c = COMP_BY_ID[D.team[i]], im = await cardImg(compSrc(c.id)), px = tx0 + i * (tw + tg), py = 500;
+  const ttl = S.titles && S.titles.eq ? t('ttl.n.' + S.titles.eq) : '';
+  x.textAlign = 'center'; x.fillStyle = '#fff'; x.font = '800 34px ' + F; x.fillText(D.clsName, 290, ttl ? 458 : 470);
+  if (ttl) { x.fillStyle = '#ffd98a'; x.font = '700 21px ' + F; x.fillText('「' + ttl + '」', 290, 488); }
+  const tw = D.team.length > 3 || ttl ? 64 : 76, tg = D.team.length > 3 ? 10 : 14, tx0 = 290 - (D.team.length * tw + (D.team.length - 1) * tg) / 2;
+  for (let i = 0; i < D.team.length; i++) { const c = COMP_BY_ID[D.team[i]], im = await cardImg(compSrc(c.id)), px = tx0 + i * (tw + tg), py = ttl ? 508 : 500;
     cardRound(x, px, py, tw, tw, 12); x.fillStyle = 'rgba(255,255,255,.07)'; x.fill(); x.lineWidth = 3; x.strokeStyle = C_RARITY[c.r].color; x.stroke(); if (im) x.drawImage(im, px + 6, py + 6, tw - 12, tw - 12); }
   const PX = 560, PY = 48, PW = 600, PH = 534;
   cardRound(x, PX, PY, PW, PH, 28); x.fillStyle = 'rgba(255,255,255,.07)'; x.fill(); x.lineWidth = 2; x.strokeStyle = 'rgba(255,255,255,.16)'; x.stroke();
@@ -2745,22 +2779,26 @@ async function drawCard(cv) {
   x.textAlign = 'right'; x.fillStyle = 'rgba(214,204,255,.55)'; x.font = '500 20px ' + F; x.fillText(new Date().toLocaleDateString(getLang()) + '  ·  ' + t('card.daysH', { n: fmtN(D.days) }), PX + PW - 40, PY + 52);
   x.textAlign = 'left'; x.fillStyle = 'rgba(255,255,255,.7)'; x.font = '600 24px ' + F; x.fillText(t('card.best'), PX + 40, PY + 112);
   g = x.createLinearGradient(0, PY + 120, 0, PY + 230); g.addColorStop(0, '#fff2c4'); g.addColorStop(1, '#ffb94a'); x.fillStyle = g; x.font = '900 112px ' + F; x.fillText('B' + fmtN(D.best), PX + 34, PY + 222);
-  const cells = [[t('card.reinc'), fmtN(D.reinc)], [t('card.rebirth'), fmtN(D.rebirths)], [t('card.comp'), D.comp + '/' + D.compMax + (D.mr ? '  MR ' + D.mr : '')], [t('card.pulls'), fmtN(D.pulls)],
-    [t('card.cos'), D.cos + '/' + D.cosMax], [t('card.pet'), D.pet + '/' + D.petMax], [t('card.soul'), D.soul ? 'Lv.' + D.soul.lv : '-', D.soul && (D.soul.name || ''), 1]];
-  // 칸: [이름, 값, 보조(영혼무기 이름), 한 줄 전체]
-  const half = (PW - 80 - 16) / 2, ch = 56, soulIm = D.soul ? await cardImg('assets/soul/' + D.soul.look + '.png') : null;
-  cells.forEach(([k, v, sub, full], i) => {
-    const cx = PX + 40 + (i % 2) * (half + 16), cy = PY + 250 + Math.floor(i / 2) * (ch + 10), cw = full ? half * 2 + 16 : half, right = cx + cw - 16;
-    cardRound(x, cx, cy, cw, ch, 12); x.fillStyle = 'rgba(255,255,255,.06)'; x.fill();
-    x.textAlign = 'left'; x.fillStyle = 'rgba(255,255,255,.62)'; x.font = '600 19px ' + F; x.fillText(k, cx + 16, cy + 36); const kw = x.measureText(k).width;
-    x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 23px ' + F; x.fillText(v, right, cy + 36); const vw = x.measureText(v).width;
-    if (sub) { x.fillStyle = '#d9c8ff'; x.font = '600 19px ' + F; let s2 = sub; const room = cw - 32 - kw - vw - 10 - (soulIm ? 50 : 0) - 16; while (s2.length > 1 && x.measureText(s2).width > room) s2 = s2.slice(0, -2) + '…';
-      x.fillText(s2, right - vw - 10, cy + 36); if (soulIm) x.drawImage(soulIm, right - vw - 10 - x.measureText(s2).width - 46, cy + 8, 40, 40); }
-  });
+  // 줄마다 칸을 같은 너비로 나눔: [이름, 값, 보조(영혼무기 이름)]
+  const rowsC = [
+    [[t('card.karma'), fmtN(D.karma)], [t('card.rift'), D.rift ? t('card.riftV', { n: fmtN(D.rift) }) : '-']],
+    D.towers.map(([id, b]) => [t('tw.' + id), b ? t('card.twV', { n: fmtN(b) }) : '-']),
+    [[t('card.soul'), D.soul ? 'Lv.' + D.soul.lv : '-', D.soul && (D.soul.name || '')]],
+  ];
+  const ch = 64, gap = 12, soulIm = D.soul ? await cardImg('assets/soul/' + D.soul.look + '.png') : null, inner = PW - 80;
+  rowsC.forEach((row, ri) => { const cw = (inner - gap * (row.length - 1)) / row.length, cy = PY + 252 + ri * (ch + gap), three = row.length > 2;
+    row.forEach(([k, v, sub], ci) => { const cx = PX + 40 + ci * (cw + gap), right = cx + cw - 16;
+      cardRound(x, cx, cy, cw, ch, 12); x.fillStyle = 'rgba(255,255,255,.06)'; x.fill();
+      if (three) { x.textAlign = 'left'; x.fillStyle = 'rgba(255,255,255,.62)'; x.font = '600 16px ' + F; x.fillText(k, cx + 14, cy + 25); x.fillStyle = '#fff'; x.font = '800 22px ' + F; x.fillText(v, cx + 14, cy + 52); return; }
+      x.textAlign = 'left'; x.fillStyle = 'rgba(255,255,255,.62)'; x.font = '600 19px ' + F; x.fillText(k, cx + 16, cy + 40); const kw = x.measureText(k).width;
+      x.textAlign = 'right'; x.fillStyle = '#fff'; x.font = '800 24px ' + F; x.fillText(v, right, cy + 41); const vw = x.measureText(v).width;
+      if (sub) { x.fillStyle = '#d9c8ff'; x.font = '600 19px ' + F; let s2 = sub; const room = cw - 32 - kw - vw - 10 - (soulIm ? 50 : 0) - 16; while (s2.length > 1 && x.measureText(s2).width > room) s2 = s2.slice(0, -2) + '…';
+        x.fillText(s2, right - vw - 12, cy + 41); if (soulIm) x.drawImage(soulIm, right - vw - 12 - x.measureText(s2).width - 46, cy + 12, 40, 40); }
+    }); });
   x.textAlign = 'right'; x.fillStyle = 'rgba(214,204,255,.55)'; x.font = '500 18px ' + F; x.fillText(CARD_URL, PX + PW - 8, H - 18);
   x.textAlign = 'left';
 }
-function cardText() { const D = cardData(); return t('card.share', { c: D.clsName, f: fmtN(D.best), r: fmtN(D.reinc), b: fmtN(D.rebirths), n: D.comp, m: D.compMax, p: D.pet, q: D.petMax, o: D.cos, w: D.cosMax }) + '\n' + 'https://' + CARD_URL + '/'; }
+function cardText() { const D = cardData(); return t('card.share', { c: D.clsName, f: fmtN(D.best), k: fmtN(D.karma), rf: D.rift, tw: D.towers.map(([id, b]) => t('tw.' + id) + ' ' + b).join(' / '), b: fmtN(D.rebirths), n: D.comp, m: D.compMax, p: D.pet, q: D.petMax, o: D.cos, w: D.cosMax }) + '\n' + 'https://' + CARD_URL + '/'; }
 const cardBlob = () => new Promise(r => $('#cardCv').toBlob(r, 'image/png'));
 async function openCard() { $('#cardModal').classList.remove('hidden'); await drawCard($('#cardCv')); }
 document.addEventListener('click', async e => {
@@ -2773,3 +2811,279 @@ document.addEventListener('click', async e => {
     else if (id === 'cardSave') { const b = await cardBlob(), u = URL.createObjectURL(b), a = document.createElement('a'); a.href = u; a.download = 'deskgeon-B' + (S.bestFloor || 0) + '.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(u), 4000); toast(t('card.saved')); }
   } catch (err) { toast(t('card.fail'), '#ffc35c'); }
 });
+
+// ================= DPS 분석기 =================
+let dpsMode = 'boss', dpsIv = 0;
+const DPS_CATS = ['basic', 'pas', 'skill', 'comp', 'soul', 'item'];
+const DPS_COL = { basic: '#ffd98a', pas: '#7ee08a', skill: '#b9a6ff', comp: '#6fb7ff', soul: '#ff7ab0', item: '#c8c8d8' };
+const dpsPct = p => p >= 10 ? p.toFixed(0) : p >= 0.1 ? p.toFixed(1) : '<0.1';
+function dpsRows(M) {
+  const R = {}, put = (key, cat, name, icon, v, part) => { const r = R[key] ||= { cat, name, icon, v: 0, parts: {} }; r.v += v; if (part) r.parts[part] = (r.parts[part] || 0) + v; };
+  for (const [k, v] of Object.entries(M.src)) {
+    const i = k.indexOf(':'), p = i < 0 ? k : k.slice(0, i), id = i < 0 ? '' : k.slice(i + 1);
+    if (p === 'basic') { let ic = 'assets/cls/' + S.cls + '.png'; try { ic = heroSprite(S.cls).toDataURL(); } catch (e) {} put('basic', 'basic', t('dps.heroBasic'), ic, v); }
+    else if (p === 'ps' || p === 'sk') { const sd = SKILL_BY_ID[id]; put(k, p === 'ps' ? 'pas' : 'skill', sd ? sd.name : id, sd ? skillSrc(id) : null, v); }
+    else if (p === 'cp' || p === 'cs') { const c = COMP_BY_ID[id]; if (c) put('c:' + id, 'comp', c.name, compSrc(id), v, p); }
+    else if (p === 'sw') put(k, 'soul', t('sfx.n.' + id), S.soul && S.soul.look ? 'assets/soul/' + S.soul.look + '.png' : null, v);
+    else if (p === 'u') put(k, 'item', t('uq.' + (id === 'double' ? 'fury' : id)), null, v);
+  }
+  return Object.entries(R).map(([key, r]) => ({ key, ...r })).sort((a, b) => b.v - a.v);
+}
+function renderDps() {
+  const M = METER[dpsMode], rows = dpsRows(M), tot = rows.reduce((a, r) => a + r.v, 0), T = Math.max(M.t, 0.01);
+  document.querySelectorAll('#dpsModal [data-dm]').forEach(b => b.classList.toggle('on', b.dataset.dm === dpsMode));
+  $('#dpsWin').textContent = M.t > 0 ? t('dps.win', { n: M.t < 10 ? M.t.toFixed(1) : Math.round(M.t) }) : '';
+  if (!(M.t > 0) || !(tot > 0)) { $('#dpsBody').innerHTML = `<div class="dpsempty">${t('dps.empty.' + dpsMode)}</div>`; return; }
+  const cat = {}; for (const r of rows) cat[r.cat] = (cat[r.cat] || 0) + r.v;
+  const cats = DPS_CATS.filter(c => cat[c] > 0), top = rows[0].v;
+  $('#dpsBody').innerHTML = `<div class="dpstot"><span>${t('dps.total')}</span><b>${fmt(tot / T)}</b></div>
+    <div class="dpsstack">${cats.map(c => `<i style="width:${100 * cat[c] / tot}%;background:${DPS_COL[c]}"></i>`).join('')}</div>
+    <div class="dpsleg">${cats.map(c => `<span><i style="background:${DPS_COL[c]}"></i>${t('dps.c.' + c)} ${dpsPct(100 * cat[c] / tot)}%</span>`).join('')}</div>
+    <div class="dpslist">${rows.map(r => {
+      let sub = '';
+      if (r.cat === 'comp') { const c = COMP_BY_ID[r.key.slice(2)], a = r.parts.cp || 0, k = r.parts.cs || 0; if (k > 0) sub = `<div class="dsub">${t('dps.compHit')} ${fmt(a / T)} · ${compSkillName(compActive(c))} ${fmt(k / T)}</div>`; }
+      return `<div class="dpsrow">${r.icon ? `<img class="px" src="${r.icon}">` : '<span class="noic"></span>'}<div class="dn"><b>${r.name}<em style="color:${DPS_COL[r.cat]}">${t('dps.c.' + r.cat)}</em></b><div class="dbar"><i style="width:${100 * r.v / top}%;background:${DPS_COL[r.cat]}"></i></div>${sub}</div><div class="dv"><b>${fmt(r.v / T)}</b><span>${dpsPct(100 * r.v / tot)}%</span></div></div>`; }).join('')}</div>
+    <div class="dpsnote">${t('dps.note')}</div>`;
+}
+function openDps() { if (!METER.boss.t && METER.hunt.t) dpsMode = 'hunt'; $('#dpsModal').classList.remove('hidden'); renderDps(); clearInterval(dpsIv); dpsIv = setInterval(() => { if ($('#dpsModal').classList.contains('hidden')) { clearInterval(dpsIv); return; } renderDps(); }, 1000); }
+document.addEventListener('click', e => {
+  const b = e.target.closest('#dpsBtn, #dpsClose, #dpsReset, #dpsModal [data-dm]'); if (!b) return;
+  if (b.id === 'dpsBtn') return openDps();
+  if (b.id === 'dpsClose') { $('#dpsModal').classList.add('hidden'); clearInterval(dpsIv); return; }
+  if (b.id === 'dpsReset') { meterReset(dpsMode); renderDps(); return; }
+  if (b.dataset.dm) { dpsMode = b.dataset.dm; renderDps(); }
+});
+
+// ================= 칭호 =================
+const TTL_COND = id => /^deep/.test(id) ? 'floor' : /^reinc/.test(id) ? 'reinc' : /^karma/.test(id) ? 'karma' : /^tw(Inf|Storm|Iron)$/.test(id) ? 'tw' : id === 'twAll' ? 'twAll' : /^rift/.test(id) ? 'rift' : /^pull/.test(id) ? 'pull' : /^boss/.test(id) ? 'boss' : /^dlShop/.test(id) ? 'shop' : id;
+const TTL_TW = { twInf: 'inf', twStorm: 'storm', twIron: 'iron' };
+function ttlFx(id) { const x = TITLE_BY_ID[id]; return t('ttl.k.' + x.fx[0], { v: x.fx[1] }); }
+function ttlCond(x) { const k = TTL_COND(x.id); return k === 'shop' ? t('ttl.c.shop', { n: fmtN(x.shop) }) : t('ttl.c.' + k, { n: fmtN(titleNeed(x)), t: TTL_TW[x.id] ? t('tw.' + TTL_TW[x.id]) : '' }); }
+function qTitle() {
+  const ts = titleState(S), tb = titleBonus(S), cats = ['floor', 'reinc', 'tower', 'col', 'battle', 'town', 'daily'];
+  const fx = TITLE_KEYS.filter(k => tb[k] > 0).map(k => `<em>${t('ttl.k.' + k, { v: tb[k] })}</em>`).join('');
+  return `<div class="qcard"><div class="qh"><b>${t('ttl.title')}</b><span>${ts.own.length} / ${TITLES.length}</span></div>
+    <div class="qx">${t('ttl.desc')}</div><div class="townfx">${fx || `<span class="qx">${t('ui.none')}</span>`}</div>
+    <div class="qx">${t('ttl.eq')}: <b style="color:#ffd98a">${ts.eq ? t('ttl.n.' + ts.eq) : t('ttl.none')}</b></div></div>` +
+    cats.map(c => `<div class="ttlcat">${t('ttl.cat.' + c)}</div>` + TITLES.filter(x => x.c === c).map(x => {
+      const own = ts.own.includes(x.id), need = titleNeed(x), v = x.shop ? 0 : Math.min(x.m(S), need);
+      return `<div class="qrow ttlrow ${own ? '' : 'lock'}"><div class="qt"><b class="${own ? 'own' : ''}">${t('ttl.n.' + x.id)} <span class="ttlfx">${ttlFx(x.id)}</span></b>${own || x.shop ? '' : `<div class="qbar"><i style="width:${Math.min(100, v / need * 100)}%"></i></div>`}<span>${ttlCond(x)}${own || x.shop ? '' : ' · ' + fmtN(Math.floor(v)) + ' / ' + fmtN(need)}</span></div>${own ? `<button class="mini ${ts.eq === x.id ? 'on' : ''}" data-act="ttl" data-v="${x.id}">${ts.eq === x.id ? t('ttl.unequip') : t('ttl.equip')}</button>` : ''}</div>`; }).join('')).join('');
+}
+
+// ================= 마을 =================
+let townSel = null, townMv = null, townSellArm = 0, townBTab = 'fn', townPaintId = null, townPal = false, townAutoN = 0, townAutoLogT = 0;
+const TOWN_IC = id => 'assets/town/' + id + '.png';
+const tHash = (x, y) => ((x * 73856093) ^ (y * 19349663)) >>> 0;
+const townSkin = (id, k) => { if (id !== 'house') return id; const [x, y] = k.split(',').map(Number); return tHash(x, y) % 2 ? 'house2' : 'house'; };
+function townFxText(k, v) { return t('town.k.' + k, { v: Math.round(v * 100) / 100 }); }
+function townBasicText(B, k) { if (B.k === 'res') return t('town.res', { n: B.v }); if (B.k === 'well') { if (!k) return t('town.wellD'); const [x, y] = k.split(',').map(Number), g = townState(S).g; let n = 0; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { const q = g[(x + dx) + ',' + (y + dy)]; if ((dx || dy) && q && q.b === 'house') n++; } return t('town.wellNow', { n }); } return t('town.deco'); }
+function townRefundNotice() { if (!S || !S.townRefund) return; const n = S.townRefund; delete S.townRefund; addLog('<b>' + t('town.refund', { n: fmtN(n) }) + '</b>'); toast(t('town.refund', { n: fmtN(n) })); save(S); }
+function renderTownBox() {
+  townRefundNotice();
+  const box = $('#townBox'); if (!box) return; const ag = townAgg(S), n = townCount(S), res = townRes(S);
+  const fx = TOWN_B.filter(B => !B.basic && B.k !== 'plaza' && ag[B.k] > 0).map(B => townFxText(B.k, ag[B.k])).join(' · ');
+  const sig = n + '|' + res + '|' + fx + '|' + getLang(); if (box.dataset.sig === sig) return; box.dataset.sig = sig;
+  box.innerHTML = `<img class="px" src="${TOWN_IC('plaza')}"><div class="tb"><b>${t('town.title')} · ${t('town.count', { n: townUsed(S), m: TOWN_N * TOWN_N })}${res ? ' · ' + t('town.resN', { n: res }) : ''}</b><span>${fx || t('town.empty')}</span></div><button class="mini hot" id="townOpenBtn">${t('town.enter')}</button>`;
+}
+function townCellHtml(k, x, y) {
+  const ts = townState(S), open = ts.open.includes(k), b = ts.g[k], B = b && TOWN_BY_ID[b.b];
+  const grass = TOWN_IC('grass' + ((x * 7 + y * 3) % 3)), tree = TOWN_IC('tree' + (1 + (x + y * 2) % 3));
+  let cls = 'tcell', inner = '';
+  if (!open) { cls += townCanOpen(S, k) ? ' can' : ' lock'; inner = `<img src="${grass}"><img src="${tree}">`; }
+  else { const fl = townFloor(S, k); inner = B && B.ground ? '' : `<img src="${fl ? TOWN_IC('fl_' + fl) : grass}">`; if (b) { inner += `<img src="${TOWN_IC(townSkin(b.b, k))}">${B.basic ? '' : `<span class="lv">${b.lv}</span>`}`; if (!B.basic && b.b !== 'plaza' && townTileMult(S, k) > 1) cls += ' boost'; } }
+  if (townSel === k) cls += ' sel'; if (townMv === k) cls += ' mv';
+  return `<div class="${cls}" data-tk="${k}" title="${b ? t('town.b.' + b.b) + (B.basic ? '' : ' Lv.' + b.lv) : ''}">${inner}</div>`;
+}
+function townClearBar() {
+  const left = townOpenable(S).length; if (!left) return ''; const c = townTileCost(S), n = townOpenAffordable(S);
+  return `<div class="tclear"><span>${t('town.clearBar', { c: fmtN(c) })}</span><div class="tbtns"><button class="mini hot" data-tw="open1" ${n ? '' : 'disabled'}>${t('town.clear1')}</button><button class="mini" data-tw="open5" ${n >= 2 ? '' : 'disabled'}>${t('town.clearN', { n: 5 })}</button><button class="mini" data-tw="openAll" ${n >= 2 ? '' : 'disabled'}>${n >= 2 ? t('town.clearAll', { n }) : t('town.clearMax')}</button></div></div>`;
+}
+function townToolsHtml() {
+  const ts = townState(S), ch = townCheapest(S);
+  return `<div class="ttools"><button class="mini ${townPal || townPaintId ? 'on' : ''}" data-tw="pal">${t('town.floorBtn')}</button><button class="mini hot" data-tw="upc" ${ch && S.stones >= ch.c ? '' : 'disabled'} title="${ch ? t('town.b.' + ts.g[ch.k].b) + ' Lv.' + ts.g[ch.k].lv : ''}">${t('town.upCheap')}${ch ? ' ' + fmtN(ch.c) : ''}</button><button class="mini" data-tw="upcAll" ${ch && S.stones >= ch.c ? '' : 'disabled'}>${t('town.upAll')}</button></div>
+    <div class="tauto"><label><input type="checkbox" data-tw="auto" ${ts.auto ? 'checked' : ''}> ${t('town.auto')}</label><span>${t('town.keep')}</span><select data-tw="res">${TOWN_RESERVES.map((v, i) => `<option value="${i}" ${(ts.res || 0) === i ? 'selected' : ''}>${v ? fmtN(v) : '0'}</option>`).join('')}</select></div>`;
+}
+function townPalHtml() {
+  const opts = [{ id: 'grass', c: 0 }, ...TOWN_FLOORS];
+  return `<div class="tx">${townPaintId ? t('town.paintOn', { f: t('town.fl.' + townPaintId), c: fmtN(townPaintId === 'grass' ? 0 : TOWN_FLOOR_BY_ID[townPaintId].c) }) : t('town.paintPick')}</div>
+    <div class="tfloors">${opts.map(f => `<button class="mini tfl ${townPaintId === f.id ? 'on' : ''}" data-tw="paint" data-v="${f.id}"><img src="${TOWN_IC(f.id === 'grass' ? 'grass0' : 'fl_' + f.id)}"><span>${t('town.fl.' + f.id)}</span><i>${f.c ? fmtN(f.c) : t('town.free')}</i></button>`).join('')}</div>
+    <div class="tbtns"><button class="mini" data-tw="palClose">${t('town.paintEnd')}</button></div>`;
+}
+function townInfoHtml() {
+  const ts = townState(S), k = townSel;
+  if (townPal || townPaintId) return townPalHtml();
+  if (townMv) return `<div class="tx">${t('town.moveHint', { b: t('town.b.' + ts.g[townMv].b) })}</div><div class="tbtns"><button class="mini" data-tw="mvCancel">${t('town.cancel')}</button></div>`;
+  if (!k) return townClearBar();
+  if (!ts.open.includes(k)) { if (!townCanOpen(S, k)) return `<div class="tx">${t('town.far')}</div>` + townClearBar(); const c = townTileCost(S); return `<div class="th"><img src="${TOWN_IC('tree1')}"><div><b>${t('town.clear')}</b><span>${t('town.clearD')}</span></div></div><div class="tbtns"><button class="mini hot" data-tw="open" ${S.stones >= c ? '' : 'disabled'}>${stoneIc} ${fmtN(c)}</button></div>` + townClearBar(); }
+  const b = ts.g[k];
+  if (!b) { const c = townBuildCost(S), list = TOWN_B.filter(B => townBTab === 'basic' ? B.basic : !B.basic);
+    const tabs = `<div class="ttabs"><button class="mini ${townBTab === 'fn' ? 'on' : ''}" data-tw="btab" data-v="fn">${t('town.tabFn')}</button><button class="mini ${townBTab === 'basic' ? 'on' : ''}" data-tw="btab" data-v="basic">${t('town.tabBasic')}</button></div>`;
+    return tabs + `<div class="tx">${townBTab === 'basic' ? t('town.basicHead') : t('town.buildHead', { c: fmtN(c) })}</div><div class="tblist">${list.map(B => { const n = townCopies(S, B.id), mx = townCopyMax(B.id), cc = townCostOf(S, B.id), ok = n < mx && S.stones >= cc;
+      const sub = B.basic ? townBasicText(B) + ' · ' + fmtN(cc) : (n >= mx ? t('town.built') : townFxText(B.k, B.v) + ' / Lv'); const cnt = !B.basic || mx >= 49 ? '' : ' ' + n + '/' + mx;
+      return `<button class="mini tbopt" data-tw="build" data-b="${B.id}" ${ok ? '' : 'disabled'}><img src="${TOWN_IC(B.id)}"><div><b>${t('town.b.' + B.id)}${cnt}</b><span>${sub}</span></div></button>`; }).join('')}</div>`; }
+  const B = TOWN_BY_ID[b.b];
+  if (B.basic) return `<div class="th"><img src="${TOWN_IC(townSkin(b.b, k))}"><div><b>${t('town.b.' + b.b)}</b><span>${townBasicText(B, k)}</span></div></div>
+    <div class="tx">${t('town.resTotal', { n: townRes(S), p: Math.min(TOWN_RES_CAP, townRes(S) * TOWN_RES_PCT) })}</div>
+    <div class="tbtns"><button class="mini" data-tw="move">${t('town.move')}</button><button class="mini" data-tw="sell">${townSellArm === k ? t('town.sellSure', { n: fmtN(Math.floor(b.sp / 2)) }) : t('town.sell')}</button></div>`;
+  const m = townTileMult(S, k), rm = townResMult(S), max = b.lv >= TOWN_MAXLV, uc = max ? 0 : townUpCost(b.lv), now = townVal(S, k), nxt = B.k === 'plaza' ? B.v * (b.lv + 1) : B.v * (b.lv + 1) * m * rm;
+  const extra = B.k === 'plaza' ? t('town.plazaD') : [rm > 1 ? t('town.resMult', { m: Math.round((rm - 1) * 100) }) : ''].filter(Boolean).join(' · ');
+  return `<div class="th"><img src="${TOWN_IC(b.b)}"><div><b>${t('town.b.' + b.b)} Lv.${b.lv}/${TOWN_MAXLV}</b><span>${townFxText(B.k, now)}${max ? '' : ' → ' + townFxText(B.k, nxt)}</span></div></div>
+    <div class="tx">${extra}</div>
+    <div class="tbtns"><button class="mini hot" data-tw="up" ${!max && S.stones >= uc ? '' : 'disabled'}>${max ? t('town.max') : t('town.up') + ' ' + stoneIc + ' ' + fmtN(uc)}</button><button class="mini" data-tw="move">${t('town.move')}</button><button class="mini" data-tw="sell">${townSellArm === k ? t('town.sellSure', { n: fmtN(Math.floor(b.sp / 2)) }) : t('town.sell')}</button></div>`;
+}
+let townCenter = false;
+function renderTown() {
+  const ag = townAgg(S), w = $('#townWin'), res = townRes(S), v0 = $('#tView'), sl = v0 ? v0.scrollLeft : 0, stp = v0 ? v0.scrollTop : 0, wt = w.scrollTop;
+  const fx = TOWN_B.filter(B => !B.basic && B.k !== 'plaza' && ag[B.k] > 0).map(B => `<em>${townFxText(B.k, ag[B.k])}</em>`).join('');
+  let cells = ''; for (let y = 0; y < TOWN_N; y++) for (let x = 0; x < TOWN_N; x++) cells += townCellHtml(x + ',' + y, x, y);
+  w.innerHTML = `<div class="evh"><b>${t('town.title')} ${t('town.count', { n: townUsed(S), m: TOWN_N * TOWN_N })}</b><span>${stoneIc} <b>${fmtN(S.stones)}</b></span></div>
+    <div class="townfx">${res ? `<em class="res">${t('town.resBadge', { n: res, p: Math.min(TOWN_RES_CAP, res * TOWN_RES_PCT) })}</em>` : ''}${fx || (res ? '' : `<span class="qx">${t('town.empty')}</span>`)}</div>
+    ${townToolsHtml()}
+    <div class="tview ${townPaintId ? 'painting' : ''}" id="tView"><div class="tgwrap"><div class="tgrid" style="grid-template-columns:repeat(${TOWN_N},40px)">${cells}</div><div class="tnpcs" id="tNpcs"></div></div></div>${(() => { const ih = townInfoHtml(); return ih ? `<div class="tinfo">${ih}</div>` : ''; })()}
+    <button class="mini" data-tw="close">${t('ui.close')}</button>`;
+  { const v = $('#tView'); if (townCenter) { townCenter = false; v.scrollLeft = (v.scrollWidth - v.clientWidth) / 2; v.scrollTop = (v.scrollHeight - v.clientHeight) / 2; } else { v.scrollLeft = sl; v.scrollTop = stp; } w.scrollTop = wt; }
+  npcSync(); npcPlace(true);
+  const tl = w.querySelector('.tblist'); if (tl && renderTown._lastSel !== townSel) w.scrollTo({ top: w.scrollHeight, behavior: 'smooth' }); renderTown._lastSel = tl ? townSel : null;
+}
+function townAct(a, b) {
+  const k = townSel;
+  if (a === 'open') { if (townOpen(S, k)) { addLog(t('town.openLog')); return true; } return false; }
+  if (a === 'build') { const id = b.dataset.b; if (townBuild(S, k, id)) { addLog('<b>' + t('town.buildLog', { b: t('town.b.' + id) }) + '</b>'); return true; } return false; }
+  return false;
+}
+// ---- 마을 NPC: 지은 기능 건물마다 그 일을 하는 사람이 한 명, 주민 2명당 마을 사람 1명(최대 6명)이 돌아다닌다
+const NPC_ROLE = { forge: 'smith', wall: 'guard', drill: 'coach', arcane: 'mage', barracks: 'soldier', chapel: 'priest', arena: 'veteran', market: 'merchant', library: 'scholar', alchemy: 'alchemist', circle: 'summoner', kennel: 'keeper', foundry: 'soulsmith' };
+const NPC_VIL = ['v1', 'v2', 'v3', 'v4', 'v5', 'v6', 'v7', 'v8'], NPC_LINES = 3, NPC_VLINES = 5;
+let townNpc = [], npcIv = 0, npcTalkT = 0;
+function npcSync() {
+  const g = townState(S).g, want = [];
+  for (const [k, b] of Object.entries(g)) { const r = NPC_ROLE[b.b]; if (r && !want.some(w => w.role === r)) want.push({ id: 'r:' + r, role: r, home: k }); }
+  const houses = Object.entries(g).filter(([, b]) => b.b === 'house').map(([k]) => k); const nv = Math.min(6, Math.ceil(townRes(S) / 2));
+  for (let i = 0; i < nv; i++) want.push({ id: 'v:' + i, role: NPC_VIL[i % NPC_VIL.length], vil: true, home: houses[i % Math.max(1, houses.length)] || townState(S).open[0] });
+  townNpc = want.map(w => townNpc.find(n => n.id === w.id && n.role === w.role) || { ...w, x: +w.home.split(',')[0], y: +w.home.split(',')[1], jx: Math.random() * .3 - .15, jy: Math.random() * .3 - .15, next: performance.now() + 500 + Math.random() * 2000, flip: false });
+}
+function npcPlace(instant) {
+  const L = $('#tNpcs'), grid = document.querySelector('#townWin .tgrid'); if (!L || !grid) return; const c0 = grid.querySelector('.tcell'); if (!c0) return;
+  const cw = c0.offsetWidth + 2, off = c0.offsetLeft, sz = Math.round(c0.offsetWidth * .72);
+  for (const n of townNpc) { let el = L.querySelector('[data-npc="' + n.id + '"]'); if (!el) { el = document.createElement('img'); el.className = 'tnpc px'; el.dataset.npc = n.id; el.src = 'assets/npc/' + n.role + '.png'; el.title = t('npc.n.' + n.role); L.appendChild(el); if (instant) el.style.transition = 'none'; }
+    el.style.width = el.style.height = sz + 'px'; el.style.left = Math.round(off + (n.x + .5 + n.jx) * cw - sz / 2) + 'px'; el.style.top = Math.round(off + (n.y + .42 + n.jy) * cw - sz / 2) + 'px'; el.style.transform = n.flip ? 'scaleX(-1)' : '';
+    if (instant) { void el.offsetWidth; el.style.transition = ''; } }
+  for (const el of [...L.querySelectorAll('.tnpc')]) if (!townNpc.some(n => n.id === el.dataset.npc)) el.remove();
+}
+function npcLine(n) {
+  const g = townState(S).g, bk = n.vil ? null : Object.keys(g).find(k => NPC_ROLE[g[k].b] === n.role), lv = bk ? g[bk].lv : 0;
+  const i = Math.floor(Math.random() * (n.vil ? NPC_VLINES : NPC_LINES)), key = n.vil ? 'npc.v.' + i : 'npc.' + n.role + '.' + i;
+  return t(key, { lv, f: fmtN(S.bestFloor || 0), c: CLASSES[S.cls] ? CLASSES[S.cls].name : '', r: townRes(S), w: S.soul && S.soul.name ? S.soul.name : t('card.soul'), n: townUsed(S) });
+}
+function npcSay(n) {
+  const L = $('#tNpcs'), el = L && L.querySelector('[data-npc="' + n.id + '"]'); if (!el) return; L.querySelectorAll('.tbub').forEach(x => x.remove());
+  const bub = document.createElement('div'); bub.className = 'tbub'; bub.innerHTML = `<b>${t('npc.n.' + n.role)}</b>${npcLine(n)}`; L.appendChild(bub);
+  const lx = parseFloat(el.style.left) + el.offsetWidth / 2, ty = parseFloat(el.style.top); bub.style.left = Math.max(4, Math.min(L.offsetWidth - bub.offsetWidth - 4, lx - bub.offsetWidth / 2)) + 'px'; bub.style.top = Math.max(0, ty - bub.offsetHeight - 2) + 'px';
+  setTimeout(() => bub.remove(), 3200);
+}
+function npcTick() {
+  if ($('#townModal').classList.contains('hidden')) { clearInterval(npcIv); npcIv = 0; return; }
+  const ts = townState(S), now = performance.now(); let moved = false;
+  for (const n of townNpc) { if (now < n.next) continue; n.next = now + 1400 + Math.random() * 2200; if (Math.random() < .3) continue;
+    const opts = []; for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) { if (!dx && !dy) continue; const x = n.x + dx, y = n.y + dy, k = x + ',' + y; if (!ts.open.includes(k)) continue; const b = ts.g[k], B = b && TOWN_BY_ID[b.b]; const w = townFloor(S, k) ? 6 : !b ? 3 : B && B.ground ? 3 : 1; for (let i = 0; i < w; i++) opts.push([x, y]); }
+    if (!opts.length) continue; const [x, y] = opts[Math.floor(Math.random() * opts.length)]; n.flip = x < n.x ? true : x > n.x ? false : n.flip; n.x = x; n.y = y; n.jx = Math.random() * .3 - .15; n.jy = Math.random() * .3 - .15; moved = true; }
+  if (moved) npcPlace(false);
+  if (townNpc.length && now > npcTalkT) { npcTalkT = now + 6000 + Math.random() * 5000; npcSay(townNpc[Math.floor(Math.random() * townNpc.length)]); }
+}
+function openTown() { townSel = null; townMv = null; townCenter = true; $('#townModal').classList.remove('hidden'); renderTown(); clearInterval(npcIv); npcTalkT = performance.now() + 2500; npcIv = setInterval(npcTick, 300); }
+document.addEventListener('click', e => {
+  if (e.target.closest('#townOpenBtn')) { openTown(); return; }
+  const w = e.target.closest('#townWin'); if (!w) return;
+  const np = e.target.closest('.tnpc'); if (np) { const n = townNpc.find(z => z.id === np.dataset.npc); if (n) npcSay(n); return; }
+  const cell = e.target.closest('[data-tk]');
+  if (cell && townPaintId) { const k = cell.dataset.tk; if (townState(S).open.includes(k)) { if (townPaint(S, k, townPaintId)) save(S); } else toast(t('town.paintOpen')); renderTown(); return; }
+  if (cell) { const k = cell.dataset.tk; if (townMv) { if (townMove(S, townMv, k)) { save(S); st = stats(S); } townMv = null; townSel = k; } else townSel = townSel === k ? null : k; townSellArm = 0; renderTown(); return; }
+  const b = e.target.closest('[data-tw]'); if (!b || b.disabled) return; const a = b.dataset.tw;
+  if (a === 'close') { $('#townModal').classList.add('hidden'); clearInterval(npcIv); npcIv = 0; $('#townBox').dataset.sig = ''; renderTownBox(); return; }
+  if (a === 'btab') { townBTab = b.dataset.v; renderTown(); return; }
+  if (a === 'pal') { townPal = !(townPal || townPaintId); townPaintId = null; townSel = null; renderTown(); return; }
+  if (a === 'paint') { townPaintId = b.dataset.v; townPal = true; townSel = null; renderTown(); return; }
+  if (a === 'palClose') { townPal = false; townPaintId = null; renderTown(); return; }
+  if (a === 'upc') return;   // 길게 누르기 처리기에서 실행
+  if (a === 'upcAll') { const r = townUpCheap(S, 9999, TOWN_RESERVES[townState(S).res || 0] || 0); if (r.n) { addLog(t('town.upLog', { n: r.n, c: fmtN(r.spent) })); toast(t('town.upLog', { n: r.n, c: fmtN(r.spent) })); st = stats(S); save(S); } else toast(t('town.upNone')); renderTown(); return; }
+  if (a === 'auto' || a === 'res') return;
+  if (a === 'open5' || a === 'openAll') { const r = townOpenMany(S, a === 'open5' ? 5 : 999); if (r.n) { addLog(t('town.clearLog', { n: r.n, c: fmtN(r.spent) })); toast(t('town.clearLog', { n: r.n, c: fmtN(r.spent) })); save(S); } renderTown(); return; }
+  if (a === 'open1') return;   // 길게 누르기 처리기에서 실행
+  if (a === 'mvCancel') { townMv = null; renderTown(); return; }
+  if (a === 'move') { townMv = townSel; renderTown(); return; }
+  if (a === 'sell') { if (townSellArm !== townSel) { townSellArm = townSel; renderTown(); return; } const r = townSell(S, townSel); townSellArm = 0; if (r) { addLog(t('town.sellLog', { n: fmtN(r) })); save(S); st = stats(S); } renderTown(); return; }
+  if (a === 'up') return;
+  if (townAct(a, b)) { save(S); st = stats(S); } renderTown();
+});
+$('#townWin').addEventListener('change', e => { const el = e.target.closest('[data-tw]'); if (!el) return; const ts = townState(S); if (el.dataset.tw === 'auto') { ts.auto = el.checked; toast(t(el.checked ? 'town.autoOn' : 'town.autoOff')); } else if (el.dataset.tw === 'res') ts.res = +el.value; save(S); renderTown(); });
+holdDelegate($('#townWin'), '[data-tw="upc"]', () => { const r = townUpCheap(S, 1, 0); if (r.n) { st = stats(S); renderTown(); } return !!r.n; }, n => { if (n) { addLog(t('town.upLog1', { n })); save(S); renderTown(); } });
+holdDelegate($('#townWin'), '[data-tw="open1"]', () => { const k = townOpenNext(S); if (k) renderTown(); return !!k; }, n => { if (n) { addLog(t('town.clearLog1', { n })); save(S); renderTown(); } });
+holdDelegate($('#townWin'), '[data-tw="up"]', () => { const ok = townUp(S, townSel); if (ok) { st = stats(S); renderTown(); } return ok; }, n => { if (n) { save(S); renderTown(); } });
+
+// ================= 성장 점검: 열렸는데 아직 안 쓰는 기능을 찾아서 알려 준다 =================
+const _gsum = o => Object.values(o || {}).reduce((a, b) => a + (+b || 0), 0);
+const _best = () => S.bestFloor || S.maxFloor || 0;
+const GROW = [
+  { id: 'team',     go: 'comp', open: () => '#team', need: () => Object.keys(S.comp || {}).length > 0, todo: () => (S.team || []).length < Math.min(teamMax(S), Object.keys(S.comp || {}).length), lock: ['pull'] },
+  { id: 'mut',      go: 'skill',   need: () => Object.values(S.skills || {}).some(v => v >= 10), todo: () => mutPending(S) > 0, lock: ['skill10'] },
+  { id: 'enchant',  go: 'gear',    open: () => { const b = $('#enchToggle'); if (b && b.getAttribute('aria-expanded') !== 'true') b.click(); return '.enchbox'; }, need: () => (S.ess || 0) > 0 || _gsum(S.ench) > 0, todo: () => _gsum(S.ench) === 0 && (S.ess || 0) >= enchCost(0), lock: ['ess'] },
+  { id: 'rebirth',  go: 'rebirth', need: () => _best() >= REBIRTH_FLOOR || (S.rebirths || 0) > 0, todo: () => !(S.rebirths || 0) && (S.maxFloor || 0) >= REBIRTH_FLOOR, lock: ['floor', REBIRTH_FLOOR] },
+  { id: 'relic',    go: 'rebirth', need: () => (S.rebirths || 0) > 0, todo: () => _gsum(S.relic) === 0 && RELICS.some(r => (S.honorPts ?? S.honor ?? 0) >= relicCost(r, 0)), lock: ['rebirth', 1] },
+  { id: 'tower',    go: 'quest', q: 'tower', need: () => !!S.cls, todo: () => towerBestAll(S) === 0 },
+  { id: 'mastery',  go: 'skill',   open: () => '#msBox', need: () => masteryUnlocked(S), todo: () => masterySpent(S) === 0 && S.sp > 0, lock: ['skillAll'] },
+  { id: 'rift',     go: 'quest', q: 'rift', need: () => riftUnlocked(S), todo: () => !(riftState(S).best > 0) && riftState(S).keys > 0, lock: ['floor', RIFT_UNLOCK] },
+  { id: 'rune',     go: 'quest', q: 'rift', need: () => riftUnlocked(S) && (runeState(S).bag.length > 0 || runeState(S).eq.some(Boolean)), todo: () => runeState(S).bag.length > 0 && runeState(S).eq.some(x => !x), lock: ['floor', RIFT_UNLOCK] },
+  { id: 'pet',      go: 'comp', open: () => { openPetModal(); return null; }, need: () => petUnlocked(S), todo: () => petLeft(S).length > 0 && petPot(S) >= petDrawCost(S), lock: ['best', PET_UNLOCK] },
+  { id: 'petLv',    go: 'comp', open: () => { openPetModal(); return '.petall'; }, need: () => petUnlocked(S) && Object.keys((S.pets && S.pets.own) || {}).length > 0, todo: () => { const own = Object.values(S.pets.own), cap = petCap(S), low = own.filter(p => p.lv < cap); return low.length > 0 && petPot(S) >= petLvCost(S, Math.min(...low.map(p => p.lv))) * 5; }, lock: ['best', PET_UNLOCK] },
+  { id: 'exped',    go: 'comp', open: () => '#expBox', need: () => Object.keys(S.comp || {}).length > (S.team || []).length, todo: () => expSlots(S).some(x => !x) && expFree(S).length > 0, lock: ['pull'] },
+  { id: 'cg',       go: 'comp', open: () => { openCgModal(); return null; }, need: () => ((S.cg && S.cg.bag) || []).length > 0 || Object.keys((S.cg && S.cg.eq) || {}).length > 0, todo: () => !S.cgAuto && ((S.cg && S.cg.bag) || []).length > 0, lock: ['exped'] },
+  { id: 'reinc',    go: 'rebirth', open: () => '#reincBtn', need: () => _best() >= REINC_FLOOR || (S.reinc || 0) > 0, todo: () => !(S.reinc || 0) && canReinc(S), lock: ['best', REINC_FLOOR] },
+  { id: 'soul',     go: 'gear', open: () => { openSoulModal(); return null; }, need: () => soulUnlocked(S), todo: () => !soulMade(S), lock: ['reinc', 1] },
+  { id: 'soulOpt',  go: 'gear', open: () => { openSoulModal(); return null; }, need: () => soulMade(S), todo: () => (S.soul.opt || []).filter(Boolean).length < soulSlots(S), lock: ['reinc', 1] },
+  { id: 'town',     go: 'shop', open: () => { openTown(); return null; }, need: () => !!S.cls, todo: () => townCount(S) === 0 && (S.stones || 0) >= townBuildCost(S) },
+  { id: 'title',    go: 'quest', q: 'title', need: () => titleState(S).own.length > 0, todo: () => !titleState(S).eq, lock: ['title'] },
+  { id: 'daily',    go: 'quest', q: 'daily', need: () => !!S.cls, todo: () => { const o = dl2State(S); return o.tries === DAILY_TRIES && !o.cur; } },
+];
+const GROW_SNOOZE = 12 * 3600e3;
+function growState() { return S.grow && typeof S.grow === 'object' ? S.grow : (S.grow = { snz: {}, seen: [] }); }
+function growList() { const g = growState(), now = Date.now(); return GROW.map(x => { let un = false, td = false; try { un = !!x.need(); td = un && !!x.todo(); } catch (e) {} return { x, un, td, snz: (g.snz[x.id] || 0) > now }; }); }
+function growLockText(x) { const [k, n] = x.lock || []; return k ? t('gr.lock.' + k, { n: fmtN(n || 0) }) : ''; }
+function growGo(id) {
+  const x = GROW.find(z => z.id === id); if (!x) return;
+  document.querySelectorAll('.modal').forEach(m => m.classList.add('hidden'));
+  goTo(x.go); if (x.q) { qTab = x.q; buildQuest(); }
+  setTimeout(() => { let sel = null; try { sel = x.open ? x.open() : null; } catch (e) {} const el = sel && document.querySelector(sel); if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.classList.remove('gpulse'); void el.offsetWidth; el.classList.add('gpulse'); setTimeout(() => el.classList.remove('gpulse'), 3200); } }, 80);
+}
+let growLast = 0;
+function renderGrowBox(force) {
+  const box = $('#growBox'); if (!box || !S || !S.cls) return; const now = Date.now(); if (!force && now - growLast < 3000) return; growLast = now;
+  const L = growList(), todo = L.filter(r => r.td), show = todo.filter(r => !r.snz), g = growState();
+  // 처음 보는 할 일은 한 번 알려 준다
+  const fresh = todo.filter(r => !g.seen.includes(r.x.id)); if (fresh.length) { g.seen.push(...fresh.map(r => r.x.id)); if (g.seen.length > 1) toast(t('gr.new', { n: t('gr.' + fresh[0].x.id) })); save(S); }
+  const guideOn = !$('#guideBox').classList.contains('hidden');
+  const hide = guideOn || !show.length; box.classList.toggle('hidden', hide); if (hide) { box.dataset.sig = ''; return; }
+  const top = show[0].x, sig = top.id + '|' + show.length + '|' + getLang(); if (box.dataset.sig === sig) return; box.dataset.sig = sig;
+  box.innerHTML = `<div class="gdt" title="${t('gr.' + top.id + '.d')}"><i>${t('gr.head', { n: show.length })}</i><b>${t('gr.' + top.id)}</b><span>${t('gr.' + top.id + '.d')}</span></div><div class="gdb"><button class="mini hot" data-gr="go">${t('gd.go')}</button><button class="mini" data-gr="all">${t('gr.all')}</button><button class="x" data-gr="later" title="${t('gr.later')}">×</button></div>`;
+  box.dataset.top = top.id;
+}
+function renderGrowModal() {
+  const L = growList(), todo = L.filter(r => r.td), ok = L.filter(r => r.un && !r.td), lock = L.filter(r => !r.un);
+  const row = (r, kind) => `<div class="grrow ${kind}"><i class="gdot"></i><div><b>${kind === 'todo' ? t('gr.' + r.x.id) : t('gr.n.' + r.x.id)}</b><span>${kind === 'lock' ? growLockText(r.x) : kind === 'ok' ? t('gr.okTx') : t('gr.' + r.x.id + '.d')}</span></div>${kind === 'todo' ? `<button class="mini hot" data-gr="go" data-id="${r.x.id}">${t('gd.go')}</button>` : ''}</div>`;
+  $('#growWin').innerHTML = `<div class="evh"><b>${t('gr.modal')}</b><span>${t('gr.count', { a: ok.length, b: L.filter(r => r.un).length })}</span></div><div class="qx">${t('gr.desc')}</div>
+    ${todo.length ? `<div class="grsec">${t('gr.secTodo', { n: todo.length })}</div>` + todo.map(r => row(r, 'todo')).join('') : `<div class="qx">${t('gr.none')}</div>`}
+    ${ok.length ? `<div class="grsec">${t('gr.secOk')}</div>` + ok.map(r => row(r, 'ok')).join('') : ''}
+    ${lock.length ? `<div class="grsec">${t('gr.secLock')}</div>` + lock.map(r => row(r, 'lock')).join('') : ''}
+    <button class="mini" data-gr="close">${t('ui.close')}</button>`;
+}
+function openGrow() { renderGrowModal(); $('#growModal').classList.remove('hidden'); }
+document.addEventListener('click', e => {
+  if (e.target.closest('#growShow')) { $('#setModal').classList.add('hidden'); openGrow(); return; }
+  const b = e.target.closest('[data-gr]'); if (!b) return; const a = b.dataset.gr;
+  if (a === 'all') return openGrow();
+  if (a === 'close') { $('#growModal').classList.add('hidden'); return; }
+  if (a === 'go') { const id = b.dataset.id || $('#growBox').dataset.top; growGo(id); return; }
+  if (a === 'later') { const id = $('#growBox').dataset.top; if (id) { growState().snz[id] = Date.now() + GROW_SNOOZE; save(S); toast(t('gr.snoozed')); } renderGrowBox(true); }
+});
+
+// 탭을 바꾸거나 창을 열면 날아가던 연출을 바로 지운다
+document.addEventListener('click', () => setTimeout(() => { if (!flyOk()) { const fl = $('#flyer'); if (fl && fl.childElementCount) fl.replaceChildren(); } }, 0), true);

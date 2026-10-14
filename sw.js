@@ -34,6 +34,7 @@ chrome.runtime.onMessage.addListener((msg, _s, reply) => {
   if (msg?.type === 'refresh') { tick().then(() => reply({ ok: true })); return true; }
   // 팝업이 닫힐 때 넘겨준 최신 상태를 확실히 저장 + 동기화
   if (msg?.type === 'flush' && msg.save) {
+    if (_s && _s.url && /harness/i.test(_s.url)) { swLog('flush ignored (test page)'); reply({ ok: false }); return; }   // 개발용 테스트 화면의 세이브는 받지 않음
     const f0 = Date.now(); swLog('flush recv');
     const s = normalize(msg.save);
     save(s, 'force')
