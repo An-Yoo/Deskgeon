@@ -395,7 +395,8 @@ button.mini.armed { background: linear-gradient(#ffd0a8, #ff9f6b); color: #2a1a1
 .tgl input:disabled + i { opacity: .4; }
 .rbopt { display: flex; align-items: center; gap: 4px; margin-top: 2px; }
 .rbopt select, .rbopt input { font: inherit; font-size: 10px; background: #0e0c1a; color: var(--text); border: 2px solid #3a3358; padding: 1px 3px; }
-.rbopt input { width: 52px; } .rbopt span { font-size: 9.5px; color: var(--muted); }
+.rbopt input { width: 52px; } .rbopt span { font-size: 9.5px; color: var(--muted); white-space: nowrap; }
+.rbopt.rbboth { flex-wrap: nowrap; } .rbopt.rbboth input { width: 40px; }
 /* 장비 강화 · 세트 */
 .enchbox { display: flex; flex-direction: column; gap: 4px; }
 

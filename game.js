@@ -1096,8 +1096,8 @@ export function newSave() {
     comp: {}, team: [], banner: 'all', presets: [], bossLock: false, autoSell: -1, lang: 'en',
     stones: 30, pulls: 0, pity: 0, stoneBuys: 0, shards: 0,
     honor: 0, honorPts: 0, relic: {}, bestFloor: 0, rebirths: 0,
-    life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbEvery: 10, rbFloor: 0, riHonor: 0 }, lastRi: null,
-    ench: {}, enchX: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, rbT: 0, bossFails: 0,
+    life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbEvery: 10, rbFloor: 0, riHonor: 0, riMode: 'honor', riEvery: 30 }, lastRi: null,
+    ench: {}, enchX: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, rbT: 0, riT: 0, bossFails: 0,
     mastery: {}, gachaOpt: { stopUR: true, stopNew: false, autoBuy: false },
     mrp: {}, pets: { own: {}, act: null, cand: null, pot: 0, ppm: 0, peak: 0, pin: 0, pt: 0 }, soul: null, lowFx: false, cgAuto: true, goldConv: true, cos: { own: [], look: {}, seen: {} }, exped: { slots: [null, null] }, cg: { bag: [], eq: {} }, mut: {}, events: [], ebuffs: [], evT: 0, evLog: [], bossPity: {}, sigGot: {}, daily: null, guide: { n: 0 }, autoSeen: [],
     towers: {}, rift: { keys: 2, best: 0, lvl: 1 }, runes: { eq: [null, null, null, null], bag: [], dust: 0 },
@@ -1137,7 +1137,7 @@ function sanitize(o, now = Date.now()) {
   o.stones = int(o.stones, 0, 0, 1e12); o.shards = int(o.shards, 0, 0, 1e15); o.ess = num(o.ess, 0, 0, 1e15);
   o.pulls = int(o.pulls); o.pity = int(o.pity, 0, 0, PITY); o.stoneBuys = int(o.stoneBuys, 0, 0, 1e5);
   o.rebirths = int(o.rebirths, 0, 0, 1e8); o.karma = int(o.karma, 0, 0, 1e9); o.reinc = int(o.reinc, 0, 0, 1e8);
-  o.stuckT = num(o.stuckT, 0, 0, 1e8); o.rbT = num(o.rbT, 0, 0, 1e8);
+  o.stuckT = num(o.stuckT, 0, 0, 1e8); o.rbT = num(o.rbT, 0, 0, 1e8); o.riT = num(o.riT, 0, 0, 1e9);
   { const l = o.lastRi; o.lastRi = l && typeof l === 'object' ? { honor: num(l.honor, 0), floor: int(l.floor, 0, 0, 1e6), karma: num(l.karma, 0), at: num(l.at, 0, 0, 1e15) } : null; }
   o.bossFails = int(o.bossFails, 0, 0, 1000); o.autoSell = int(o.autoSell, -1, -1, 2);
   o.autoEquip = o.autoEquip !== false; o.bossLock = !!o.bossLock;
@@ -1225,7 +1225,7 @@ function sanitize(o, now = Date.now()) {
   o.tower = { best: int(tw.best, 0, 0, 1e6), tries: int(tw.tries, TOWER_TRIES, 0, TOWER_TRIES), prev: tw.prev && typeof tw.prev === 'object' ? { floor: int(tw.prev.floor, o.floor, 1, 1e6), kills: int(tw.prev.kills), prog: num(tw.prev.prog, 0, 0, 1), bossLock: !!tw.prev.bossLock } : null };
   const au = o.auto || {};
   // 모르는 자동화 켜짐/꺼짐 값도 남긴다: 예전 버전이 같은 세이브를 열어도(다른 PC의 크롬 동기화 등) 새 자동화 설정이 지워지지 않게
-  o.auto = { ...Object.fromEntries(Object.entries(au || {}).filter(([k, v]) => (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) && /^[a-zA-Z]\w{0,15}$/.test(k)).slice(0, 40)), ...pickObj(au, AUTO.map(a => a.id), v => !!v), rbMode: au.rbMode === 'floor' || au.rbMode === 'time' ? au.rbMode : 'stuck', rbStuck: int(au.rbStuck, 30, 1, 9999), rbEvery: int(au.rbEvery, 10, 1, 9999), rbFloor: int(au.rbFloor, 0, 0, 1e6), riHonor: num(au.riHonor, 0) };
+  o.auto = { ...Object.fromEntries(Object.entries(au || {}).filter(([k, v]) => (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) && /^[a-zA-Z]\w{0,15}$/.test(k)).slice(0, 40)), ...pickObj(au, AUTO.map(a => a.id), v => !!v), rbMode: ['floor', 'time', 'both'].includes(au.rbMode) ? au.rbMode : 'stuck', rbStuck: int(au.rbStuck, 30, 1, 9999), rbEvery: int(au.rbEvery, 10, 1, 9999), riMode: au.riMode === 'time' ? 'time' : 'honor', riEvery: int(au.riEvery, 30, 1, 99999), rbFloor: int(au.rbFloor, 0, 0, 1e6), riHonor: num(au.riHonor, 0) };
   // 진행 중이던 보스/탑 상태
   const bo = o.boss;
   if (bo && typeof bo === 'object' && Number.isFinite(+bo.hp) && Number.isFinite(+bo.max)) {
@@ -1245,7 +1245,7 @@ function sanitize(o, now = Date.now()) {
   o.hp = o.boss && o.hp != null ? num(o.hp, 0, 0) : null;
   // 오프라인 보고서
   const p = o.pending;
-  o.pending = p && typeof p === 'object' ? { seconds: num(p.seconds), gold: num(p.gold), floors: int(p.floors, 0, 0, 1e6), kills: num(p.kills), levels: int(p.levels, 0, 0, 1e6), stones: int(p.stones, 0, 0, 1e9), rebirths: int(p.rebirths), drops: (Array.isArray(p.drops) ? p.drops : []).map(clampItem).filter(Boolean).slice(0, 8) } : null;
+  o.pending = p && typeof p === 'object' ? { seconds: num(p.seconds), gold: num(p.gold), floors: int(p.floors, 0, 0, 1e6), kills: num(p.kills), levels: int(p.levels, 0, 0, 1e6), stones: int(p.stones, 0, 0, 1e9), rebirths: int(p.rebirths), honor: num(p.honor), reincs: int(p.reincs), karma: num(p.karma), drops: (Array.isArray(p.drops) ? p.drops : []).map(clampItem).filter(Boolean).slice(0, 8) } : null;
   return o;
 }
 export function normalize(s) {
@@ -1819,11 +1819,11 @@ export function step(s, dt, ev) {
   petTick(s, dt);
   ev = ev || {};
   if (!METER.off) { titleTick(s, dt, ev); townAutoTick(s, dt, ev); }
-  if (!s.cls) return ev;
-  autoTick(s, dt, ev);
-  if (!s.noEv) eventTick(s, dt, ev);
+  // 직업을 고르기 전에도 전투는 돌아간다 (처음 들어온 화면이 멈춰 보이지 않게). 자동화·이벤트는 직업 선택 후부터
+  if (s.cls) autoTick(s, dt, ev);
+  if (!s.noEv && s.cls) eventTick(s, dt, ev);
   if (s.ebuffs && s.ebuffs.length) { for (const b of s.ebuffs) b.t -= dt; s.ebuffs = s.ebuffs.filter(b => b.t > 0); }
-  if (!s.boss || !s.boss.tower) { s.stuckT = (s.stuckT || 0) + dt * RT; s.rbT = (s.rbT || 0) + dt * RT; }   // 실제 시간 기준 (오프라인 배율·부스트와 무관). rbT = 지난 환생 후 경과
+  if (!s.boss || !s.boss.tower) { s.stuckT = (s.stuckT || 0) + dt * RT; s.rbT = (s.rbT || 0) + dt * RT; s.riT = (s.riT || 0) + dt * RT; }   // 실제 시간 기준 (오프라인 배율·부스트와 무관). rbT = 지난 환생 후, riT = 지난 윤회 후 경과
   s.dropBank = Math.min(3, (s.dropBank || 0) + dt * DROP_PER_SEC);                    // 직업 선택 전에는 멈춤
   const st = stats(s);
   MT = METER.off ? null : {};
@@ -2133,6 +2133,7 @@ export function rebirth(s) {
     honor: s.honor + g, honorPts: (s.honorPts || 0) + g, relic: { ...(s.relic || {}) }, bestFloor: Math.max(s.bestFloor || 0, s.maxFloor), rebirths: s.rebirths + 1, autoEquip: s.autoEquip, createdAt: s.createdAt,
     cls: s.cls, banner: s.banner,
     comp: s.comp, team: s.team, presets: s.presets, stones: s.stones, shards: s.shards || 0, pulls: s.pulls, pity: s.pity, stoneBuys: 0, lang: s.lang,
+    riT: s.riT || 0,   // 윤회 시간 조건은 환생해도 이어서 셈다
     ...persistKeep(s),
   };
   keep.ess += gearEssence(s);
@@ -2306,14 +2307,17 @@ function autoTick(s, dt, ev) {
       ev.autoEnch = (ev.autoEnch || 0) + 1;
     }
   }
-  if (autoOn(s, 'reinc') && !s.boss && canReinc(s) && riTarget(s) > 0 && (s.honor || 0) >= riTarget(s)) {
+  // 윤회: honor = 명예 기준 이상 · time = 지난 윤회 후 N분마다 (둘 다 이번 주기 B100 이상 필요)
+  const riOk = s.auto.riMode === 'time' ? (s.riT || 0) >= (s.auto.riEvery || 30) * 60 : riTarget(s) > 0 && (s.honor || 0) >= riTarget(s);
+  if (autoOn(s, 'reinc') && !s.boss && canReinc(s) && riOk) {
     const k = reincarnate(s); ev.autoReinc = (ev.autoReinc || 0) + k; ev.autoReincs = (ev.autoReincs || 0) + 1; ev.convStones = (ev.convStones || 0) + LAST_CONV.stones;
     return;
   }
   if (autoOn(s, 'rebirth') && !s.boss && honorGain(s) > 0) {
     const a = s.auto;
     // floor: 목표 층 도달 · time: 지난 환생 후 N분마다(층 진행과 무관) · stuck: 새 층 없이 N분
-    const ok = a.rbMode === 'floor' ? s.maxFloor >= rbFloorTarget(s) : a.rbMode === 'time' ? (s.rbT || 0) >= (a.rbEvery || 10) * 60 : (s.stuckT || 0) >= (a.rbStuck || 30) * 60;
+    const byStuck = (s.stuckT || 0) >= (a.rbStuck || 30) * 60, byTime = (s.rbT || 0) >= (a.rbEvery || 10) * 60;   // both: 둘 중 먼저 되는 쪽
+    const ok = a.rbMode === 'floor' ? s.maxFloor >= rbFloorTarget(s) : a.rbMode === 'time' ? byTime : a.rbMode === 'both' ? byStuck || byTime : byStuck;
     if (ok) { const g = rebirth(s); ev.autoRebirth = (ev.autoRebirth || 0) + g; ev.convStones = (ev.convStones || 0) + LAST_CONV.stones; ev.autoRebirths = (ev.autoRebirths || 0) + 1; if (autoOn(s, 'relic')) autoRelics(s, ev); }
   }
 }
@@ -2601,11 +2605,13 @@ export function advance(s, now = Date.now()) {
     gold: ev.gold || 0, floors: ev.autoRebirths ? 0 : Math.max(0, s.floor - before.floor),
     kills: ((s.life && s.life.kills) || 0) - before.kills, levels: ev.autoRebirths ? 0 : Math.max(0, s.level - before.level),
     stones: s.stones - before.stones, drops: ev.drops || [], rebirths: ev.autoRebirths || 0,
+    honor: ev.autoRebirth || 0, reincs: ev.autoReincs || 0, karma: ev.autoReinc || 0,
   };
   if (offline) {
     const p = s.pending || { seconds: 0, gold: 0, floors: 0, kills: 0, levels: 0, stones: 0, drops: [] };
     p.seconds += res.seconds; p.gold += res.gold; p.floors += res.floors;
     p.kills += res.kills; p.levels += res.levels; p.stones += res.stones; p.rebirths = (p.rebirths || 0) + res.rebirths;
+    p.honor = (p.honor || 0) + res.honor; p.reincs = (p.reincs || 0) + res.reincs; p.karma = (p.karma || 0) + res.karma;
     p.drops = p.drops.concat(res.drops).sort((a, b) => (b.r * 10 + b.t) - (a.r * 10 + a.t)).slice(0, 8);
     s.pending = p;
   }

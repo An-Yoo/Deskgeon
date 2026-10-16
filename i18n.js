@@ -6,6 +6,11 @@ Object.assign(D.en, { 'auto.rb.time': 'Every', 'auto.rb.timeU': 'min', 'auto.rb.
 Object.assign(D.ko, { 'auto.rb.time': '일정 시간마다', 'auto.rb.timeU': '분마다', 'auto.rb.nowT': '지난 환생 후 {n}분째 (실제 시간, 닫아 둔 동안도 포함)' });
 Object.assign(D.ja, { 'auto.rb.time': '一定時間ごと', 'auto.rb.timeU': '分ごと', 'auto.rb.nowT': '前回の転生から{n}分（実時間、閉じている間も含む）' });
 Object.assign(D.zh, { 'auto.rb.time': '每隔', 'auto.rb.timeU': '分钟', 'auto.rb.nowT': '距上次转生已{n}分钟（真实时间，关闭期间也计算）' });
+// 5.9.2: 자동 환생 '새 층 없이 또는 시간마다', 자동 윤회 '일정 시간마다', 오프라인 보고서 요약
+Object.assign(D.en, { 'auto.rb.both': 'No new floor, or every', 'auto.rb.or': 'or every', 'auto.rb.nowB': 'No new floor for {a} min · {b} min since the last rebirth (real time)', 'auto.ri.m.honor': 'By Honor', 'auto.ri.m.time': 'Every', 'auto.ri.nowT': '{n} min since the last reincarnation', 'auto.d.reinc': 'Reincarnates automatically when the condition below is met (this cycle must have reached B100).', 'ui.rep.honor': 'Honor +{h}', 'ui.rep.reincs': 'Auto reincarnations: {n} · Karma +{k}' });
+Object.assign(D.ko, { 'auto.rb.both': '새 층 없이 또는 시간마다', 'auto.rb.or': '또는', 'auto.rb.nowB': '새 층 없이 {a}분째 · 지난 환생 후 {b}분째 (실제 시간)', 'auto.ri.m.honor': '명예 기준', 'auto.ri.m.time': '일정 시간마다', 'auto.ri.nowT': '지난 윤회 후 {n}분째', 'auto.d.reinc': '아래 조건이 되면 자동으로 윤회해요 (이번 주기에 B100 이상 도달 필요).', 'ui.rep.honor': '명예 +{h}', 'ui.rep.reincs': '자동 윤회 {n}회 · 업보 +{k}' });
+Object.assign(D.ja, { 'auto.rb.both': '新階層なし または一定時間', 'auto.rb.or': 'または', 'auto.rb.nowB': '新階層なし{a}分 · 前回の転生から{b}分（実時間）', 'auto.ri.m.honor': '名誉基準', 'auto.ri.m.time': '一定時間ごと', 'auto.ri.nowT': '前回の輪廠から{n}分', 'auto.d.reinc': '下の条件を満たすと自動で輪廠します（今回の周回でB100到達が必要）。', 'ui.rep.honor': '名誉 +{h}', 'ui.rep.reincs': '自動輪廠 {n}回 · 業 +{k}' });
+Object.assign(D.zh, { 'auto.rb.both': '无新层或每隔', 'auto.rb.or': '或每隔', 'auto.rb.nowB': '无新层{a}分钟 · 距上次转生{b}分钟（真实时间）', 'auto.ri.m.honor': '按荣誉', 'auto.ri.m.time': '每隔', 'auto.ri.nowT': '距上次轮回已{n}分钟', 'auto.d.reinc': '满足下方条件时自动轮回（本周期需到达B100）。', 'ui.rep.honor': '荣誉 +{h}', 'ui.rep.reincs': '自动轮回 {n}次 · 业力 +{k}' });
 let cur = 'en';
 export function setLang(l) { cur = D[l] ? l : 'en'; return cur; }
 export function getLang() { return cur; }

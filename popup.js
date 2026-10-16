@@ -791,7 +791,7 @@ function frame(now) {
   S.lastTick = Date.now();          // 팝업에서 진행한 시간이 오프라인에 중복 적립되지 않도록
   st = stats(S);
 
-  if (S.cls && !(trans && trans.t < .35)) {
+  if (!(trans && trans.t < .35)) {
     swingT -= dt;
     if (swingT <= 0) { swingT = Math.max(.14, 1 / st.aps); if (mon.drop <= .3) heroSwing(); }
     for (const h of st.compHits) {
@@ -2108,13 +2108,32 @@ function qBook() {
     <div class="book">${cells}</div>
     <div class="qx c">${t('q.bookComp', { n: owned, m: COMPANIONS.length })}</div>`;
 }
+// 자동 환생 조건: stuck = 새 층 없이 N분 · time = 지난 환생 후 N분마다(층 무관) · both = 둘 중 먼저 · floor = 목표 층 도달
+function rbOptHtml(au) {
+  const rm = ['floor', 'time', 'both'].includes(au.rbMode) ? au.rbMode : 'stuck';
+  const num = (act, v, min) => `<input type="number" data-act="${act}" min="${min}" max="9999" value="${v}">`;
+  const sel = `<select data-act="rbmode">${['stuck', 'time', 'both', 'floor'].map(m => `<option value="${m}" ${rm === m ? 'selected' : ''}>${t('auto.rb.' + m)}</option>`).join('')}</select>`;
+  const stuckIn = num('rbstuck', au.rbStuck || 30, 1), everyIn = num('rbevery', au.rbEvery || 10, 1);
+  const a = Math.floor((S.stuckT || 0) / 60), b = Math.floor((S.rbT || 0) / 60);
+  if (rm === 'floor') return `<div class="rbopt">${sel}${num('rbfloor', rbFloorTarget(S), 30)}<span>${t('auto.rb.floorU')}</span></div>`;
+  if (rm === 'time') return `<div class="rbopt">${sel}${everyIn}<span>${t('auto.rb.timeU')}</span></div><div class="rbnow">${t('auto.rb.nowT', { n: b })}</div>`;
+  if (rm === 'both') return `<div class="rbopt">${sel}</div><div class="rbopt rbboth"><span>${t('auto.rb.stuck')}</span>${stuckIn}<span>${t('auto.rb.min')}</span><span>${t('auto.rb.or')}</span>${everyIn}<span>${t('auto.rb.timeU')}</span></div><div class="rbnow">${t('auto.rb.nowB', { a, b })}</div>`;
+  return `<div class="rbopt">${sel}${stuckIn}<span>${t('auto.rb.min')}</span></div><div class="rbnow">${t('auto.rb.now', { n: a })}</div>`;
+}
+// 자동 윤회 조건: honor = 명예 기준 이상 · time = 지난 윤회 후 N분마다
+function riOptHtml(au) {
+  const rim = au.riMode === 'time' ? 'time' : 'honor';
+  const sel = `<select data-act="rimode">${['honor', 'time'].map(m => `<option value="${m}" ${rim === m ? 'selected' : ''}>${t('auto.ri.m.' + m)}</option>`).join('')}</select>`;
+  const last = S.lastRi ? t('auto.ri.last', { h: fmt(S.lastRi.honor), f: S.lastRi.floor, k: fmtN(S.lastRi.karma) }) : t('auto.ri.none');
+  if (rim === 'time') return `<div class="rbopt">${sel}<input type="number" data-act="rievery" min="1" max="99999" value="${au.riEvery || 30}"><span>${t('auto.rb.timeU')}</span></div><div class="rbnow">${t('auto.ri.nowT', { n: Math.floor((S.riT || 0) / 60) })} · ${last}</div>`;
+  const sp = splitAmt(riTarget(S));
+  return `<div class="rbopt">${sel}</div><div class="rbopt riopt"><span>${t('ui.honor')}</span><input type="number" inputmode="decimal" min="0" step="any" data-act="rinum" placeholder="${t('auto.ri.ph')}" value="${sp.m}"><select data-act="riunit">${SUF.map((u, i) => `<option value="${i}" ${i === sp.u ? 'selected' : ''}>${unitLabel(i)}</option>`).join('')}</select><span>${t('auto.ri.post')}</span></div><div class="rbnow">${t('auto.ri.now', { h: fmt(S.honor || 0) })} · ${last}${!au.riHonor && S.lastRi ? '<br>' + t('auto.ri.def') : ''}</div>`;
+}
 function qAuto() {
   const au = S.auto || {};
   return `<div class="qx">${t('q.autoNote')}</div>` + AUTO.map(a => {
     const un = a.need(S), on = !!au[a.id];
-    const rm = au.rbMode === 'floor' || au.rbMode === 'time' ? au.rbMode : 'stuck';
-    const opt = a.id === 'rebirth' && un ? `<div class="rbopt"><select data-act="rbmode">${['stuck', 'time', 'floor'].map(m => `<option value="${m}" ${rm === m ? 'selected' : ''}>${t('auto.rb.' + m)}</option>`).join('')}</select><input type="number" data-act="rbval" min="${rm === 'floor' ? 30 : 1}" max="9999" value="${rm === 'floor' ? rbFloorTarget(S) : rm === 'time' ? (au.rbEvery || 10) : (au.rbStuck || 30)}"><span>${rm === 'floor' ? t('auto.rb.floorU') : rm === 'time' ? t('auto.rb.timeU') : t('auto.rb.min')}</span></div>${rm === 'stuck' ? `<div class="rbnow">${t('auto.rb.now', { n: Math.floor((S.stuckT || 0) / 60) })}</div>` : rm === 'time' ? `<div class="rbnow">${t('auto.rb.nowT', { n: Math.floor((S.rbT || 0) / 60) })}</div>` : ''}`
-      : a.id === 'reinc' && un ? (() => { const sp = splitAmt(riTarget(S)); return `<div class="rbopt riopt"><span>${t('ui.honor')}</span><input type="number" inputmode="decimal" min="0" step="any" data-act="rinum" placeholder="${t('auto.ri.ph')}" value="${sp.m}"><select data-act="riunit">${SUF.map((u, i) => `<option value="${i}" ${i === sp.u ? 'selected' : ''}>${unitLabel(i)}</option>`).join('')}</select><span>${t('auto.ri.post')}</span></div><div class="rbnow">${t('auto.ri.now', { h: fmt(S.honor || 0) })} · ${S.lastRi ? t('auto.ri.last', { h: fmt(S.lastRi.honor), f: S.lastRi.floor, k: fmtN(S.lastRi.karma) }) : t('auto.ri.none')}${!au.riHonor && S.lastRi ? '<br>' + t('auto.ri.def') : ''}</div>`; })() : '';
+    const opt = a.id === 'rebirth' && un ? rbOptHtml(au) : a.id === 'reinc' && un ? riOptHtml(au) : '';
     return `<div class="qrow ${un ? '' : 'lock'}"><div class="qt"><b>${t('auto.' + a.id)}</b><span>${un ? t('auto.d.' + a.id, { w: Math.round(bossRetryWait(S) / 60) }) : t('auto.lock.' + a.cond.k, { n: a.cond.n })}</span>${opt}</div><label class="tgl"><input type="checkbox" data-act="auto" data-id="${a.id}" ${on ? 'checked' : ''} ${un ? '' : 'disabled'}><i></i></label></div>`;
   }).join('');
 }
@@ -2233,7 +2252,8 @@ function unitLabel(i) { if (!i) return t('auto.ri.u0'); const n = t('auto.ri.uni
 function splitAmt(v) { if (!(v > 0)) return { m: '', u: 0 }; const u = Math.max(0, Math.min(SUF.length - 1, Math.floor(Math.log10(v) / 3))); return { m: Math.round(v / Math.pow(1000, u) * 100) / 100, u }; }
 function autoOpt(el, act) {
   if (act === 'rbmode') { S.auto.rbMode = el.value; if (el.value === 'floor' && !S.auto.rbFloor) S.auto.rbFloor = rbFloorTarget(S); }
-  else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else if (S.auto.rbMode === 'time') S.auto.rbEvery = v; else S.auto.rbStuck = v; }
+  else if (act === 'rbstuck' || act === 'rbevery' || act === 'rbfloor' || act === 'rievery') { const v = Math.max(1, Math.round(+el.value || 0)); if (act === 'rbfloor') S.auto.rbFloor = Math.max(30, v); else if (act === 'rbevery') S.auto.rbEvery = v; else if (act === 'rievery') S.auto.riEvery = v; else S.auto.rbStuck = v; }
+  else if (act === 'rimode') S.auto.riMode = el.value === 'time' ? 'time' : 'honor';
   else if (act === 'rinum' || act === 'riunit') { const box = el.closest('.riopt'); const m = +box.querySelector('[data-act="rinum"]').value, u = +box.querySelector('[data-act="riunit"]').value || 0; S.auto.riHonor = m > 0 ? m * Math.pow(1000, u) : 0; }
 }
 // ---------- 자동 진행 (환경설정) ----------
@@ -2683,7 +2703,8 @@ function showReport(res) {
     t('ui.rep.kills', { k: `<b>${fmt(res.kills)}</b>`, g: `<b>${fmt(res.gold)}</b>` }) + (res.stones > 0 ? t('ui.rep.stones', { s: `<b>${res.stones}</b>` }) : '') + '<br>' +
     (res.floors > 0 ? t('ui.rep.floors', { f: `<b>${res.floors}</b>`, n: S.floor }) + '<br>' : '') +
     (res.levels > 0 ? t('ui.rep.lv', { l: `<b>${res.levels}</b>` }) + '<br>' : '') +
-    (res.rebirths > 0 ? t('ui.rep.rebirths', { n: `<b>${res.rebirths}</b>` }) + '<br>' : '') +
+    (res.rebirths > 0 ? t('ui.rep.rebirths', { n: `<b>${res.rebirths}</b>` }) + (res.honor > 0 ? ' · ' + t('ui.rep.honor', { h: `<b>${fmt(res.honor)}</b>` }) : '') + '<br>' : '') +
+    (res.reincs > 0 ? t('ui.rep.reincs', { n: `<b>${res.reincs}</b>`, k: `<b>${fmt(res.karma || 0)}</b>` }) + '<br>' : '') +
     ((S.events || []).length ? '<b class="hi">' + t('ev.waiting', { n: S.events.length }) + '</b><br>' : '') +
     (AUTO.some(a => a.need(S) && !(S.autoSeen || []).includes(a.id)) ? '<b class="hi">' + t('auto.repNew') + '</b><br>' : '') +
     (expSlots(S).some(x => x && Date.now() >= x.end) ? '<b class="hi">' + t('exp.repDone') + '</b><br>' : '');
