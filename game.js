@@ -1096,8 +1096,8 @@ export function newSave() {
     comp: {}, team: [], banner: 'all', presets: [], bossLock: false, autoSell: -1, lang: 'en',
     stones: 30, pulls: 0, pity: 0, stoneBuys: 0, shards: 0,
     honor: 0, honorPts: 0, relic: {}, bestFloor: 0, rebirths: 0,
-    life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbFloor: 0, riHonor: 0 }, lastRi: null,
-    ench: {}, enchX: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, bossFails: 0,
+    life: { kills: 0, bosses: 0 }, quest: {}, boost: { until: 0, charges: 0 }, tower: { best: 0, tries: 3, prev: null }, auto: { boss: true, rbMode: 'stuck', rbStuck: 30, rbEvery: 10, rbFloor: 0, riHonor: 0 }, lastRi: null,
+    ench: {}, enchX: {}, ess: 0, ach: {}, bestiary: [], karma: 0, reinc: 0, cycleBest: 0, stuckT: 0, rbT: 0, bossFails: 0,
     mastery: {}, gachaOpt: { stopUR: true, stopNew: false, autoBuy: false },
     mrp: {}, pets: { own: {}, act: null, cand: null, pot: 0, ppm: 0, peak: 0, pin: 0, pt: 0 }, soul: null, lowFx: false, cgAuto: true, goldConv: true, cos: { own: [], look: {}, seen: {} }, exped: { slots: [null, null] }, cg: { bag: [], eq: {} }, mut: {}, events: [], ebuffs: [], evT: 0, evLog: [], bossPity: {}, sigGot: {}, daily: null, guide: { n: 0 }, autoSeen: [],
     towers: {}, rift: { keys: 2, best: 0, lvl: 1 }, runes: { eq: [null, null, null, null], bag: [], dust: 0 },
@@ -1137,7 +1137,7 @@ function sanitize(o, now = Date.now()) {
   o.stones = int(o.stones, 0, 0, 1e12); o.shards = int(o.shards, 0, 0, 1e15); o.ess = num(o.ess, 0, 0, 1e15);
   o.pulls = int(o.pulls); o.pity = int(o.pity, 0, 0, PITY); o.stoneBuys = int(o.stoneBuys, 0, 0, 1e5);
   o.rebirths = int(o.rebirths, 0, 0, 1e8); o.karma = int(o.karma, 0, 0, 1e9); o.reinc = int(o.reinc, 0, 0, 1e8);
-  o.stuckT = num(o.stuckT, 0, 0, 1e8);
+  o.stuckT = num(o.stuckT, 0, 0, 1e8); o.rbT = num(o.rbT, 0, 0, 1e8);
   { const l = o.lastRi; o.lastRi = l && typeof l === 'object' ? { honor: num(l.honor, 0), floor: int(l.floor, 0, 0, 1e6), karma: num(l.karma, 0), at: num(l.at, 0, 0, 1e15) } : null; }
   o.bossFails = int(o.bossFails, 0, 0, 1000); o.autoSell = int(o.autoSell, -1, -1, 2);
   o.autoEquip = o.autoEquip !== false; o.bossLock = !!o.bossLock;
@@ -1225,7 +1225,7 @@ function sanitize(o, now = Date.now()) {
   o.tower = { best: int(tw.best, 0, 0, 1e6), tries: int(tw.tries, TOWER_TRIES, 0, TOWER_TRIES), prev: tw.prev && typeof tw.prev === 'object' ? { floor: int(tw.prev.floor, o.floor, 1, 1e6), kills: int(tw.prev.kills), prog: num(tw.prev.prog, 0, 0, 1), bossLock: !!tw.prev.bossLock } : null };
   const au = o.auto || {};
   // 모르는 자동화 켜짐/꺼짐 값도 남긴다: 예전 버전이 같은 세이브를 열어도(다른 PC의 크롬 동기화 등) 새 자동화 설정이 지워지지 않게
-  o.auto = { ...Object.fromEntries(Object.entries(au || {}).filter(([k, v]) => (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) && /^[a-zA-Z]\w{0,15}$/.test(k)).slice(0, 40)), ...pickObj(au, AUTO.map(a => a.id), v => !!v), rbMode: au.rbMode === 'floor' ? 'floor' : 'stuck', rbStuck: int(au.rbStuck, 30, 5, 9999), rbFloor: int(au.rbFloor, 0, 0, 1e6), riHonor: num(au.riHonor, 0) };
+  o.auto = { ...Object.fromEntries(Object.entries(au || {}).filter(([k, v]) => (typeof v === 'boolean' || (typeof v === 'number' && Number.isFinite(v))) && /^[a-zA-Z]\w{0,15}$/.test(k)).slice(0, 40)), ...pickObj(au, AUTO.map(a => a.id), v => !!v), rbMode: au.rbMode === 'floor' || au.rbMode === 'time' ? au.rbMode : 'stuck', rbStuck: int(au.rbStuck, 30, 1, 9999), rbEvery: int(au.rbEvery, 10, 1, 9999), rbFloor: int(au.rbFloor, 0, 0, 1e6), riHonor: num(au.riHonor, 0) };
   // 진행 중이던 보스/탑 상태
   const bo = o.boss;
   if (bo && typeof bo === 'object' && Number.isFinite(+bo.hp) && Number.isFinite(+bo.max)) {
@@ -1823,7 +1823,7 @@ export function step(s, dt, ev) {
   autoTick(s, dt, ev);
   if (!s.noEv) eventTick(s, dt, ev);
   if (s.ebuffs && s.ebuffs.length) { for (const b of s.ebuffs) b.t -= dt; s.ebuffs = s.ebuffs.filter(b => b.t > 0); }
-  if (!s.boss || !s.boss.tower) s.stuckT = (s.stuckT || 0) + dt * RT;   // 실제 시간 기준 (오프라인 배율·부스트와 무관)
+  if (!s.boss || !s.boss.tower) { s.stuckT = (s.stuckT || 0) + dt * RT; s.rbT = (s.rbT || 0) + dt * RT; }   // 실제 시간 기준 (오프라인 배율·부스트와 무관). rbT = 지난 환생 후 경과
   s.dropBank = Math.min(3, (s.dropBank || 0) + dt * DROP_PER_SEC);                    // 직업 선택 전에는 멈춤
   const st = stats(s);
   MT = METER.off ? null : {};
@@ -2312,7 +2312,8 @@ function autoTick(s, dt, ev) {
   }
   if (autoOn(s, 'rebirth') && !s.boss && honorGain(s) > 0) {
     const a = s.auto;
-    const ok = a.rbMode === 'floor' ? s.maxFloor >= rbFloorTarget(s) : (s.stuckT || 0) >= (a.rbStuck || 30) * 60;
+    // floor: 목표 층 도달 · time: 지난 환생 후 N분마다(층 진행과 무관) · stuck: 새 층 없이 N분
+    const ok = a.rbMode === 'floor' ? s.maxFloor >= rbFloorTarget(s) : a.rbMode === 'time' ? (s.rbT || 0) >= (a.rbEvery || 10) * 60 : (s.stuckT || 0) >= (a.rbStuck || 30) * 60;
     if (ok) { const g = rebirth(s); ev.autoRebirth = (ev.autoRebirth || 0) + g; ev.convStones = (ev.convStones || 0) + LAST_CONV.stones; ev.autoRebirths = (ev.autoRebirths || 0) + 1; if (autoOn(s, 'relic')) autoRelics(s, ev); }
   }
 }
@@ -2694,11 +2695,21 @@ export async function load() {
 // 개발용 테스트 화면(harness*.html)에서는 가짜 저장소(window.__mem)가 없으면 진짜 저장소에 절대 쓰지 않는다
 const TEST_PAGE = typeof location !== 'undefined' && /harness/i.test(location.pathname || '');
 const noRealWrite = () => TEST_PAGE && !(globalThis.__mem && chrome && chrome.storage && chrome.storage.local && !chrome.storage.local.__real);
+// 여러 창을 동시에 열었을 때: 팝업이 "지금 저장해도 되는 창인지"(gate)와 "저장했다"(hook)를 등록한다
+let SAVE_GATE = null, SAVE_HOOK = null;
+export function setSaveHooks(gate, hook) { SAVE_GATE = gate; SAVE_HOOK = hook; }
+// 다른 창이 저장한 로컬 세이브만 읽는다 (계정 동기화는 보지 않음)
+export async function loadLocal() {
+  const v = (await chrome.storage.local.get(SAVE_KEY))[SAVE_KEY];
+  return v ? normalize(v) : null;
+}
 export async function save(s, mode = 'auto') {
   if (noRealWrite()) return;
+  if (SAVE_GATE && !SAVE_GATE()) return;
   s.savedAt = Date.now();
   const clean = serialize(s);
   await chrome.storage.local.set({ [SAVE_KEY]: clean });
+  if (SAVE_HOOK) { try { SAVE_HOOK(s.savedAt); } catch (e) {} }
   if (mode === 'force' || (mode === 'auto' && Date.now() - lastSyncWrite > SYNC_EVERY_MS)) await writeSync(clean);
 }
 

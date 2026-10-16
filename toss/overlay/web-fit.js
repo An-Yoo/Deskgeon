@@ -2,7 +2,7 @@
 // - 토스 상단바(더보기/닫기 버튼)는 게임 위에 떠 있어서 SafeArea 값이 0이어도 최소 TOP_MIN 만큼은 비워 둔다.
 // - 폭 기준으로 확대한 뒤 세로가 남으면 body 높이를 늘려 던전 로그/각 탭 목록이 더 길게 보이게 한다.
 (() => {
-  const W = 384, H0 = 588, HMAX = 780, TOP_MIN = 76;
+  const W = 384, H0 = 588, HMAX = 780, TOP_MIN = 92;   // 5.9.2: 76 → 92 (토스 상단 버튼과 톱니바퀴 사이 여유)
   document.documentElement.classList.add('dgweb', 'dgtoss');
   const imp = (el, k, v) => el.style.setProperty(k, v, 'important');
   function fit() {

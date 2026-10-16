@@ -39,6 +39,8 @@ for (const k of ['ui.drive', 'ui.driveLink', 'ui.drvUnsupported', 'ui.drvErr', '
   if (!re.test(ij)) throw new Error('i18n key not found: ' + k);
   ij = ij.replace(re, '$1$3');
 }
+// 게임이 뜨기 전(로딩·오류 화면) 문구도 한국어로
+ij = patch(ij, "let cur = 'en';", "let cur = 'ko';", 'i18n-default-ko');
 wr(path.join(APP, 'game', 'i18n.js'), ij);
 let gj = rd(path.join(SRC, 'game.js'));
 // 앱인토스는 국내 서비스: 새 세이브의 기본 언어를 한국어로
@@ -61,6 +63,9 @@ pj = patch(pj, 'function showReport(res) {', 'function showReport(res) {\n  wind
 pj = patch(pj, 'window.__dmReady = true;', "window.__dmReady = true; window.__dgGame = { get S() { return S; }, save: () => save(S), render: () => { st = stats(S); render(); }, addLog, showReport, lang: () => getLang() };", 'expose-game');
 // 앱인토스는 국내 서비스: 새 세이브의 기본 언어를 한국어로
 pj = patch(pj, "setLang(S.lang || 'en');", "setLang(S.lang || 'ko');", 'default-lang-ko');
+// 기존 세이브도 한국어로: 앱인토스 안에서 직접 언어를 바꾼 적이 없으면 항상 한국어로 시작 (크롬 확장 세이브 코드를 가져와도)
+pj = patch(pj, "setLang(S.lang || 'ko');", "if (!localStorage.getItem('dg.t.langPicked')) S.lang = 'ko'; setLang(S.lang || 'ko');", 'force-ko-unless-picked');
+pj = patch(pj, "S.lang = setLang(l); save(S, 'force');", "S.lang = setLang(l); try { localStorage.setItem('dg.t.langPicked', '1'); } catch (e) {} save(S, 'force');", 'remember-lang-pick');
 pj = pj.replace(/(['"`])https:\/\/chromewebstore\.google\.com[^'"`]*\1/g, "''");
 wr(path.join(APP, 'game', 'popup.js'), pj);
 

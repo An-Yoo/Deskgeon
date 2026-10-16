@@ -1,5 +1,5 @@
 import {
-  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, rbFloorTarget, riTarget, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR, METER, meterReset, TITLES, TITLE_BY_ID, titleState, titleNeed, titleOwned, titleEquip, titleBonus, TITLE_KEYS, TOWN_N, TOWN_B, TOWN_BY_ID, TOWN_MAXLV, TOWN_PAIR, townState, townCount, townCopies, townCopyMax, townTileCost, townBuildCost, townUpCost, townCanOpen, townOpen, townBuild, townUp, townMove, townSell, townTileMult, townAgg, townVal, dl2State, dl2Cur, dl2Start, dl2Pick, dl2Buy, dlWeekSum, DL_WEEK, DL_SHOP, DL_EVERY, towerBestAll, masterySpent, canTowerSweep, towerSweep, towerSweepAll, canRiftSweep, riftSweep, riftSweepAll, townUsed, townRes, townResMult, townCostOf, TOWN_RES_PCT, TOWN_RES_CAP, townOpenable, townOpenNext, townOpenMany, townOpenAffordable, TOWN_FLOORS, TOWN_FLOOR_BY_ID, TOWN_RESERVES, townFloor, townPaint, townCheapest, townUpCheap, BOSS_EVERY,
+  SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, rbFloorTarget, riTarget, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR, METER, meterReset, TITLES, TITLE_BY_ID, titleState, titleNeed, titleOwned, titleEquip, titleBonus, TITLE_KEYS, TOWN_N, TOWN_B, TOWN_BY_ID, TOWN_MAXLV, TOWN_PAIR, townState, townCount, townCopies, townCopyMax, townTileCost, townBuildCost, townUpCost, townCanOpen, townOpen, townBuild, townUp, townMove, townSell, townTileMult, townAgg, townVal, dl2State, dl2Cur, dl2Start, dl2Pick, dl2Buy, dlWeekSum, DL_WEEK, DL_SHOP, DL_EVERY, towerBestAll, masterySpent, canTowerSweep, towerSweep, towerSweepAll, canRiftSweep, riftSweep, riftSweepAll, townUsed, townRes, townResMult, townCostOf, TOWN_RES_PCT, TOWN_RES_CAP, townOpenable, townOpenNext, townOpenMany, townOpenAffordable, TOWN_FLOORS, TOWN_FLOOR_BY_ID, TOWN_RESERVES, townFloor, townPaint, townCheapest, townUpCheap, BOSS_EVERY, setSaveHooks, loadLocal,
 } from './game.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
@@ -2112,7 +2112,8 @@ function qAuto() {
   const au = S.auto || {};
   return `<div class="qx">${t('q.autoNote')}</div>` + AUTO.map(a => {
     const un = a.need(S), on = !!au[a.id];
-    const opt = a.id === 'rebirth' && un ? `<div class="rbopt"><select data-act="rbmode"><option value="stuck" ${au.rbMode !== 'floor' ? 'selected' : ''}>${t('auto.rb.stuck')}</option><option value="floor" ${au.rbMode === 'floor' ? 'selected' : ''}>${t('auto.rb.floor')}</option></select><input type="number" data-act="rbval" min="${au.rbMode === 'floor' ? 30 : 5}" max="9999" value="${au.rbMode === 'floor' ? rbFloorTarget(S) : (au.rbStuck || 30)}"><span>${au.rbMode === 'floor' ? t('auto.rb.floorU') : t('auto.rb.min')}</span></div>${au.rbMode !== 'floor' ? `<div class="rbnow">${t('auto.rb.now', { n: Math.floor((S.stuckT || 0) / 60) })}</div>` : ''}`
+    const rm = au.rbMode === 'floor' || au.rbMode === 'time' ? au.rbMode : 'stuck';
+    const opt = a.id === 'rebirth' && un ? `<div class="rbopt"><select data-act="rbmode">${['stuck', 'time', 'floor'].map(m => `<option value="${m}" ${rm === m ? 'selected' : ''}>${t('auto.rb.' + m)}</option>`).join('')}</select><input type="number" data-act="rbval" min="${rm === 'floor' ? 30 : 1}" max="9999" value="${rm === 'floor' ? rbFloorTarget(S) : rm === 'time' ? (au.rbEvery || 10) : (au.rbStuck || 30)}"><span>${rm === 'floor' ? t('auto.rb.floorU') : rm === 'time' ? t('auto.rb.timeU') : t('auto.rb.min')}</span></div>${rm === 'stuck' ? `<div class="rbnow">${t('auto.rb.now', { n: Math.floor((S.stuckT || 0) / 60) })}</div>` : rm === 'time' ? `<div class="rbnow">${t('auto.rb.nowT', { n: Math.floor((S.rbT || 0) / 60) })}</div>` : ''}`
       : a.id === 'reinc' && un ? (() => { const sp = splitAmt(riTarget(S)); return `<div class="rbopt riopt"><span>${t('ui.honor')}</span><input type="number" inputmode="decimal" min="0" step="any" data-act="rinum" placeholder="${t('auto.ri.ph')}" value="${sp.m}"><select data-act="riunit">${SUF.map((u, i) => `<option value="${i}" ${i === sp.u ? 'selected' : ''}>${unitLabel(i)}</option>`).join('')}</select><span>${t('auto.ri.post')}</span></div><div class="rbnow">${t('auto.ri.now', { h: fmt(S.honor || 0) })} · ${S.lastRi ? t('auto.ri.last', { h: fmt(S.lastRi.honor), f: S.lastRi.floor, k: fmtN(S.lastRi.karma) }) : t('auto.ri.none')}${!au.riHonor && S.lastRi ? '<br>' + t('auto.ri.def') : ''}</div>`; })() : '';
     return `<div class="qrow ${un ? '' : 'lock'}"><div class="qt"><b>${t('auto.' + a.id)}</b><span>${un ? t('auto.d.' + a.id, { w: Math.round(bossRetryWait(S) / 60) }) : t('auto.lock.' + a.cond.k, { n: a.cond.n })}</span>${opt}</div><label class="tgl"><input type="checkbox" data-act="auto" data-id="${a.id}" ${on ? 'checked' : ''} ${un ? '' : 'disabled'}><i></i></label></div>`;
   }).join('');
@@ -2232,7 +2233,7 @@ function unitLabel(i) { if (!i) return t('auto.ri.u0'); const n = t('auto.ri.uni
 function splitAmt(v) { if (!(v > 0)) return { m: '', u: 0 }; const u = Math.max(0, Math.min(SUF.length - 1, Math.floor(Math.log10(v) / 3))); return { m: Math.round(v / Math.pow(1000, u) * 100) / 100, u }; }
 function autoOpt(el, act) {
   if (act === 'rbmode') { S.auto.rbMode = el.value; if (el.value === 'floor' && !S.auto.rbFloor) S.auto.rbFloor = rbFloorTarget(S); }
-  else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else S.auto.rbStuck = Math.max(5, v); }
+  else if (act === 'rbval') { const v = Math.max(1, Math.round(+el.value || 0)); if (S.auto.rbMode === 'floor') S.auto.rbFloor = Math.max(30, v); else if (S.auto.rbMode === 'time') S.auto.rbEvery = v; else S.auto.rbStuck = v; }
   else if (act === 'rinum' || act === 'riunit') { const box = el.closest('.riopt'); const m = +box.querySelector('[data-act="rinum"]').value, u = +box.querySelector('[data-act="riunit"]').value || 0; S.auto.riHonor = m > 0 ? m * Math.pow(1000, u) : 0; }
 }
 // ---------- 자동 진행 (환경설정) ----------
@@ -2697,6 +2698,7 @@ async function init() {
   await preload();
   window.__dmStep = 'load';
   S = await load();
+  initInstances();
   window.__dmStep = 'advance';
   { const off = Math.round((Date.now() - (S.lastTick || Date.now())) / 1000); (window.__dmLog || (() => {}))('save lv' + S.level + ' B' + S.floor + ' bag' + S.bag.length + ' comp' + Object.keys(S.comp || {}).length + ' from=' + S._from + ' offline=' + off + 's'); }
   const _adv0 = performance.now();
@@ -2724,8 +2726,10 @@ async function init() {
     flushedAt = Date.now();
     (window.__dmLog || (() => {}))('flush');
     // 개발용 테스트 화면에서는 백그라운드로 세이브를 넘기지 않는다 (진짜 저장소 오염 방지)
+    if (!isLead) { instPost('bye'); return; }   // 따라가기만 하던 창은 저장하지 않는다 (다른 창의 최신 상태를 덮어쓰지 않게)
     if (!/harness/i.test(location.pathname)) { try { const c = serialize(S); chrome.runtime.sendMessage({ type: 'flush', save: c }).catch(() => {}); } catch (e) {} }
     save(S, 'local').catch(() => {});
+    instPost('bye');
   };
   window.addEventListener('pagehide', flush);
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flush(); });
@@ -2738,7 +2742,54 @@ async function init() {
     refreshSyncLine();
     if (r.action === 'pull' && Date.now() - openedAt < 15000) applySave(r.save, 'drive');
   });
-  setInterval(() => { driveSync(S, { push: true }).then(refreshSyncLine); }, 120000);
+  setInterval(() => { if (isLead) driveSync(S, { push: true }).then(refreshSyncLine); }, 120000);
+}
+
+// ================= 여러 창 동시 실행 =================
+// 같은 세이브를 여러 창(팝업·탭·브라우저 창)에서 열면 창마다 자기 상태를 4초마다 저장해서
+// 다른 창에서 바꾼 설정이 먼저 열린 창의 상태로 되돌아갔다.
+// → 마지막으로 열거나 만지거나 다시 본 창 하나만 저장하고, 나머지 창은 그 창이 저장할 때마다 세이브를 받아 따라간다.
+const INST = Math.random().toString(36).slice(2, 10);
+let isLead = true, instCh = null, adopting = false, adoptAgain = false, followDirty = false, leadSeenAt = 0;
+function instPost(type, extra) { try { instCh && instCh.postMessage({ type, id: INST, ...extra }); } catch (e) {} }
+function claimLead() { if (isLead) return; isLead = true; instPost('lead'); (window.__dmLog || (() => {}))('inst lead'); if (followDirty) rebuildFollow(); }
+function rebuildFollow() {
+  followDirty = false; hudSig = '';
+  st = stats(S);
+  buildSlots(); buildBag(); buildSkills(); buildComps(); buildRelics(); buildEnch(); refreshSave();
+  try { refreshAutoBox(); } catch (e) {}
+}
+async function adoptLatest() {
+  if (isLead) return;
+  if (adopting) { adoptAgain = true; return; }
+  adopting = true;
+  try {
+    const n = await loadLocal();
+    if (!n || isLead) return;                       // 기다리는 사이 이 창을 만져서 다시 주인이 됐으면 버린다
+    Object.keys(S).forEach(k => delete S[k]);
+    Object.assign(S, n);
+    st = stats(S);
+    if (document.visibilityState === 'visible') rebuildFollow(); else followDirty = true;
+  } catch (e) { (window.__dmLog || (() => {}))('inst adopt fail ' + (e && e.message)); }
+  finally { adopting = false; if (adoptAgain) { adoptAgain = false; adoptLatest(); } }
+}
+function initInstances() {
+  try { instCh = typeof BroadcastChannel === 'function' ? new BroadcastChannel('deskgeon.inst') : null; } catch (e) { instCh = null; }
+  setSaveHooks(() => isLead, () => instPost('saved'));
+  if (!instCh) return;                              // 지원 안 하는 환경: 예전처럼 혼자 저장
+  instCh.onmessage = e => {
+    const m = e.data || {}; if (!m.id || m.id === INST) return;
+    if (m.type === 'lead') { if (isLead) (window.__dmLog || (() => {}))('inst follow'); isLead = false; leadSeenAt = Date.now(); adoptLatest(); }
+    else if (m.type === 'saved') { if (isLead) { instPost('lead'); return; } leadSeenAt = Date.now(); adoptLatest(); }   // 내가 주인인데 다른 창이 저장했으면(간발의 차) 다시 알린다
+    else if (m.type === 'bye' && !isLead && document.visibilityState === 'visible') claimLead();
+  };
+  instPost('lead');                                 // 새로 연 창이 주인
+  // 이 창을 만지거나 다시 보면 주인이 된다 (클릭 처리보다 먼저)
+  for (const evn of ['pointerdown', 'keydown', 'wheel']) window.addEventListener(evn, claimLead, true);
+  window.addEventListener('focus', claimLead);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') { if (isLead) return; if (followDirty) rebuildFollow(); } });
+  // 주인 창이 저장을 멈추면(닫힘·멈춤) 보이는 창이 이어받는다
+  setInterval(() => { if (!isLead && document.visibilityState === 'visible' && Date.now() - leadSeenAt > 15000) claimLead(); }, 5000);
 }
 init().catch(e => { console.error(e); if (window.__dmFail) window.__dmFail(e); });
 
