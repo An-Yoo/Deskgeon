@@ -1,0 +1,5 @@
+/* Deskgeon 웹(PWA) 버전: 팝업(384x588) 화면을 창 크기에 맞게 확대/축소해 가운데 배치 */
+html { width: 100% !important; height: 100% !important; overflow: hidden; background: #0d0b17; }
+body { margin: 0 auto !important; transform-origin: top center; }
+html.dgweb { -webkit-text-size-adjust: 100%; touch-action: manipulation; }
+html.dgweb, html.dgweb body { overscroll-behavior: none; -webkit-tap-highlight-color: transparent; }
