@@ -94,3 +94,17 @@ html.dgtoss .hud .lv { white-space: nowrap; flex-wrap: nowrap; overflow: hidden;
 html.dgtoss .hud .lv .sp { flex: none; }
 html.dgtoss .hud .cur, html.dgtoss .hud .dps { white-space: nowrap; }
 html.dgtoss body:has(.page[data-tab="dungeon"].hidden) .hud .xpbar { display: none; }
+
+/* 5.13 아레나 */
+#dgArena .dgarow { display: flex; align-items: center; gap: 8px; padding: 7px 8px; margin: 5px 0; border: 1px solid #3a3358; background: rgba(255,255,255,.03); }
+#dgArena .dgarow img { width: 32px; height: 32px; image-rendering: pixelated; flex: none; }
+#dgArena .dgarow .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; font-size: 11px; text-align: left; }
+#dgArena .dgarow .t span { color: #a9a2cf; font-size: 10px; } #dgArena .dgarow .t .wc { font-size: 10.5px; font-weight: 700; color: #ffd98a; }
+#dgArena .win, .win.dgarena { width: min(340px, 92vw); box-sizing: border-box; } #dgArena .dgrklist { max-height: 52vh; overflow: auto; }
+#dgArena .agood { color: #7ee08a !important; } #dgArena .abad { color: #ff8a8a !important; }
+#dgArena .dgabar { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px; color: #cfc6ff; }
+#dgArena .dgafight { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; padding: 10px 6px; margin: 4px 0 8px; border: 1px solid #6b5a2e; background: rgba(255,217,138,.06); font-size: 11px; }
+#dgArena .dgafight .vs { color: #ffd98a; font-weight: 900; } #dgArena .hb { height: 8px; margin-top: 4px; background: #0e0c1a; border: 1px solid #3a3358; }
+#dgArena .hb i { display: block; height: 100%; background: linear-gradient(#8ee6ff, #3ba6d8); transition: width .3s; } #dgArena .hb.op i { background: linear-gradient(#ff9a9a, #d84a4a); }
+#dgArena .dgares { text-align: center; padding: 10px; margin: 4px 0 8px; border: 1px solid #3a3358; } #dgArena .dgares b { display: block; font-size: 18px; }
+#dgArena .dgares.w b { color: #ffd98a; } #dgArena .dgares.l b { color: #ff8a8a; } #dgArena .dgares span { font-size: 11px; color: #cfc6ff; }
