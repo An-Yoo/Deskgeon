@@ -9,8 +9,8 @@
 <script src="./web-shim.js"></script>
 <script src="./web-fit.js"></script>
 <script src="./boot.js"></script>
-  <script type="module" crossorigin src="./assets/index-JQCcG0LS.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DR2Ahy1t.css">
+  <script type="module" crossorigin src="./assets/index-DFN-06x0.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-FhK6QWtj.css">
 </head>
 <body>
   <div class="gmini" id="gMini"><i class="gmd" id="gMiniDot"></i><span class="gmt" id="gMiniTxt"></span><button class="mini" id="gMiniStop"></button><button class="mini" id="gMiniOpen"></button></div>
@@ -107,11 +107,11 @@
     <section class="page hidden" data-tab="skill">
       <div class="clsbox" id="clsbox"></div>
       <div class="spbar"><span data-i18n="ui.sp">Skill points</span> <b id="spLeft">0</b><button class="mini" id="respecBtn" data-i18n="ui.respec">Reset skills</button></div>
-      <div class="sech" data-i18n="ui.active">Active</div>
+      <div class="sktabs" id="skTabs"><button class="mini on" data-st="a" data-i18n="ui.active">Active</button><button class="mini" data-st="p" data-i18n="ui.passive">Passive</button><button class="mini" data-st="d" data-i18n="div.tab">Divine</button><button class="mini" data-st="m" data-i18n="ui.mastery">Mastery</button></div>
       <div class="skills" id="skA"></div>
-      <div class="sech" data-i18n="ui.passive">Passive</div>
-      <div class="skills" id="skP"></div>
-      <div class="msbox" id="msBox">
+      <div class="skills hidden" id="skP"></div>
+      <div class="skills hidden" id="skD"></div>
+      <div class="msbox hidden" id="msBox">
         <div class="sech"><span data-i18n="ui.mastery">Mastery</span><span id="msHead"></span></div>
         <div class="relnote" data-i18n="ui.msNote"></div>
         <div id="msList"></div>
