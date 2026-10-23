@@ -164,3 +164,11 @@ html.dgtoss body:has(.page[data-tab="dungeon"].hidden) .hud .xpbar { display: no
 #dgArena .ares.w { border-color: rgba(255,217,138,.5); background: linear-gradient(rgba(255,217,138,.14), rgba(255,217,138,.03)); }
 #dgArena .ares > b { display: block; font-size: 17px; color: #ffd98a; } #dgArena .ares.l > b { color: #ff8a8a; }
 #dgArena .ares > span { display: block; font-size: 11px; color: #cfc6ff; margin: 2px 0 5px; } #dgArena .ares button { margin-top: 4px; padding: 5px 24px; }
+
+/* 5.13.2 아레나를 던전 아래 칸에 띄울 때 */
+.dockbody > #dgArena.docked > .win.dgarena { max-height: none; overflow: visible; padding: 8px; }
+.dockbody > #dgArena.docked h2, .dockbody > #dgArena.docked .aclose { display: none; }
+.dockbody > #dgArena.docked .abody { overflow: visible; }
+.dockbody > #dgArena.docked canvas#aCol { aspect-ratio: auto; height: 150px; object-fit: cover; object-position: 50% 100%; }
+.dockbody > #dgArena.docked .ascene { gap: 4px; }
+.dockbody > #dgArena.docked .atabs { margin-bottom: 6px; }

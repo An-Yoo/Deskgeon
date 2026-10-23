@@ -9,8 +9,8 @@
 <script src="./web-shim.js"></script>
 <script src="./web-fit.js"></script>
 <script src="./boot.js"></script>
-  <script type="module" crossorigin src="./assets/index-BNnw4wxt.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-1eHLhcrG.css">
+  <script type="module" crossorigin src="./assets/index-weCmvGiQ.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-ReRegeaj.css">
 </head>
 <body>
   <div class="gmini" id="gMini"><i class="gmd" id="gMiniDot"></i><span class="gmt" id="gMiniTxt"></span><button class="mini" id="gMiniStop"></button><button class="mini" id="gMiniOpen"></button></div>
@@ -36,6 +36,8 @@
         <span class="fl">B<b id="floor">1</b>F</span>
         <span class="fname" id="fname"></span>
         <span class="boostTag hidden" id="boostTag"></span>
+        <button class="fbadge hidden" id="growBadge"></button>
+        <button class="sgbtn" id="dpsBtn"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 14h12"/><path d="M4 11V8M7 11V4M10 11V6.5M13 11V2.5"/></svg><span data-i18n="dps.btn">DPS</span></button>
         <span class="best"><span data-i18n="ui.best">Best</span> B<b id="maxfloor">1</b>F</span>
       </div>
       <div class="screen" id="screen">
@@ -59,17 +61,16 @@
       </div>
       <button class="evbar hidden" id="evBox"></button>
       <div class="ebrow hidden" id="ebRow"></div>
-      <div class="statgrid">
+      <div class="statgrid hidden">
         <div><span data-i18n="stat.atk">ATK</span><b id="s_atk">0</b></div>
         <div><span data-i18n="stat.hp">HP</span><b id="s_hp">0</b></div>
         <div><span data-i18n="stat.crit">Crit</span><b id="s_crit">0%</b></div>
         <div><span data-i18n="ui.allyDps">Ally DPS</span><b id="s_comp">0</b></div>
-        <button class="sgbtn" id="dpsBtn"><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M2 14h12"/><path d="M4 11V8M7 11V4M10 11V6.5M13 11V2.5"/></svg><span data-i18n="dps.btn">DPS</span></button>
       </div>
       <div class="guidebox autocard hidden" id="autoCard"></div>
       <div class="guidebox hidden" id="guideBox"></div>
       <div class="guidebox growbox hidden" id="growBox"></div>
-      <div class="log" id="log"></div>
+      <div class="dock" id="dock"><div class="dockbar" id="dockBar"></div><div class="dockbody" id="dockBody"><div class="log" id="log"></div></div></div>
     </section>
 
     <section class="page hidden" data-tab="gear">
@@ -200,11 +201,13 @@
 
   <nav class="tabs">
     <button class="on" data-go="dungeon" data-i18n="ui.tab.dungeon">Dungeon</button>
-    <button data-go="gear" id="tabGear"><span data-i18n="ui.tab.gear">Gear</span><i class="dot hidden" id="gearDot"></i></button>
-    <button data-go="skill"><span data-i18n="ui.tab.skill">Skills</span><i class="dot hidden" id="skillDot"></i></button>
+    <button data-grp="char" id="grpChar"><span data-i18n="ui.tab.char">Hero</span><i class="dot hidden" id="charDot"></i></button>
+    <button data-go="gear" id="tabGear" class="tsub"><span data-i18n="ui.tab.gear">Gear</span><i class="dot hidden" id="gearDot"></i></button>
+    <button data-go="skill" class="tsub"><span data-i18n="ui.tab.skill">Skills</span><i class="dot hidden" id="skillDot"></i></button>
     <button data-go="comp"><span data-i18n="ui.tab.comp">Allies</span><i class="dot hidden" id="compDot"></i></button>
-    <button data-go="shop"><span data-i18n="ui.tab.shop">Upgrade</span><i class="dot hidden" id="shopDot"></i></button>
-    <button data-go="rebirth"><span data-i18n="ui.tab.rebirth">Rebirth</span><i class="dot hidden" id="rbDot"></i></button>
+    <button data-grp="grow" id="grpGrow"><span data-i18n="ui.tab.grow">Growth</span><i class="dot hidden" id="growDot"></i></button>
+    <button data-go="shop" class="tsub"><span data-i18n="ui.tab.shop">Upgrade</span><i class="dot hidden" id="shopDot"></i></button>
+    <button data-go="rebirth" class="tsub"><span data-i18n="ui.tab.rebirth">Rebirth</span><i class="dot hidden" id="rbDot"></i></button>
     <button data-go="quest"><span data-i18n="ui.tab.quest">Quest</span><i class="dot hidden" id="questDot"></i></button>
   </nav>
 
