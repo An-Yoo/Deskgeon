@@ -172,3 +172,54 @@ html.dgtoss body:has(.page[data-tab="dungeon"].hidden) .hud .xpbar { display: no
 .dockbody > #dgArena.docked canvas#aCol { aspect-ratio: auto; height: 150px; object-fit: cover; object-position: 50% 100%; }
 .dockbody > #dgArena.docked .ascene { gap: 4px; }
 .dockbody > #dgArena.docked .atabs { margin-bottom: 6px; }
+
+/* 5.14.3 보스 레이드 */
+#dgRaid .win.dgraid { width: min(360px, 94vw); max-height: 88vh; overflow: hidden; box-sizing: border-box; padding: 12px 12px 10px; display: flex; flex-direction: column; text-align: left; }
+#dgRaid h2 { text-align: center; margin: 0 0 6px; letter-spacing: 2px; color: #ff9a7a; text-shadow: 0 0 10px rgba(255,120,90,.35); }
+#dgRaid .rbody { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+#dgRaid .rclose { margin-top: 8px; width: 100%; }
+#dgRaid .rboss { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: 12px; background: radial-gradient(circle at 18% 60%, rgba(255,90,70,.28), rgba(40,10,30,.35) 60%), rgba(255,255,255,.03); border: 1px solid rgba(255,120,90,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
+#dgRaid .rimg { width: 64px; height: 64px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: 12px; background: radial-gradient(circle at 50% 70%, rgba(255,110,80,.35), rgba(10,6,18,.6) 70%); border: 1px solid rgba(255,140,110,.4); }
+#dgRaid .rimg img { width: 40px; height: 60px; image-rendering: pixelated; filter: drop-shadow(0 0 6px rgba(255,80,60,.6)); animation: rbob 2.4s ease-in-out infinite; }
+@keyframes rbob { 50% { transform: translateY(-3px) scale(1.04); } }
+#dgRaid .rbt { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+#dgRaid .rbt small { font-size: 9.5px; font-weight: 800; letter-spacing: 2px; color: #ff9a7a; }
+#dgRaid .rbt b { font-size: 15px; color: #fff; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#dgRaid .rbt span { font-size: 11px; color: #ffd98a; font-weight: 700; }
+#dgRaid .rbar { position: relative; height: 14px; margin: 7px 0 5px; border-radius: 7px; background: #120a14; border: 1px solid #5a2a2a; overflow: hidden; }
+#dgRaid .rbar i { display: block; height: 100%; background: linear-gradient(#ff8a6a, #c8322a); box-shadow: 0 0 10px rgba(255,80,60,.5); transition: width .4s; }
+#dgRaid .rbar span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9.5px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px #000; }
+#dgRaid .rchips { display: flex; gap: 6px; margin-bottom: 6px; } #dgRaid .rchips span { flex: 1; text-align: center; font-size: 10px; color: #cfc6ff; padding: 4px; border-radius: 8px; background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.08); } #dgRaid .rchips b { color: #fff; }
+#dgRaid .rav { width: 30px; height: 30px; flex: none; image-rendering: pixelated; border-radius: 8px; background: radial-gradient(circle at 50% 75%, rgba(185,166,255,.22), rgba(10,8,22,.55) 70%); border: 1px solid rgba(185,166,255,.3); }
+#dgRaid .t { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+#dgRaid .t b { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#dgRaid .t span { font-size: 10px; color: #a9a2cf; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } #dgRaid .t span b { font-size: 10.5px; color: #ffd98a; }
+#dgRaid .rme { display: flex; align-items: center; gap: 8px; padding: 7px 8px; border-radius: 12px; background: linear-gradient(135deg, rgba(255,217,138,.12), rgba(185,166,255,.08)); border: 1px solid rgba(255,217,138,.3); }
+#dgRaid .rme .rav { width: 40px; height: 40px; border-radius: 10px; }
+#dgRaid .rgain { font-style: normal; margin-left: 5px; color: #7ee08a; font-weight: 800; }
+#dgRaid .rhit { flex: none; padding: 8px 12px; background: linear-gradient(#ff9a7a, #c8442e); color: #fff; font-weight: 800; border-color: rgba(255,170,140,.6); }
+#dgRaid .rhit:disabled { opacity: .45; }
+#dgRaid .rnote { margin: 5px 2px 0; font-size: 10px; color: #ffd98a; }
+#dgRaid .rsec { display: flex; justify-content: space-between; align-items: baseline; margin: 9px 0 5px; font-size: 11.5px; font-weight: 800; color: #ffd98a; } #dgRaid .rsec small { font-size: 9.5px; font-weight: 600; color: #a9a2cf; }
+#dgRaid .rrw { padding: 6px 7px 3px; border-radius: 10px; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.09); }
+#dgRaid .rrw.nx { margin-top: 4px; opacity: .8; } #dgRaid .rrw small { display: block; font-size: 9.5px; color: #a9a2cf; margin-bottom: 3px; }
+#dgRaid .rch { display: inline-block; margin: 0 3px 3px 0; padding: 2px 6px; border-radius: 999px; font-size: 9.5px; color: #cfc6ff; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); } #dgRaid .rch b { color: #fff; }
+#dgRaid .rrow { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-bottom: 1px solid rgba(255,255,255,.06); }
+#dgRaid .rrow.me { background: rgba(255,217,138,.10); border-radius: 8px; }
+#dgRaid .rrow .rk { width: 22px; height: 22px; flex: none; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 10.5px; font-weight: 800; color: #cfc6ff; background: rgba(185,166,255,.14); }
+#dgRaid .rrow.p1 .rk { background: #ffd98a; color: #3a2606; }
+#dgRaid .rrow em { font-style: normal; display: flex; flex-direction: column; align-items: flex-end; font-size: 12px; font-weight: 800; color: #ffd98a; } #dgRaid .rrow em small { font-size: 9.5px; font-weight: 600; color: #a9a2cf; }
+#dgRaid .rdim { font-size: 10.5px; color: #a9a2cf; } #dgRaid .rempty { padding: 16px 8px; text-align: center; } #dgRaid .rdemo { text-align: center; margin-top: 6px; }
+#dgRaid .rlast { margin-top: 6px; font-size: 10px; color: #a9a2cf; text-align: center; }
+.dockbody > #dgRaid.docked > .win.dgraid { max-height: none; overflow: visible; padding: 8px; }
+.dockbody > #dgRaid.docked h2, .dockbody > #dgRaid.docked .rclose { display: none; }
+.dockbody > #dgRaid.docked .rbody { overflow: visible; }
+#dgRaid .rscene { display: flex; flex-direction: column; gap: 5px; }
+#dgRaid .rstop { display: flex; align-items: baseline; gap: 7px; } #dgRaid .rstop b { font-size: 13px; color: #fff; } #dgRaid .rstop span { font-size: 11px; font-weight: 800; color: #ffd98a; }
+#dgRaid .rstop em { margin-left: auto; font-style: normal; font: 800 17px monospace; color: #ff9a7a; text-shadow: 0 0 8px rgba(255,90,60,.6); }
+#dgRaid .rshud .rbar { margin: 4px 0 0; }
+#dgRaid .rscv { position: relative; }
+#dgRaid canvas#rsCv { display: block; width: 100%; aspect-ratio: 8 / 5; image-rendering: pixelated; border-radius: 10px; border: 1px solid rgba(255,140,110,.45); box-shadow: 0 0 20px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.04); background: #05030a; }
+#dgRaid .rspts { position: absolute; left: 7px; top: 6px; font-size: 10px; color: #cfc6ff; padding: 2px 8px; border-radius: 999px; background: rgba(8,4,16,.55); border: 1px solid rgba(255,255,255,.1); backdrop-filter: blur(4px); } #dgRaid .rspts b { color: #7ee08a; }
+#dgRaid .rsres { position: absolute; left: 12%; right: 12%; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 10px; border-radius: 14px; background: linear-gradient(rgba(40,14,24,.72), rgba(14,8,26,.78)); border: 1px solid rgba(255,217,138,.45); box-shadow: 0 8px 30px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.12); backdrop-filter: blur(6px); }
+#dgRaid .rsres b { font-size: 18px; color: #ffd98a; text-shadow: 0 0 10px rgba(255,217,138,.45); } #dgRaid .rsres span { font-size: 11px; color: #cfc6ff; } #dgRaid .rsres .rhit { margin-top: 4px; padding: 6px 28px; }
