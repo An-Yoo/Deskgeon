@@ -9,8 +9,8 @@
 <script src="./web-shim.js"></script>
 <script src="./web-fit.js"></script>
 <script src="./boot.js"></script>
-  <script type="module" crossorigin src="./assets/index-ldhDDHHf.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-hMhVlgJU.css">
+  <script type="module" crossorigin src="./assets/index-DLpN8mcZ.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-ChWIUREW.css">
 </head>
 <body>
   <div class="gmini" id="gMini"><i class="gmd" id="gMiniDot"></i><span class="gmt" id="gMiniTxt"></span><button class="mini" id="gMiniStop"></button><button class="mini" id="gMiniOpen"></button></div>
@@ -76,7 +76,7 @@
     <section class="page hidden" data-tab="gear">
       <div class="doll">
         <canvas id="dollcv" width="48" height="48"></canvas>
-        <button class="mini cosbtn" id="cosBtn" data-i18n="cos.btn">Costume</button><button class="mini cosbtn soulbtn" id="soulBtn" data-i18n="soul.btn">Soul Weapon</button>
+        <button class="mini cosbtn" id="cosBtn" data-i18n="cos.btn">Costume</button><button class="mini cosbtn engrbtn" id="engrBtn" data-i18n="engr.btn">Engrave</button><button class="mini cosbtn soulbtn" id="soulBtn" data-i18n="soul.btn">Soul Weapon</button>
         <div class="slots" id="slots"></div>
       </div>
       <div class="statsum" id="statsum"></div>
@@ -326,6 +326,7 @@
           <button class="mini wide" id="expBtn" data-i18n="ui.copyCode">Copy save code</button>
           <textarea id="impTxt" data-i18n-ph="ui.codePh"></textarea>
           <button class="mini wide" id="impBtn" data-i18n="ui.loadCode">Load save code</button>
+          <button class="mini wide" id="pnBtn" data-i18n="pn.btn">Patch notes</button>
           <div class="sbh sm" data-i18n="ui.backups">Backups</div>
           <div class="baks" id="baks"></div>
           <div class="sbh sm" data-i18n="ui.diag">Diagnostics</div>
@@ -351,6 +352,13 @@
     <div class="win evwin" id="evWin"></div>
   </div>
 
+  <div class="modal hidden gmodal" id="engrModal"><div class="gwin engrwin" id="engrWin"></div></div>
+  <div class="modal hidden" id="pnModal">
+    <div class="win setwin helpwin pnwin">
+      <div class="sethead"><h2 id="pnTitle" data-i18n="pn.title">Patch notes</h2><button class="mini" id="pnClose" data-i18n="ui.close">Close</button></div>
+      <div class="pnbody" id="pnBody"></div>
+    </div>
+  </div>
   <div class="modal hidden" id="helpModal">
     <div class="win setwin helpwin">
       <div class="sethead"><h2 data-i18n="help.title">Guide</h2><button class="mini" id="helpClose" data-i18n="ui.close">Close</button></div>
