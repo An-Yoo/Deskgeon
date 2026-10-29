@@ -1,7 +1,7 @@
 // Deskgeon 앱인토스 버전용 chrome.* 대체 구현 (localStorage 기반)
 // 저장 키 앞에 사용자별 접두어(window.__dgPrefix)를 붙여 토스 계정별로 세이브를 분리한다.
 (() => {
-  const VERSION = '5.14.16';
+  const VERSION = '5.14.17';
   const P = () => globalThis.__dgPrefix || 'dg.t.pending.';
   const listeners = [];
   const clone = v => (v === undefined ? undefined : JSON.parse(JSON.stringify(v)));
