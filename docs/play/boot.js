@@ -58,5 +58,12 @@
   window.addEventListener('error', e => { window.__dmLog('error ' + (e.message || '') + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno); errs.push((e.error && e.error.stack) || (e.message + ' @' + (e.filename || '').split('/').pop() + ':' + e.lineno)); if (!window.__dmReady) setTimeout(() => show('error'), 4000); });
   window.addEventListener('unhandledrejection', e => { const r = e.reason; window.__dmLog('rejection ' + ((r && r.message) || r)); errs.push('rejection: ' + ((r && r.stack) || r)); if (!window.__dmReady) setTimeout(() => show('rejection'), 4000); });
   window.__dmFail = (err) => { errs.push((err && err.stack) || String(err)); show('init'); };
-  setTimeout(() => { if (!window.__dmReady) window.__dmLog('timeout 12s at ' + step); show('timeout (12s)'); }, 12000);
+  // 5.14.17: 그림을 받는 중(preload)이면 느린 망(웹판 첫 접속 등)일 수 있어 45초까지 기다린다. 그 뒤에라도 게임이 뜨면 오류 화면을 걷는다
+  const watch = ms => setTimeout(() => {
+    if (window.__dmReady) return;
+    if (step === 'preload' && Date.now() - T0 < 45000) { watch(3000); return; }
+    window.__dmLog('timeout at ' + step); show('timeout (' + Math.round((Date.now() - T0) / 1000) + 's)');
+  }, ms);
+  watch(12000);
+  const unshow = setInterval(() => { if (!window.__dmReady) return; clearInterval(unshow); const d = document.getElementById('dmBoot'); if (d) d.remove(); }, 1000);
 })();
