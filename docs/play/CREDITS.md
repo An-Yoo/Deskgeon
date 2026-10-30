@@ -13,6 +13,12 @@
 CC0라 표기 의무는 없지만, 멋진 그림을 만들어준 DCSS 아티스트들께 감사드립니다.
 (작가 목록: https://github.com/crawl/tiles/blob/master/ARTISTS.md)
 
+## 큰 수 계산: break_infinity.js (MIT)
+1e308 을 넘는 수(몬스터 체력·골드·명예 등)를 계산하는 데 씁니다. `big.js` 는 원본 ESM 빌드에서 `pad-end` 의존성만 `String.prototype.padEnd` 로 바꾼 것입니다.
+
+- 출처: https://github.com/Patashu/break_infinity.js (v2.2.0)
+- 라이선스: MIT License, Copyright (c) 2019 Timothy Stiles
+
 ## 직접 만든 것
 - 툴바 아이콘(icons/*.png): 직접 그린 도트
 - 반지 아이콘 gear/ring0~5.png: 위 CC0 반지 타일의 색상 변형
@@ -196,6 +202,36 @@ soul/boromir.png  ←  player/hand1/boromir.png
 soul/gimli.png  ←  player/hand1/gimli.png
 soul/arwen.png  ←  player/hand1/arwen.png
 soul/frodo.png  ←  player/hand1/frodo.png
+soul/katana_slant.png  ←  player/hand1/katana_slant.png
+soul/rapier.png  ←  player/hand1/rapier.png
+soul/sceptre.png  ←  player/hand1/sceptre.png
+soul/staff_fancy.png  ←  player/hand1/staff_fancy.png
+soul/rod_moon.png  ←  player/hand1/rod_moon.png
+soul/great_bow.png  ←  player/hand1/great_bow.png
+soul/sword_twist.png  ←  player/hand1/sword_twist.png
+soul/sword_breaker.png  ←  player/hand1/sword_breaker.png
+soul/enchantress_dagger.png  ←  player/hand1/enchantress_dagger.png
+soul/sacred_scourge_two.png  ←  player/hand1/sacred_scourge_two.png
+soul/trident_elec.png  ←  player/hand1/trident_elec.png
+soul/glaive_two.png  ←  player/hand1/glaive_two.png
+soul/scythe_slant.png  ←  player/hand1/scythe_slant.png
+soul/flail_ball_four.png  ←  player/hand1/flail_ball_four.png
+soul/quarterstaff_jester.png  ←  player/hand1/quarterstaff_jester.png
+soul/arc_blade.png  ←  player/hand1/artefact/arc_blade.png
+soul/bloodbane.png  ←  player/hand1/artefact/bloodbane.png
+soul/chilly_death.png  ←  player/hand1/artefact/chilly_death.png
+soul/crystal_spear.png  ←  player/hand1/artefact/crystal_spear.png
+soul/elemental_staff.png  ←  player/hand1/artefact/elemental_staff.png
+soul/firestarter.png  ←  player/hand1/artefact/firestarter.png
+soul/flaming_death.png  ←  player/hand1/artefact/flaming_death.png
+soul/glaive_of_the_guard.png  ←  player/hand1/artefact/glaive_of_the_guard.png
+soul/mace_of_brilliance.png  ←  player/hand1/artefact/mace_of_brilliance.png
+soul/plutonium_sword.png  ←  player/hand1/artefact/plutonium_sword.png
+soul/sword_of_power.png  ←  player/hand1/artefact/sword_of_power.png
+soul/trident_octopus_king.png  ←  player/hand1/artefact/trident_octopus_king.png
+soul/vampires_tooth.png  ←  player/hand1/artefact/vampires_tooth.png
+soul/wyrmbane.png  ←  player/hand1/artefact/wyrmbane.png
+soul/zonguldrok.png  ←  player/hand1/artefact/zonguldrok.png
 ```
 cls/clr.png  ←  player/base/dwarf_m.png
 cls/mag.png  ←  player/base/deep_elf_m.png
@@ -748,4 +784,172 @@ comp/azrael.png  ←  mon/unique/azrael.png
 comp/mnoleg.png  ←  mon/unique/mnoleg.png
 comp/lom_lobon.png  ←  mon/unique/lom_lobon.png
 comp/gloorx_vloq.png  ←  mon/unique/gloorx_vloq.png
+town/fl_stone.png  ←  dngn/floor/limestone0.png
+town/fl_dirt.png  ←  dngn/floor/dirt0.png
+town/fl_sand.png  ←  dngn/floor/sand1.png
+town/fl_marble.png  ←  dngn/floor/white_marble0.png
+town/fl_bmarble.png  ←  dngn/floor/marble_floor1.png
+town/fl_slate.png  ←  dngn/floor/rect_gray0.png
+town/fl_cobble.png  ←  dngn/floor/cobble_blood1.png
+town/fl_mosaic.png  ←  dngn/floor/mosaic0.png
+npc/smith.png  ←  player/base/dwarf_m.png + player/legs/pants_brown.png + player/body/leather_heavy.png + player/hand1/rod_hammer.png (겹쳐 합성)
+npc/guard.png  ←  player/base/human_m.png + player/legs/metal_gray.png + player/body/half_plate.png + player/head/helm_red.png + player/hand1/spear.png + player/hand2/shield_kite1.png (겹쳐 합성)
+npc/coach.png  ←  player/base/human_m.png + player/legs/pants_black.png + player/body/leather_stud.png + player/hair/brown1.png + player/head/band_red.png + player/hand1/short_sword.png (겹쳐 합성)
+npc/mage.png  ←  player/base/elf_f.png + player/legs/skirt_blue.png + player/body/robe_purple.png + player/hair/fem_black.png + player/head/wizard_purple.png + player/hand1/staff_mage.png (겹쳐 합성)
+npc/soldier.png  ←  player/base/human_m.png + player/legs/leg_armour02.png + player/body/green_chain.png + player/head/helm_green.png + player/hand1/long_sword_slant.png + player/hand2/shield_knight_gray.png (겹쳐 합성)
+npc/priest.png  ←  player/base/human_f.png + player/legs/skirt_white.png + player/body/robe_white.png + player/hair/fem_yellow.png + player/head/hood_white.png + player/hand1/sceptre.png + player/hand2/misc/book_white.png (겹쳐 합성)
+npc/veteran.png  ←  player/base/human_m.png + player/legs/metal_gray.png + player/body/armour_blue_gold.png + player/head/viking_gold.png + player/hand1/battleaxe.png (겹쳐 합성)
+npc/merchant.png  ←  player/base/halfling_m.png + player/legs/pants_brown.png + player/body/shirt_vest.png + player/hair/frodo.png + player/head/straw.png + player/hand1/misc/box.png (겹쳐 합성)
+npc/scholar.png  ←  player/base/gnome_m.png + player/legs/pants_blue.png + player/body/robe_blue.png + player/head/cap_blue.png + player/hand2/misc/book_blue.png (겹쳐 합성)
+npc/alchemist.png  ←  player/base/human_f.png + player/legs/pants_darkgreen.png + player/body/robe_green.png + player/hair/pigtails_brown.png + player/hand1/misc/bottle.png (겹쳐 합성)
+npc/summoner.png  ←  player/base/deep_elf_m.png + player/body/robe_black_hood.png + player/head/hood_black2.png + player/hand1/staff_ring_blue.png (겹쳐 합성)
+npc/keeper.png  ←  player/base/halfling_f.png + player/legs/pants_short_brown.png + player/body/leather_green.png + player/hair/ponytail_yellow.png + player/hand1/whip.png (겹쳐 합성)
+npc/soulsmith.png  ←  player/base/human_m.png + player/legs/pants_black.png + player/body/robe_black_red.png + player/head/hood_red.png + player/hand1/misc/bone_lantern.png (겹쳐 합성)
+npc/v1.png  ←  player/base/human_m.png + player/legs/pants_blue.png + player/body/shirt_white1.png + player/hair/brown1.png (겹쳐 합성)
+npc/v2.png  ←  player/base/human_f.png + player/body/dress_green.png + player/hair/fem_red.png (겹쳐 합성)
+npc/v3.png  ←  player/base/dwarf_f.png + player/legs/pants_brown.png + player/body/jacket2.png (겹쳐 합성)
+npc/v4.png  ←  player/base/halfling_m.png + player/legs/pants_short_brown.png + player/body/shirt_check.png + player/hair/merry.png (겹쳐 합성)
+npc/v5.png  ←  player/base/elf_m.png + player/legs/pants_l_white.png + player/body/shirt_blue.png + player/hair/legolas.png (겹쳐 합성)
+npc/v6.png  ←  player/base/human_f.png + player/legs/skirt_red.png + player/body/shirt_white_yellow.png + player/hair/pigtail_red.png (겹쳐 합성)
+npc/v7.png  ←  player/base/gnome_f.png + player/legs/pants_orange.png + player/body/shirt_hawaii.png + player/head/straw.png (겹쳐 합성)
+npc/v8.png  ←  player/base/human_m.png + player/legs/pants_short_gray.png + player/body/shirt_black.png + player/hair/sam.png + player/head/cap_black1.png (겹쳐 합성)
+town/road.png  ←  dngn/floor/limestone0.png
+town/tree.png  ←  dngn/trees/mangrove1.png
+town/statue.png  ←  dngn/statues/statue_angel.png
+town/pond.png  ←  dngn/blue_fountain.png
+town/forge.png  ←  dngn/altars/makhleb_flame1.png
+town/wall.png  ←  dngn/gateways/enter_vaults_closed.png
+town/drill.png  ←  mon/statues/training_dummy.png
+town/arcane.png  ←  dngn/altars/vehumet1.png
+town/barracks.png  ←  dngn/altars/okawaru.png
+town/chapel.png  ←  dngn/altars/shining_one.png
+town/arena.png  ←  dngn/statues/statue_dragon.png
+town/market.png  ←  dngn/shops/shop_gadgets.png
+town/library.png  ←  dngn/altars/sif_muna.png
+town/alchemy.png  ←  dngn/altars/jiyva01.png
+town/circle.png  ←  dngn/gateways/starry_portal.png
+town/kennel.png  ←  dngn/statues/statue_cat.png
+town/foundry.png  ←  dngn/altars/yredelemnul.png
+town/plaza.png  ←  dngn/sparkling_fountain.png
+town/grass0.png  ←  dngn/floor/grass/grass0.png
+town/grass1.png  ←  dngn/floor/grass/grass1.png
+town/grass2.png  ←  dngn/floor/grass/grass2.png
+town/tree1.png  ←  dngn/trees/tree1_yellow.png
+town/tree2.png  ←  dngn/trees/tree2_red.png
+town/tree3.png  ←  dngn/trees/tree1_lightred.png
+comp/spriggan_berserker.png  ←  mon/spriggan/spriggan_berserker.png
+comp/spriggan_defender.png  ←  mon/spriggan/spriggan_defender.png
+comp/skeletal_warrior.png  ←  mon/undead/skeletal_warrior.png
+comp/moon_troll.png  ←  mon/vault/moon_troll.png
+comp/deformed_orc.png  ←  mon/vault/deformed_orc.png
+comp/phantasmal_warrior.png  ←  mon/undead/phantasmal_warrior.png
+comp/spectral_axe.png  ←  mon/nonliving/spectral_axe.png
+comp/spectral_mace.png  ←  mon/nonliving/spectral_mace.png
+comp/draco_knight.png  ←  mon/draco/draco-base-red.png + mon/draco/draco-job-knight.png (겹쳐 합성)
+comp/vampire_knight.png  ←  mon/undead/vampire_knight.png
+comp/revenant.png  ←  mon/undead/revenant.png
+comp/warmonger.png  ←  mon/demonspawn/warmonger.png
+comp/blork_the_orc.png  ←  mon/unique/blork_the_orc.png
+comp/flesh_golem.png  ←  mon/nonliving/flesh_golem.png
+comp/chaos_champion.png  ←  mon/demonspawn/chaos_champion.png
+comp/hell_sentinel.png  ←  mon/demons/hell_sentinel.png
+comp/guardian_golem.png  ←  mon/nonliving/guardian_golem.png
+comp/iron_elemental.png  ←  mon/nonliving/iron_elemental.png
+comp/snorg.png  ←  mon/unique/snorg.png
+comp/lernaean_hydra.png  ←  mon/unique/lernaean_hydra05.png
+comp/bone_dragon.png  ←  mon/undead/bone_dragon.png
+comp/hell_beast.png  ←  mon/demons/hell_beast.png
+comp/tiamat_grey.png  ←  mon/unique/tiamat_grey.png
+comp/serpent_geh.png  ←  mon/unique/serpent_of_hell-geh.png
+comp/pan_iron.png  ←  mon/panlord/demon_wings_bat.png + mon/panlord/demon_body_armour.png + mon/panlord/demon_head_helmet.png (겹쳐 합성)
+comp/spriggan_rider.png  ←  mon/spriggan/spriggan_rider.png
+comp/deformed_elf.png  ←  mon/vault/deformed_elf.png
+comp/crimson_imp.png  ←  mon/demons/crimson_imp.png
+comp/shadow_imp.png  ←  mon/demons/shadow_imp.png
+comp/quasit.png  ←  mon/demons/quasit.png
+comp/hungry_ghost.png  ←  mon/undead/hungry_ghost.png
+comp/vine_stalker.png  ←  mon/fungi_plants/vine_stalker.png
+comp/draco_shifter.png  ←  mon/draco/draco-base-green.png + mon/draco/draco-job-shifter.png (겹쳐 합성)
+comp/jiangshi.png  ←  mon/undead/jiangshi.png
+comp/shadow.png  ←  mon/undead/shadow.png
+comp/silent_spectre.png  ←  mon/undead/silent_spectre.png
+comp/phantom.png  ←  mon/undead/phantom.png
+comp/thorn_hunter.png  ←  mon/fungi_plants/thorn_hunter.png
+comp/purgy.png  ←  mon/unique/purgy.png
+comp/corrupter.png  ←  mon/demonspawn/corrupter.png
+comp/ignacio.png  ←  mon/unique/ignacio.png
+comp/lurking_horror.png  ←  mon/abyss/lurking_horror.png
+comp/unseen_horror.png  ←  mon/aberr/unseen_horror.png
+comp/smoke_demon.png  ←  mon/demons/smoke_demon.png
+comp/eustachio.png  ←  mon/unique/eustachio.png
+comp/neqoxec.png  ←  mon/demons/neqoxec.png
+comp/sixfirhy.png  ←  mon/demons/sixfirhy.png
+comp/tiamat_mottled.png  ←  mon/unique/tiamat_mottled.png
+comp/serpent_tar.png  ←  mon/unique/serpent_of_hell-tar.png
+comp/pan_mantis.png  ←  mon/panlord/demon_wings_torn.png + mon/panlord/demon_body_mantis.png + mon/panlord/demon_head_skull.png (겹쳐 합성)
+comp/spriggan_air_mage.png  ←  mon/spriggan/spriggan_air_mage.png
+comp/vampire_mage.png  ←  mon/undead/vampire_mage.png
+comp/white_imp.png  ←  mon/demons/white_imp.png
+comp/iron_imp.png  ←  mon/demons/iron_imp.png
+comp/insubstantial_wisp.png  ←  mon/nonliving/insubstantial_wisp.png
+comp/ball_lightning.png  ←  mon/nonliving/ball_lightning.png
+comp/fire_elemental.png  ←  mon/nonliving/fire_elemental.png
+comp/water_elemental.png  ←  mon/nonliving/water_elemental.png
+comp/draco_scorcher.png  ←  mon/draco/draco-base-yellow.png + mon/draco/draco-job-scorcher.png (겹쳐 합성)
+comp/draco_annihilator.png  ←  mon/draco/draco-base-purple.png + mon/draco/draco-job-annihilator.png (겹쳐 합성)
+comp/hell_wizard.png  ←  mon/vault/hell_wizard_100.png
+comp/air_elemental.png  ←  mon/nonliving/air_elemental.png
+comp/earth_elemental.png  ←  mon/nonliving/earth_elemental.png
+comp/electric_golem.png  ←  mon/nonliving/electric_golem.png
+comp/blizzard_demon.png  ←  mon/demons/blizzard_demon.png
+comp/ice_devil.png  ←  mon/demons/ice_devil.png
+comp/spellforged_servitor.png  ←  mon/nonliving/spellforged_servitor.png
+comp/great_orb_of_eyes.png  ←  mon/eyes/great_orb_of_eyes.png
+comp/zonguldrok_lich.png  ←  mon/vault/zonguldrok_lich.png
+comp/ice_dragon.png  ←  mon/dragons/ice_dragon.png
+comp/eye_of_devastation.png  ←  mon/eyes/eye_of_devastation.png
+comp/sun_demon.png  ←  mon/demons/sun_demon.png
+comp/tiamat_yellow.png  ←  mon/unique/tiamat_yellow.png
+comp/serpent_coc.png  ←  mon/unique/serpent_of_hell-coc.png
+comp/pan_void.png  ←  mon/panlord/demon_wings_large.png + mon/panlord/demon_body_tentacley.png + mon/panlord/demon_head_cthulhu.png (겹쳐 합성)
+comp/spriggan_druid.png  ←  mon/spriggan/spriggan_druid.png
+comp/treant.png  ←  mon/fungi_plants/treant.png
+comp/wandering_mushroom.png  ←  mon/fungi_plants/wandering_mushroom.png
+comp/wellspring.png  ←  mon/nonliving/wellspring.png
+comp/lost_soul.png  ←  mon/undead/lost_soul.png
+comp/azure_jelly.png  ←  mon/amorphous/azure_jelly.png
+comp/prince_ribbit.png  ←  mon/unique/prince_ribbit.png
+comp/draco_zealot.png  ←  mon/draco/draco-base-white.png + mon/draco/draco-job-zealot.png (겹쳐 합성)
+comp/draco_monk.png  ←  mon/draco/draco-base-pale.png + mon/draco/draco-job-monk.png (겹쳐 합성)
+comp/draco_caller.png  ←  mon/draco/draco-base-brown.png + mon/draco/draco-job-caller.png (겹쳐 합성)
+comp/blood_saint.png  ←  mon/demonspawn/blood_saint.png
+comp/eidolon.png  ←  mon/undead/eidolon.png
+comp/ushabti.png  ←  mon/nonliving/ushabti.png
+comp/apis.png  ←  mon/holy/apis.png
+comp/gelid.png  ←  mon/demonspawn/gelid.png
+comp/black_sun.png  ←  mon/demonspawn/black_sun.png
+comp/royal_jelly.png  ←  mon/unique/royal_jelly.png
+comp/nellie.png  ←  mon/unique/nellie.png
+comp/worldbinder.png  ←  mon/abyss/worldbinder.png
+comp/wretched_star.png  ←  mon/abyss/wretched_star.png
+comp/golden_eye.png  ←  mon/eyes/golden_eye.png
+comp/shining_eye.png  ←  mon/eyes/shining_eye.png
+comp/tiamat_pale.png  ←  mon/unique/tiamat_pale.png
+comp/serpent_dis.png  ←  mon/unique/serpent_of_hell-dis.png
+comp/pan_dawn.png  ←  mon/panlord/demon_wings_butterfly.png + mon/panlord/demon_body_succubus.png + mon/panlord/demon_head_incubus.png (겹쳐 합성)
 ```
+
+## 직접 그린 도트 (Deskgeon 오리지널)
+마을의 집(빨간 지붕·파란 지붕), 우물, 밭, 가로등, 울타리, 꽃밭 그림(assets/town/house.png, house2.png, well.png, farm.png, lamp.png, fence.png, flowers.png)은 이 게임을 위해 직접 그린 도트입니다.
+
+## 성 (5.13)
+town/throne.png  ←  dngn/statues/statue_ancient_hero.png
+town/treasury.png  ←  dngn/altars/gozag0.png
+town/sanctum.png  ←  dngn/statues/statue_angel.png
+town/watchtower.png  ←  dngn/statues/statue_archer.png
+town/cwall0.png  ←  dngn/wall/stone2_gray0.png
+town/cwall1.png  ←  dngn/wall/stone2_gray1.png
+town/cwall2.png  ←  dngn/wall/stone2_gray2.png
+town/cwall3.png  ←  dngn/wall/stone2_gray3.png
+town/cgate.png  ←  dngn/gateways/stone_arch.png
+- 보스 레이드 그림 assets/raid/: 위 CC0 묶음(releases/Nov-2015)에서 게임에 처음 쓰는 타일만 골랐습니다 (지옥뱀·히드라·왕실 젤리·형언할 수 없는 것, 판데모니움 군주 3명은 날개·몸·머리 부품을 겹친 것, 지옥·코키토스·디스·타르타로스·늪·산성·심연·판데모니움 지형, 관문·제단 불꽃·이펙트)
