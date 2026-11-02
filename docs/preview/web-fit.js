@@ -10,7 +10,7 @@
     const ins = window.__dgInsets || { top: 0, bottom: 0, left: 0, right: 0 };
     const top = Math.max(ins.top || 0, TOP_MIN);
     const aw = window.innerWidth - (ins.left || 0) - (ins.right || 0);
-    const ah = window.innerHeight - top - (ins.bottom || 0);
+    const ah = window.innerHeight - top - (window.__dgAdH ? window.__dgAdH : (ins.bottom || 0));   // 5.14.18 하단 배너가 있으면 그 높이(안전 영역 포함)만큼 비운다
     let s = aw / W;                       // 폭에 맞춘 배율
     let h = ah / s;                       // 그 배율에서 쓸 수 있는 높이(게임 px)
     if (h < H0) { s = ah / H0; h = H0; }  // 화면이 낮으면 높이에 맞춰 축소
