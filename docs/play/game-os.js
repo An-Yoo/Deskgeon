@@ -126,7 +126,12 @@ export const RARITIES = [
   { name: '희귀', mult: 1.85, color: '#6fb7ff' },
   { name: '영웅', mult: 2.50, color: '#c78dff' },
   { name: '전설', mult: 3.40, color: '#ffc35c' },
+  { name: '신화', mult: 4.60, color: '#ff4d6d' },   // 5.14.23 신화 장비: 위계 1(B1000)부터 드롭, 기본 능력치 전설의 1.35배, 옵션 4개
 ];
+export const MYTH_GEAR_W = 0.1;
+// 5.14.23 신화의 힘: 신화 장비 한 부위마다 공격력·체력 ×1.3 (부위끼리 곱연산, 8부위면 약 ×8.2). 한 부위만 얻어도 확 세지게
+export const MYTH_PIECE_X = 1.3;
+export function mythCount(s) { let n = 0; for (const it of Object.values(s.equip || {})) if (it && it.r >= 5) n++; return n; }   // 위계마다 드롭 가중치 (전설 최대 1.6, 보스는 3배). 위계 4에서 최대 (5.14.25)
 
 // ---------- 몬스터 / 난이도 ----------
 function _nameArr(prefix, n) {
@@ -151,7 +156,7 @@ export function isHwMob(f, k, now = Date.now()) { return hwOn(now) && monHash(f,
 export function monPick(f, k, now = Date.now()) { const h = monHash(f, k); return isHwMob(f, k, now) ? { hw: (h >>> 4) % HW_MOBS } : { v: (h >>> 7) % MON_VARIANTS }; }
 export function zoneStart(z) { return z < 16 ? z * 3 + 1 : 49 + (z - 16) * 8; }
 export function isBossFloor(f) { return f % BOSS_EVERY === 0; }
-export function killsNeeded(f, s) { const n = Math.min(30, 10 + Math.floor((f - 1) / 10) * 3), m = s && f > TRACE_DEEP_FLOOR ? Math.max(10, n - 2 * traceLv(s, 'deep')) : n; const kx = s ? blessFx(s).killsX : 1; return kx === 1 ? m : Math.max(5, Math.round(m * kx)); }
+export function killsNeeded(f, s) { const n = Math.min(30, 10 + Math.floor((f - 1) / 10) * 3), m = s && f > TRACE_DEEP_FLOOR ? Math.max(10, n - 2 * traceLv(s, 'deep')) : n; const kx = s ? blessFx(s).killsX * (s.ebuffs && s.ebuffs.length ? ebuffMult(s, 'killsX') : 1) : 1; return kx === 1 ? m : Math.max(5, Math.round(m * kx)); }
 // 몬스터 체력·골드·경험치·보스 공격력·명예가 층마다 커지는 폭 (실질 층). 5.14: 모든 층이 그대로 (층당 몬스터 체력 ×1.4, 5.13 전과 같음).
 // 큰 값이 Decimal 이라 5.13.5 의 B2000 이후 평평한 구간(숫자 1e300 한계)이 없다
 export const DEEP_513 = { knee: 1000, k: 0.3, knee2: 4000, k2: 0.005 };   // 5.13.0~5.13.4 값 (옛 기록 환산용)
@@ -166,6 +171,11 @@ export const goldGrowth = t => t <= 0 ? GOLD_G : GOLD_G + TIER_G_STEP * (t - 1);
 function tierLog(f, grow) { const e = Math.max(1, floorEff(f)); let L = (Math.min(e, MON_KNEE) - 1) * Math.log10(grow(0)), x = MON_KNEE; while (x < e) { const t = Math.floor(x / MON_KNEE), nx = Math.min(e, (t + 1) * MON_KNEE); L += (nx - x) * Math.log10(grow(t)); x = nx; } return L; }
 export function monHp(f) { return Decimal.pow(10, tierLog(f, monGrowth)).mul(14); }
 export function bossHp(f) { return monHp(f).mul(20); }
+/* 5.14.19 윤회의 흔적 '심층 완화': B1000 이후 층당 몬스터 체력 증가율을 레벨마다 TRACE_CALM 씩 낮춘다 (던전 몬스터·보스만. 탑·균열·위계 배율은 그대로) */
+export function calmLv(s) { const T = TRACE_BY_ID.calm; return Math.max(0, Math.min(T ? T.max : 0, Math.floor(+traceLv(s, 'calm') || 0))); }
+export function monGrowthS(s) { const c = TRACE_CALM * calmLv(s); return c > 0 ? (t => monGrowth(t) - (t >= 1 ? c : 0)) : monGrowth; }
+export function monHpS(s, f) { return Decimal.pow(10, tierLog(f, monGrowthS(s))).mul(14); }
+export function bossHpS(s, f) { return monHpS(s, f).mul(20); }
 // 보스 공격력: B80까지는 그대로, 그 뒤로는 성장을 완만하게 (용사 체력 성장과 비슷한 속도) → 후반 벽이 "즉사"가 아니라 "화력·생존 싸움"이 되게
 export const BOSS_DPS_KNEE = 80, BOSS_DPS_G2 = 1.135;
 const BOSS_DPS_K0 = 5 * Math.pow(1.235, BOSS_DPS_KNEE - 1);
@@ -260,7 +270,7 @@ export function buyRelic(s, id) {
   s.honorPts = D(s.honorPts).sub(c); (s.relic ||= {})[id] = lv + 1;
   return true;
 }
-export function bossTime(s) { return BOSS_TIME + relicVal(s, 'btime'); }
+export function bossTime(s) { return BOSS_TIME + relicVal(s, 'btime') + (s.ebuffs && s.ebuffs.length ? ebuffMult(s, 'btime') : 0); }
 export function offlineRate(s) { return Math.min(1, OFFLINE_RATE + relicVal(s, 'offline') / 100); }
 
 // n레벨부터 k번 연속 구매 총액 (등비수열 합)
@@ -299,6 +309,25 @@ export const SKILLS = [
   { id: 'div_mag_p2', cls: 'mag', type: 'passive', div: 2, unlock: 2000, c0: 18, cl: 1.5, eff: 'extra', m0: 12, ml: 2, fx: 'mystic', desc: () => '' },
   { id: 'div_clr_a2', cls: 'clr', type: 'active',  div: 2, unlock: 2000, cd: 26, eff: 'burst', v0: 40, vl: 6, fx: 'holy', desc: v => '' },
   { id: 'div_clr_p2', cls: 'clr', type: 'passive', div: 2, unlock: 2000, c0: 18, cl: 1.5, eff: 'extra', m0: 12, ml: 2, fx: 'grace', desc: () => '' },
+  // 5.14.25: 위계 3(상위신, B3000)·위계 4(주신, B4000) 신격 스킬. 피해 말고도 전투 규칙이 하나씩 바뀐다
+  // 액티브: seal 보스 n초간 공격 못 함 · cdAll 다른 스킬 쿨타임 -n초(99 = 초기화) · tAdd 보스 제한시간 +n초 · exec [체력비, 배수] 보스 체력이 그 아래면 피해 배수 · heal 체력 n% 회복
+  // 패시브: 터질 때마다 heal 체력 회복(초당 재생으로 환산) · cdr 모든 쿨타임 감소 · pblk n초간 피해 50% 차단
+  { id: 'div_war_a3', cls: 'war', type: 'active',  div: 3, unlock: 3000, cd: 30, eff: 'burst', v0: 70, vl: 10, seal: 3, fx: 'crush', desc: v => '' },
+  { id: 'div_war_p3', cls: 'war', type: 'passive', div: 3, unlock: 3000, c0: 20, cl: 1.5, eff: 'extra', m0: 20, ml: 3, heal: 2, fx: 'blood', desc: () => '' },
+  { id: 'div_rog_a3', cls: 'rog', type: 'active',  div: 3, unlock: 3000, cd: 30, eff: 'burst', v0: 70, vl: 10, cdAll: 4, fx: 'dagger2', desc: v => '' },
+  { id: 'div_rog_p3', cls: 'rog', type: 'passive', div: 3, unlock: 3000, c0: 20, cl: 1.5, eff: 'extra', m0: 20, ml: 3, cdr: 1, fx: 'exploit', desc: () => '' },
+  { id: 'div_mag_a3', cls: 'mag', type: 'active',  div: 3, unlock: 3000, cd: 30, eff: 'burst', v0: 70, vl: 10, tAdd: 4, fx: 'warp', desc: v => '' },
+  { id: 'div_mag_p3', cls: 'mag', type: 'passive', div: 3, unlock: 3000, c0: 20, cl: 1.5, eff: 'extra', m0: 20, ml: 3, cdr: 1, fx: 'surge', desc: () => '' },
+  { id: 'div_clr_a3', cls: 'clr', type: 'active',  div: 3, unlock: 3000, cd: 30, eff: 'burst', v0: 70, vl: 10, exec: [0.3, 3], fx: 'judge', desc: v => '' },
+  { id: 'div_clr_p3', cls: 'clr', type: 'passive', div: 3, unlock: 3000, c0: 20, cl: 1.5, eff: 'extra', m0: 20, ml: 3, pblk: 1.5, fx: 'shield', desc: () => '' },
+  { id: 'div_war_a4', cls: 'war', type: 'active',  div: 4, unlock: 4000, cd: 34, eff: 'burst', v0: 110, vl: 16, cdAll: 99, fx: 'whirl', desc: v => '' },
+  { id: 'div_war_p4', cls: 'war', type: 'passive', div: 4, unlock: 4000, c0: 22, cl: 1.5, eff: 'extra', m0: 32, ml: 5, pblk: 1.5, fx: 'counter', desc: () => '' },
+  { id: 'div_rog_a4', cls: 'rog', type: 'active',  div: 4, unlock: 4000, cd: 34, eff: 'burst', v0: 110, vl: 16, exec: [0.25, 4], fx: 'flurry', desc: v => '' },
+  { id: 'div_rog_p4', cls: 'rog', type: 'passive', div: 4, unlock: 4000, c0: 22, cl: 1.5, eff: 'extra', m0: 32, ml: 5, heal: 2, fx: 'poison', desc: () => '' },
+  { id: 'div_mag_a4', cls: 'mag', type: 'active',  div: 4, unlock: 4000, cd: 34, eff: 'burst', v0: 110, vl: 16, seal: 4, fx: 'meteor', desc: v => '' },
+  { id: 'div_mag_p4', cls: 'mag', type: 'passive', div: 4, unlock: 4000, c0: 22, cl: 1.5, eff: 'extra', m0: 32, ml: 5, pblk: 1.5, fx: 'reson', desc: () => '' },
+  { id: 'div_clr_a4', cls: 'clr', type: 'active',  div: 4, unlock: 4000, cd: 34, eff: 'burst', v0: 110, vl: 16, heal: 40, tAdd: 3, fx: 'sanct', desc: v => '' },
+  { id: 'div_clr_p4', cls: 'clr', type: 'passive', div: 4, unlock: 4000, c0: 22, cl: 1.5, eff: 'extra', m0: 32, ml: 5, heal: 3, fx: 'prayer', desc: () => '' },
   // 전사
   { id: 'war_bash',   cls: 'war', type: 'active',  name: '강타',        unlock: 1,  cd: 6,  eff: 'burst', v0: 6,  vl: 0.9, fx: 'slash',  desc: v => `DPS ${v.toFixed(1)}배 일격` },
   { id: 'war_cry',    cls: 'war', type: 'active',  name: '전투의 함성', unlock: 8,  cd: 24, eff: 'buff', dur: 12, v0: 16, vl: 3, buff: v => ({ atkP: v }), fx: 'aura', color: '#ff7a4a', desc: v => `12초간 공격력 +${v.toFixed(0)}%` },
@@ -373,7 +402,7 @@ export const EVENTS = [
   { id: 'crack',   need: s => riftUnlocked(s), o: [{ r: { keys: 1 } }, { r: { dust: 20 } }] },
 ];
 export const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));
-function goldPerMin(s, st) { const f = s.floor; return goldPerKill(f).mul(st.goldMult).mul(Math.min(20, dn(D(st.dps).div(monHp(f)))) * 60); }
+function goldPerMin(s, st) { const f = s.floor; return goldPerKill(f).mul(st.goldMult).mul(Math.min(20, dn(D(st.dps).div(monHpS(s, f)))) * 60); }
 export function eventReward(s, o, st) {
   const r = {}, x = o.r || {};
   if (x.goldMin) r.gold = goldPerMin(s, st || stats(s)).mul(x.goldMin);
@@ -417,7 +446,7 @@ function eventTick(s, dt, ev) {
     if (e) { s.events.push({ id: e.id, f: s.floor, age: 0 }); ev.newEvent = e.id; }
   } else if (s.events.length >= EVENT_MAX) s.evT = Math.min(s.evT, EVENT_EVERY);
 }
-const EB_ADD = { armor: 1, critD: 1, spdA: 1 };
+const EB_ADD = { armor: 1, critD: 1, spdA: 1, btime: 1 };
 export function ebuffMult(s, k) { const add = EB_ADD[k]; let m = add ? 0 : 1; for (const b of s.ebuffs || []) if (b.k === k) m = add ? m + b.v : m * b.v; return m; }
 
 // ---------- 초보자 가이드: 순서대로 하나씩, 달성하면 보상 ----------
@@ -453,7 +482,10 @@ export function guideClaim(s) {
   const gd = (s.guide ||= {}), i = GUIDE.indexOf(g);
   if (i > (gd.n || 0)) (gd.done ||= []).push(g.id);
   else { gd.n = i + 1; while (gd.n < GUIDE.length && (gd.done || []).includes(GUIDE[gd.n].id)) gd.n++; }
-  gd.v = 3; s.stones += g.r; if (g.gift) giveReward(s, g.gift); return g.r;
+  gd.v = 3; s.stones += g.r; if (g.gift) giveReward(s, g.gift);
+  // 5.14.26: 그 사이 이미 해낸 다음 단계들도 이어서 받는다 (자동 진행으로 B5 보스를 벌써 잡았는데 그 단계가 한참 뒤에 뜨던 문제)
+  let got = g.r; for (let k = 0; k < GUIDE.length; k++) { const n = guideStep(s); if (!n || !n.ok(s)) break; const j = GUIDE.indexOf(n); if (j > (gd.n || 0)) (gd.done ||= []).push(n.id); else { gd.n = j + 1; while (gd.n < GUIDE.length && (gd.done || []).includes(GUIDE[gd.n].id)) gd.n++; } s.stones += n.r; got += n.r; if (n.gift) giveReward(s, n.gift); }
+  return got;
 }
 // 화면을 켜고 노는 동안만 부른다 (dt 초). rbNow 가 새로 켜지면 true
 export function guideTick(s, dt) {
@@ -467,14 +499,15 @@ export function guideTick(s, dt) {
 
 // ---------- 오늘의 던전: 모두 같은 날짜 시드로 Lv.1부터 15분 (즉시 계산) ----------
 export const DAILY_TRIES = 3, DAILY_SEC = 900;
+// 5.14.26 fav: 그날 공명이 일찍 켜지는 계열 (3장·6장 → 2장·4장)
 export const DAILY_MODS = [
-  { id: 'bloodmoon', b: [['critD', 100], ['regenX', 0.3]] },
-  { id: 'arcane',    b: [['skillX', 3], ['atkX', 0.6]] },
-  { id: 'legion',    b: [['compX', 3], ['atkX', 0.7]] },
-  { id: 'giants',    b: [['monX', 1.6], ['goldX', 2.5]] },
-  { id: 'glass',     b: [['atkX', 1.8], ['hpX', 0.45]] },
-  { id: 'fortress',  b: [['armor', 120], ['atkX', 0.8]] },
-  { id: 'haste',     b: [['spdA', 80], ['hpX', 0.75]] },
+  { id: 'bloodmoon', b: [['critD', 100], ['regenX', 0.3]], fav: 'fury' },
+  { id: 'arcane',    b: [['skillX', 3], ['atkX', 0.6]], fav: 'fury' },
+  { id: 'legion',    b: [['compX', 3], ['atkX', 0.7]], fav: 'rush' },
+  { id: 'giants',    b: [['monX', 1.6], ['goldX', 2.5]], fav: 'ward' },
+  { id: 'glass',     b: [['atkX', 1.8], ['hpX', 0.45]], fav: 'fury' },
+  { id: 'fortress',  b: [['armor', 120], ['atkX', 0.8]], fav: 'ward' },
+  { id: 'haste',     b: [['spdA', 80], ['hpX', 0.75]], fav: 'rush' },
 ];
 export const DAILY_BLESS = [{ id: 'power', b: [['atkX', 1.3]] }, { id: 'fortune', b: [['goldX', 2]] }, { id: 'wisdom', b: [['xpX', 2]] }];
 function hash32(str) { let h = 2166136261; for (let i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -516,24 +549,35 @@ export function dailyRun(s, cls, bless, now = Date.now()) {
 // ---------- 오늘의 던전 2.0: 같은 시드 + 10층마다 카드 고르기 + 던전 증표 ----------
 export const DL_EVERY = 10, DL_TOK_PER_FLOOR = 2, DL_FIRST_BONUS = 20;
 export const DL_WEEK = [{ f: 100, r: 30 }, { f: 200, r: 60 }, { f: 300, r: 120 }];   // 이번 주 하루 최고 기록 합계
-export const DL_CARDS = [
-  { id: 'atk',   eb: [['atkX', 1.5]] },
-  { id: 'hp',    eb: [['hpX', 1.6]] },
-  { id: 'glass', eb: [['atkX', 2.0], ['hpX', 0.6]] },
-  { id: 'skill', eb: [['skillX', 2]] },
-  { id: 'crit',  eb: [['critD', 150]] },
-  { id: 'speed', eb: [['spdA', 60]] },
-  { id: 'armor', eb: [['armor', 100]] },
-  { id: 'regen', eb: [['regenX', 2.5]] },
+export const DL_CARDS = [   // 5.14.26 공명에 맞춰 조정: 광폭 카드 하향, 수호 카드는 적도 약하게
+  { id: 'atk',   eb: [['atkX', 1.3]] },
+  { id: 'hp',    eb: [['hpX', 1.6], ['monX', 0.75]] },
+  { id: 'glass', eb: [['atkX', 1.5], ['hpX', 0.6]] },
+  { id: 'skill', eb: [['skillX', 1.5]] },
+  { id: 'crit',  eb: [['critD', 90]] },
+  { id: 'speed', eb: [['spdA', 50]] },
+  { id: 'armor', eb: [['armor', 100], ['monX', 0.75]] },
+  { id: 'regen', eb: [['regenX', 2.5], ['monX', 0.75]] },
   { id: 'gold',  eb: [['goldX', 3]] },
   { id: 'xp',    eb: [['xpX', 3]] },
-  { id: 'small', eb: [['monX', 0.7]] },
+  { id: 'small', eb: [['monX', 0.6]] },
   { id: 'ally' }, { id: 'sp' }, { id: 'time' }, { id: 'lucky' },
 ];
 export const DL_CARD_BY_ID = Object.fromEntries(DL_CARDS.map(c => [c.id, c]));
+// 5.14.26 공명: 같은 계열 카드를 3장·6장 모으면 그 계열의 규칙이 켜진다. 흩어 고르면 아무것도 안 켜져서, 무엇을 모을지가 결과를 가른다
+export const DL_FAM = { atk: 'fury', glass: 'fury', crit: 'fury', skill: 'fury', speed: 'fury', hp: 'ward', armor: 'ward', regen: 'ward', small: 'ward', gold: 'rush', xp: 'rush', sp: 'rush', ally: 'rush', time: 'rush', lucky: 'rush' };
+export const DL_RES = {   // 광폭·수호·질주마다 3장·6장째에 켜진다 (요일 7종 × 직업 4개 시뮬로 세 계열이 고르게 1등하도록 맞춤)
+  fury: [{ n: 3, eb: [['atkX', 1.5]] }, { n: 6, eb: [['atkX', 1.5]] }],                                   // 광폭: 공격력 ×1.5 → 한 번 더 ×1.5
+  ward: [{ n: 3, skip: 3, eb: [['monX', 0.5]] }, { n: 6, skip: 4, eb: [['monX', 0.45]] }],                // 수호: 보스를 이기면 3층 건너뛰기·적 체력 ×0.5 → 4층 건너뛰기·×0.45
+  rush: [{ n: 3, eb: [['killsX', 0.4], ['goldX', 4], ['atkX', 1.6]] }, { n: 6, time: 240, eb: [['xpX', 3], ['goldX', 3], ['atkX', 1.6]] }],   // 질주: 층마다 잡을 수 ×0.4·골드 ×4 → 제한시간 +4분
+};
+export const DL_FAV_X = 3;   // 오늘의 공명 계열은 효과도 두 번 겹쳐 받는다
+export const dlResN = (n, fav) => fav ? (n === 3 ? 2 : n === 6 ? 4 : n) : n;   // 오늘의 공명 계열은 2장·4장에서 켜진다
+export function dlResCount(picks) { const n = { fury: 0, ward: 0, rush: 0 }; for (const id of picks || []) if (DL_FAM[id]) n[DL_FAM[id]]++; return n; }
 export const DL_SHOP = [
   { id: 'dlShop1', c: 300, title: true }, { id: 'dlShop2', c: 800, title: true }, { id: 'dlShop3', c: 2000, title: true },
   { id: 'stones', c: 20, n: 50000 }, { id: 'mile', c: 30, n: 1000 }, { id: 'petpot', c: 25, n: 120 },
+  { id: 'holy', c: 30, n: 10 }, { id: 'abyc', c: 30, n: 2 },   // 5.14.23 신성 조각 10개 / 심연 결정 = 심연 원정(최고 깊이) 2회분
 ];
 const mkRng = seed => { let x = seed | 0 || 1; return () => { x |= 0; x = x + 0x6D2B79F5 | 0; let t = Math.imul(x ^ x >>> 15, 1 | x); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
 export function weekKeyOf(day) { const d = new Date(day + 'T12:00:00'); const wd = (d.getDay() + 6) % 7; d.setDate(d.getDate() - wd); return localDay(d.getTime()); }
@@ -545,8 +589,10 @@ export function dl2State(s, now = Date.now()) {
 }
 export function dlOffer(day, cls, picks) {
   const r = mkRng(hash32('dlo|' + day + '|' + cls + '|' + picks.length + '|' + picks.join(','))), n = picks[picks.length - 1] === 'lucky' ? 4 : 3;
-  const pool = DL_CARDS.map(c => c.id).filter(id => !(id === 'lucky' && picks[picks.length - 1] === 'lucky')), out = [];
-  while (out.length < n && pool.length) out.push(pool.splice(Math.floor(r() * pool.length), 1)[0]);
+  // 5.14.26: 계열(광폭·수호·질주)마다 1장씩 → 매번 '어느 계열을 모을지'를 고른다. 행운 다음에는 아무 계열이나 1장 더
+  const ok = id => !(id === 'lucky' && picks[picks.length - 1] === 'lucky'), out = [];
+  for (const f of ['fury', 'ward', 'rush']) { const p = DL_CARDS.map(c => c.id).filter(id => DL_FAM[id] === f && ok(id)); out.push(p[Math.floor(r() * p.length)]); }
+  if (n > 3) { const p = DL_CARDS.map(c => c.id).filter(id => ok(id) && !out.includes(id)); out.push(p[Math.floor(r() * p.length)]); }
   return out;
 }
 // 처음부터 다시 계산 (같은 날·직업·카드 순서면 결과가 항상 같음). 고를 차례가 오면 멈춘다.
@@ -559,14 +605,18 @@ export function dlSim(day, cls, picks) {
     const d = newSave(); d.cls = cls; d.daily = null; d.noEv = true; d.noSig = true; d.quest = null; d.auto = {}; d.autoEquip = true; d.lastTick = 0; d.stones = 0;
     d.ebuffs = mod.b.map(([k, v]) => ({ k, v, t: 1e9 }));
     let extraT = 0, pi = 0, next = DL_EVERY, bossT = 0, reachAt = 0, best = 1, T = 0;
+    const fam = { fury: 0, ward: 0, rush: 0 }, res = []; let skipN = 0;
     const apply = id => { const c = DL_CARD_BY_ID[id]; if (!c) return; if (c.eb) for (const [k, v] of c.eb) d.ebuffs.push({ k, v, t: 1e9 });
+      const f = DL_FAM[id]; if (f) { fam[f]++; for (const R of DL_RES[f]) if (fam[f] === dlResN(R.n, f === mod.fav)) { const fx = f === mod.fav ? DL_FAV_X : 1; for (let q = 0; q < fx; q++) for (const [k, v] of R.eb || []) d.ebuffs.push({ k, v, t: 1e9 }); if (R.time) extraT += R.time * fx; if (R.skip) skipN = Math.max(skipN, R.skip + (fx > 1 ? 1 : 0)); res.push(f + R.n); } }
       if (id === 'ally') { const pool = COMPANIONS.filter(x => x.r >= 1 && x.r <= 2); const a = pool[Math.floor(rnd() * pool.length)]; d.comp[a.id] = { aw: 3, lv: 0, n: 1 }; if (!d.team.includes(a.id) && d.team.length < TEAM_BASE) d.team.push(a.id); COMP_VER++; }
       if (id === 'sp') d.sp += 3; if (id === 'time') extraT += 60; };
-    const snap = () => { const st = stats(d); return { lv: d.level, dps: st.dps, hp: st.hp }; };
+    const snap = () => { const st = stats(d); return { lv: d.level, dps: st.dps, hp: st.hp, fam: { ...fam }, res: res.slice() }; };
     if (!picks.length) return { pause: true, T: 0, floor: 1, log, offer: dlOffer(day, cls, picks), ...snap() };
     apply(picks[0]); pi = 1;
+    const bs = { w: 0, lt: 0, lh: 0 };   // 보스전 승리 · 시간 초과 패배 · 쓰러져 패배 (밸런스 확인용)
     for (; T < DAILY_SEC + extraT; T += 0.5) {
-      step(d, 0.5, {});
+      const bt0 = d.boss ? d.boss.timer : 0, e0 = {}; step(d, 0.5, e0);
+      if (e0.bossWin) { bs.w++; if (skipN && d.floor === d.maxFloor) for (let k = 0; k < skipN; k++) advanceFloor(d, {}); }   // 수호 공명: 보스를 이기면 일반 층을 건너뛴다 if (e0.bossLose) { if (bt0 <= 0.5) bs.lt++; else bs.lh++; }
       if (d.maxFloor > best) { best = d.maxFloor; reachAt = T; }
       while (d.maxFloor >= next) {
         if (pi < picks.length) { log.push({ f: next, T: Math.round(T), pick: picks[pi] }); apply(picks[pi]); pi++; next += DL_EVERY; }
@@ -578,7 +628,7 @@ export function dlSim(day, cls, picks) {
       }
       if (canChallenge(d)) { bossT += 0.5; if (bossT >= (d.bossFails ? 20 : 2)) { bossT = 0; challengeBoss(d); } }
     }
-    return { done: true, day, cls, mod: mod.id, picks: picks.slice(), floor: best, at: Math.round(reachAt), log, ...snap() };
+    return { done: true, day, cls, mod: mod.id, picks: picks.slice(), floor: best, at: Math.round(reachAt), log, bs, ...snap() };
   } finally { Math.random = realRandom; OWN_CACHE = OC; COMP_VER++; METER.off = mOff; }
 }
 export const dlTok = f => Math.max(0, (f || 0) * DL_TOK_PER_FLOOR);
@@ -606,6 +656,8 @@ export function dl2Buy(s, id) {
   else if (id === 'stones') s.stones += it.n;
   else if (id === 'mile') s.mile = (s.mile || 0) + it.n;
   else if (id === 'petpot') { if (!petUnlocked(s)) return false; const p = petState(s); p.pot = p.pot.add(dmax(0, p.ppm).mul(it.n)); }
+  else if (id === 'holy') s.holy = (s.holy || 0) + it.n;
+  else if (id === 'abyc') { const c = abyGift(s, it.n).crystal; if (!(c > 0)) return false; s.abyc = (s.abyc || 0) + c; }   // 심연 원정을 한 번도 안 했으면 살 수 없음
   o.tok -= it.c; return true;
 }
 
@@ -618,9 +670,24 @@ const SKILL_TPL = {
   mag_fire: 'burst', mag_chain: 'burst', mag_ice: 'ice', mag_dart: 'p.extra', mag_surge: 'p.cdr', mag_arcane: 'p.extra', mag_meteor: 'burst', mag_warp: 'warpx', mag_reson: 'p.extra', mag_absorb: 'p.xp',
   div_war_a: 'burst', div_rog_a: 'burst', div_mag_a: 'burst', div_clr_a: 'burst', div_war_p: 'p.extra', div_rog_p: 'p.extra', div_mag_p: 'p.extra', div_clr_p: 'p.extra',
   div_war_a2: 'burst', div_rog_a2: 'burst', div_mag_a2: 'burst', div_clr_a2: 'burst', div_war_p2: 'p.extra', div_rog_p2: 'p.extra', div_mag_p2: 'p.extra', div_clr_p2: 'p.extra',
+  div_war_a3: 'burst', div_rog_a3: 'burst', div_mag_a3: 'burst', div_clr_a3: 'burst', div_war_p3: 'p.extra', div_rog_p3: 'p.extra', div_mag_p3: 'p.extra', div_clr_p3: 'p.extra',
+  div_war_a4: 'burst', div_rog_a4: 'burst', div_mag_a4: 'burst', div_clr_a4: 'burst', div_war_p4: 'p.extra', div_rog_p4: 'p.extra', div_mag_p4: 'p.extra', div_clr_p4: 'p.extra',
   clr_smite: 'bossx', clr_heal: 'healx', clr_bless: 'bless', clr_light: 'p.light', clr_shield: 'p.shieldx', clr_fortune: 'p.goldx', clr_sanct: 'sanct', clr_judge: 'bossx', clr_prayer: 'p.healx', clr_grace: 'p.compx',
 };
-export function skillDesc(sd, lv) {
+// 5.14.25 위계 3·4 신격 스킬의 규칙 효과 설명
+export function skillRules(sd) {
+  if (!sd.div || sd.div < 3) return '';
+  const r = [];
+  if (sd.exec) r.push(t('sk.r.exec', { p: Math.round(sd.exec[0] * 100), x: sd.exec[1] }));
+  if (sd.seal) r.push(t('sk.r.seal', { n: sd.seal }));
+  if (sd.cdAll) r.push(sd.cdAll >= 99 ? t('sk.r.reset') : t('sk.r.cdAll', { n: sd.cdAll }));
+  if (sd.tAdd) r.push(t('sk.r.tAdd', { n: sd.tAdd }));
+  if (sd.type === 'active' && sd.heal) r.push(t('sk.r.heal', { n: sd.heal }));
+  if (sd.type === 'passive') { if (sd.heal) r.push(t('sk.r.pheal', { n: sd.heal })); if (sd.cdr) r.push(t('sk.r.pcdr', { n: sd.cdr })); if (sd.pblk) r.push(t('sk.r.pblk', { n: sd.pblk })); }
+  return r.length ? ' · ' + r.join(' · ') : '';
+}
+export function skillDesc(sd, lv) { return skillDesc0(sd, lv) + skillRules(sd); }
+function skillDesc0(sd, lv) {
   const tpl = 'sk.' + (SKILL_TPL[sd.id] || 'burst');
   if (sd.type === 'active') {
     const v = skillVal(sd, lv);
@@ -970,7 +1037,8 @@ export const PET_MAX = 100, PET_UNLOCK = 30;
 // 효과 종류: v = 전설·Lv.100 기준 수치. flat이면 그대로 더하고, 아니면 해당 배율에 따로 곱한다 (다른 보너스에 묻히지 않게)
 export const PET_FX = { atk: { v: 15 }, hp: { v: 22 }, skill: { v: 15 }, basic: { v: 40 }, comp: { v: 22 }, boss: { v: 15 }, crit: { v: 8, flat: 1 }, haste: { v: 8, flat: 1 }, gold: { v: 30 }, xp: { v: 30 } };
 export const PET_FX_KEYS = Object.keys(PET_FX);
-export const PET_TIER_W = [40, 30, 18, 9, 3], PET_TIER_M = [0.4, 0.55, 0.7, 0.85, 1];
+export const PET_TIER_W = [39, 30, 18, 9, 3, 1], PET_TIER_M = [0.4, 0.55, 0.7, 0.85, 1, 1.25];   // 5.14.23 신화 효과 1% (전설의 1.25배)
+export const PET_TOP = PET_TIER_W.length - 1;
 // 펫 저금통: 사냥으로 번 골드의 10%만큼이 따로 쌓인다 (골드에서 빼지 않음 → 자동 강화와 골드를 다투지 않음)
 // 가격 기준 petRef(f) = "그 층에서 저금통이 1분에 모이는 양" (실제 세이브 B197 실측 골드 7e37/분, 층당 ×1.57 = 시뮬 기울기)
 //  · n번째 펫 뽑기 = B(30+10n) 기준 10분어치 → 펫이 층을 따라 하나씩 풀린다 (16번째 ≈ B180)
@@ -992,7 +1060,7 @@ export function petLeft(s) { const o = petState(s).own; return PETS.filter(id =>
 export function petDrawCost(s) { return petRef(PET_UNLOCK + 10 * Object.keys(petState(s).own).length).mul(PET_DRAW_MIN).ceil(); }
 export function petRollCost(s) { return petRef(Math.max(PET_UNLOCK, petBest(s))).mul(PET_ROLL_MIN).ceil(); }
 export function petLvCost(s, lv) { return petRef(2 * (lv + 1)).mul(PET_LV_MIN).ceil(); }
-function rollPetFx() { const k = PET_FX_KEYS[Math.floor(Math.random() * PET_FX_KEYS.length)]; let x = Math.random() * 100, r = 0; while (r < 4 && x >= PET_TIER_W[r]) { x -= PET_TIER_W[r]; r++; } return { k, r }; }
+function rollPetFx() { const k = PET_FX_KEYS[Math.floor(Math.random() * PET_FX_KEYS.length)]; let x = Math.random() * 100, r = 0; while (r < PET_TOP && x >= PET_TIER_W[r]) { x -= PET_TIER_W[r]; r++; } return { k, r }; }
 export function petVal(p) { return p && PET_FX[p.k] ? PET_FX[p.k].v * PET_TIER_M[p.r] * (0.1 + 0.9 * Math.min(PET_MAX, p.lv) / PET_MAX) : 0; }
 export function petAgg(s) { const o = {}; for (const k of PET_FX_KEYS) o[k] = 0; const own = ((s.pets || {}).own) || {}; for (const id in own) { const p = own[id]; if (PET_FX[p.k]) o[p.k] += petVal(p); } return o; }
 export function petDraw(s) {
@@ -1010,9 +1078,9 @@ export function petRoll(s, id) { const ps = petState(s), p = ps.own[id]; if (!p)
 export function petKeep(s, accept) { const ps = petState(s), c = ps.cand; if (!c) return false; if (accept && ps.own[c.id]) { ps.own[c.id].k = c.k; ps.own[c.id].r = c.r; } ps.cand = null; return true; }
 // 자동 다시 뽑기: 원하는 효과(k, 'any'면 아무거나)·최소 등급(minR)이 나올 때까지 최대 n번 굴린다. 나오면 바로 적용
 export function petWant(p, k, minR) { return !!p && (k === 'any' || p.k === k) && p.r >= minR; }
-export function petAutoOdds(k, minR) { let w = 0; for (let r = minR; r < 5; r++) w += PET_TIER_W[r]; return (k === 'any' ? 1 : 1 / PET_FX_KEYS.length) * w / 100; }
+export function petAutoOdds(k, minR) { let w = 0; for (let r = minR; r <= PET_TOP; r++) w += PET_TIER_W[r]; return (k === 'any' ? 1 : 1 / PET_FX_KEYS.length) * w / 100; }
 export function petAutoRoll(s, id, k, minR, n) {
-  const ps = petState(s), p = ps.own[id]; if (!p || (k !== 'any' && !PET_FX[k]) || !(minR >= 0 && minR <= 4)) return null;
+  const ps = petState(s), p = ps.own[id]; if (!p || (k !== 'any' && !PET_FX[k]) || !(minR >= 0 && minR <= PET_TOP)) return null;
   let rolls = 0, spent = D0; const c = petRollCost(s);
   for (; rolls < n; rolls++) {
     if (ps.pot.lt(c)) return { rolls, spent, hit: false, out: true };
@@ -1280,7 +1348,7 @@ function mrGain(s, n, ev) {
     if (p.lv >= MRP_MAX) p.xp = 0;
   }
 }   // 소환 마일리지로 원하는 LR·MR 동료
-export function shopKeyLeft(s, now = Date.now()) { const b = s.shopBuy || {}; return b.keyDay === localDay(now) ? Math.max(0, STONE_SHOP.keyDaily - (b.keyN || 0)) : STONE_SHOP.keyDaily; }
+export function shopKeyLeft(s, now = Date.now()) { if (((s.rift && s.rift.keys) || 0) >= KEY_HOLD) return 0; const b = s.shopBuy || {}; return b.keyDay === localDay(now) ? Math.max(0, STONE_SHOP.keyDaily - (b.keyN || 0)) : STONE_SHOP.keyDaily; }
 export function rushAllCost(s, now = Date.now()) { return expSlots(s).reduce((a, x, i) => a + rushCost(s, i, now), 0); }
 export function cosLeftN(s) { return cosPool(s).length; }
 // 같은 상품을 n번 연속으로 산다 (돈이 모자라거나 한도에 걸리면 거기서 멈춤)
@@ -1293,7 +1361,7 @@ export function shopBuy(s, what, arg, now = Date.now()) {
   if (what === 'gearBoxHi') { if (!pay(STONE_SHOP.gearBoxHi)) return null; const it = { k: CG_KINDS[Math.floor(Math.random() * 3)], r: Math.random() < 0.3 ? 4 : 3, q: 100 + Math.floor(Math.random() * 21) }; cgAdd(s, it); return { gear: it }; }
   if (what === 'cosAll') { const c = cosState(s), left = cosPool(s), got = []; for (const z of left) { if (!pay(STONE_SHOP.costume)) break; c.own.push(z.id); got.push(z.id); } return got.length ? { cosAll: got } : null; }
   if (what === 'rushAll') { const c = rushAllCost(s, now); if (!c || !pay(c)) return null; for (const x of expSlots(s)) if (x && now < x.end) x.end = now; return { rushAll: true, cost: c }; }
-  if (what === 'key') { if (shopKeyLeft(s, now) <= 0 || !pay(STONE_SHOP.key)) return null; if (b.keyDay !== localDay(now)) { b.keyDay = localDay(now); b.keyN = 0; } b.keyN++; const rs = riftState(s); rs.keys = Math.min(KEY_MAX + 20, rs.keys + 1); return { keys: 1 }; }
+  if (what === 'key') { if (shopKeyLeft(s, now) <= 0 || !pay(STONE_SHOP.key)) return null; if (b.keyDay !== localDay(now)) { b.keyDay = localDay(now); b.keyN = 0; } b.keyN++; const rs = riftState(s); rs.keys = Math.min(KEY_HOLD, rs.keys + 1); return { keys: 1 }; }
   if (what === 'rush') { const c = rushCost(s, arg, now); if (!c || !pay(c)) return null; expSlots(s)[arg].end = now; return { rush: arg }; }
   if (what === 'expSlot') { const n = b.expSlot || 0; if (n >= EXP_MAX - EXP_SLOTS || !pay(STONE_SHOP.expSlot[n])) return null; b.expSlot = n + 1; expState(s); return { expSlot: expCap(s) }; }
   if (what === 'costume') { const c = cosState(s); if (!COS_BY_ID[arg] || COS_BY_ID[arg].free || (COS_BY_ID[arg].hw && !hwOn()) || c.own.includes(arg) || !pay(STONE_SHOP.costume)) return null; c.own.push(arg); return { cos: arg }; }
@@ -1348,9 +1416,9 @@ function clampItem(it) {
   if (it && typeof it === 'string') it = decItem(it);
   if (!it || typeof it !== 'object' || !SLOT_BY_ID[it.s]) return null;
   const sl = SLOT_BY_ID[it.s];
-  const o = { s: it.s, t: int(it.t, 0, 0, sl.tiers - 1), r: int(it.r, 0, 0, 4), f: int(it.f, 0, 0, 100000) };
+  const o = { s: it.s, t: int(it.t, 0, 0, sl.tiers - 1), r: int(it.r, 0, 0, RARITIES.length - 1), f: int(it.f, 0, 0, 100000) };
   if (it.n != null) o.n = int(it.n, 1, 1, 1e9);
-  if (it.u && UNIQUES[it.u] && UNIQUES[it.u].slot === it.s && o.r === 4) o.u = it.u;
+  if (it.u && UNIQUES[it.u] && UNIQUES[it.u].slot === it.s && o.r >= 4) o.u = it.u;   // 5.14.23 신화도 전용 효과
   if (Array.isArray(it.a)) {
     // 옵션 값은 그 등급·단계에서 나올 수 있는 최대치(기준값 × 1.3 × 등급 보정)까지만 인정
     o.a = it.a.filter(x => Array.isArray(x) && AFFIXES[x[0]]).slice(0, AFFIX_COUNT[o.r]).map(([k, v]) => [k, Math.round(num(v, 0, 0, affixBase(k, o.t) * 1.3 * (1 + 0.15 * o.r)) * 10) / 10]);
@@ -1397,7 +1465,7 @@ function sanitize(o, now = Date.now()) {
   o.ach = pickObj(o.ach, ACH.map(a => a.id), (v, k) => int(v, 0, 0, ACH.find(a => a.id === k).t.length));
   o.skills = pickObj(o.skills, SKILLS.map(sd => sd.id), v => int(v, 0, 0, SKILL_MAX));
   o.mastery = pickObj(o.mastery, MASTERY.map(m => m.id), v => int(v, 0, 0, 1e6));
-  { const g = o.gachaOpt || {}; o.gachaOpt = { stopUR: g.stopUR !== false, stopNew: !!g.stopNew, autoBuy: !!g.autoBuy }; }
+  { const g = o.gachaOpt || {}; o.gachaOpt = { stopUR: g.stopUR !== false, stopNew: !!g.stopNew, autoBuy: !!g.autoBuy, pn: g.pn === 1000 ? 1000 : 100, batch: g.batch === 100 ? 100 : 10, mini: !!g.mini, ...([3, 4, 5, -1].includes(g.stopR) ? { stopR: g.stopR } : {}) }; }   // 5.14.23: N회 소환 횟수(pn) + 연속 소환의 정지 등급·회차당 횟수·미니 모드도 다시 켜도 유지 (예전에는 불러올 때 지워졌다)
   // 스킬 포인트 보정: 남은 + 쓴 포인트가 레벨 총량보다 적으면 채워준다 (예전 직업 변경 버그로 잃은 포인트 복구)
   if (o.cls) { const have = o.sp + skillSpent(o) + masterySpent(o), need = spTotal(o.level); if (have < need) o.sp += need - have; }
   o.cd = pickObj(o.cd, SKILLS.map(sd => sd.id), v => num(v, 0, -100, 100));
@@ -1417,7 +1485,7 @@ function sanitize(o, now = Date.now()) {
   const cnt = src => pickObj(src, ['kill', 'boss', 'up', 'pull', 'tower', 'floor', 'rebirth', 'sell', 'clv', 'ench', 'exped', 'rift'], v => num(v));
   const flags = (src, L) => pickObj(src, [...L.map(m => m.id), 'all'], v => (v ? true : null));
   o.quest = { day: isDay(q.day) ? q.day : '', d: cnt(q.d), dc: flags(q.dc, DAILY), wk: isDay(q.wk) ? q.wk : '', w: cnt(q.w), wc: flags(q.wc, WEEKLY),
-    att: { last: q.att && isDay(q.att.last) ? q.att.last : '', n: int(q.att && q.att.n, 0, 0, 1e6) } };
+    att: { last: q.att && isDay(q.att.last) ? q.att.last : '', n: int(q.att && q.att.n, 0, 0, 1e6), ...(q.att && isDay(q.att.bd) ? { bd: q.att.bd } : {}) } };
   o.boost = { charges: int(o.boost && o.boost.charges, 0, 0, 999), until: num(o.boost && o.boost.until, 0, 0, now + 24 * 3600e3) };
   { const MS = Object.fromEntries(SKILLS.map(x => [x.id, 1]));
     const mu = o.mut && typeof o.mut === 'object' ? o.mut : {}; o.mut = {}; for (const [k, v] of Object.entries(mu)) if (MS[k] && (v === 'a' || v === 'b') && !/__proto__|constructor|prototype/.test(k)) o.mut[k] = v;
@@ -1452,9 +1520,9 @@ function sanitize(o, now = Date.now()) {
       o.mile = int(o.mile, 0, 0, 1e9);
   o.abyc = num(o.abyc, 0, 0, 1e15);
       { const w = o.soul; o.soul = w && typeof w === 'object' && w.made ? { made: true, look: SOUL_LOOKS.includes(w.look) ? w.look : SOUL_LOOKS[0], name: cleanName(w.name) || null, lv: int(w.lv, 1, 1, SOUL_LV_LIMIT), xp: Math.max(0, Math.min(1e6, Number(w.xp) || 0)), opt: [...new Set((Array.isArray(w.opt) ? w.opt : []).filter(k => SOUL_FX[k]))].slice(0, SOUL_SLOT_AT.length), show: w.show !== false } : null; if (o.soul && !o.soul.opt.length) o.soul.opt = ['cut']; o.soulKills = int(o.soulKills, 0, 0, 1e7); }
-      { const ps = o.pets && typeof o.pets === 'object' ? o.pets : {}; const own = {}; for (const id of PETS) { const p = ps.own && ps.own[id]; if (p && typeof p === 'object') own[id] = { lv: int(p.lv, 1, 1, PET_MAX), k: PET_FX[p.k] ? p.k : 'atk', r: int(p.r, 0, 0, 4) }; }
+      { const ps = o.pets && typeof o.pets === 'object' ? o.pets : {}; const own = {}; for (const id of PETS) { const p = ps.own && ps.own[id]; if (p && typeof p === 'object') own[id] = { lv: int(p.lv, 1, 1, PET_MAX), k: PET_FX[p.k] ? p.k : 'atk', r: int(p.r, 0, 0, PET_TOP) }; }
         const c = ps.cand; const fin = v => { const x = Number(v); return Number.isFinite(x) && x > 0 ? Math.min(x, 1e300) : 0; };
-        o.pets = { own, pot: big(ps.pot), ppm: big(ps.ppm), peak: big(ps.peak), pin: big(ps.pin), pt: Math.min(600, fin(ps.pt)), act: own[ps.act] ? ps.act : (Object.keys(own)[0] || null), cand: c && typeof c === 'object' && own[c.id] && PET_FX[c.k] ? { id: c.id, k: c.k, r: int(c.r, 0, 0, 4) } : null }; }
+        o.pets = { own, pot: big(ps.pot), ppm: big(ps.ppm), peak: big(ps.peak), pin: big(ps.pin), pt: Math.min(600, fin(ps.pt)), act: own[ps.act] ? ps.act : (Object.keys(own)[0] || null), cand: c && typeof c === 'object' && own[c.id] && PET_FX[c.k] ? { id: c.id, k: c.k, r: int(c.r, 0, 0, PET_TOP) } : null }; }
   { const tw0 = o.town && typeof o.town === 'object' ? o.town : {}; const TN = tw0.castle === true ? TOWN_N_CASTLE : TOWN_N, oldN = int(tw0.N, 7, 3, TN), sh = Math.floor((TN - oldN) / 2), mv = k => { if (typeof k !== 'string' || !sh) return k; const [x, y] = k.split(',').map(Number); return (x + sh) + ',' + (y + sh); };
     const tw = { ...tw0, open: (Array.isArray(tw0.open) ? tw0.open : []).map(mv), g: Object.fromEntries(Object.entries(tw0.g && typeof tw0.g === 'object' ? tw0.g : {}).map(([k, v]) => [mv(k), v])) };
     let refund = 0; { const best = {}; for (const [k, b] of Object.entries(tw.g)) { if (!b || !TOWN_BY_ID[b.b]) continue; if (b.b === 'plaza') { const sp = num(b.sp, 0, 0, 1e300); if (sp > 20000) refund += Math.min(sp, townSpCap(TOWN_MAXLV)) - 20000; tw.g[k] = { b: 'plaza', lv: 1, sp: 20000 }; continue; } if (TOWN_BY_ID[b.b].basic) continue; const cur = best[b.b]; const lv = num(b.lv, 1, 1, TOWN_MAXLV); if (!cur || lv > cur.lv) { if (cur) { refund += Math.min(num(tw.g[cur.k].sp, 0, 0, 1e300), townSpCap(TOWN_MAXLV)); delete tw.g[cur.k]; } best[b.b] = { k, lv }; } else { refund += Math.min(num(b.sp, 0, 0, 1e300), townSpCap(TOWN_MAXLV)); delete tw.g[k]; } } }
@@ -1483,7 +1551,7 @@ function sanitize(o, now = Date.now()) {
         if (r && typeof r === 'object') { const ids = [...new Set(Array.isArray(r.ids) ? r.ids : [])].filter(id => typeof id === 'string' && o.comp[id] && !used.has(id)).slice(0, ABY_SIZE); if (ids.length) { ids.forEach(id => used.add(id)); const start = num(r.start, now, 0, now + 60000); run = { ids, d: int(r.d, 1, 1, ABY_DMAX), start, end: Math.min(num(r.end, start, start, start + ABY_H * 3600e3), start + ABY_H * 3600e3) }; } }
         o.abyss = { best: int(ab.best, 0, 0, ABY_DMAX), run, auto: ab.auto !== false }; } } }
   const clampRune = ru => (ru && typeof ru === 'object' && RUNE_STATS[ru.k]) ? Object.assign({ k: ru.k, r: int(ru.r, 0, 0, 4), t: int(ru.t, 1, 1, 1000), u: int(ru.u, 0, 0, RUNE_UP_MAX) }, (ru.k2 && RUNE_STATS[ru.k2] && ru.k2 !== ru.k && int(ru.r, 0, 0, 4) === 4) ? { k2: ru.k2 } : {}) : null;
-  { const rs = o.rift || {}; o.rift = { keys: int(rs.keys, KEY_DAILY, 0, KEY_MAX + 20), best: int(rs.best, 0, 0, 1000), lvl: 1 }; o.rift.lvl = int(rs.lvl, 1, 1, o.rift.best + 1);
+  { const rs = o.rift || {}; o.rift = { keys: int(rs.keys, KEY_DAILY, 0, KEY_HOLD), best: int(rs.best, 0, 0, 1000), lvl: 1 }; o.rift.lvl = int(rs.lvl, 1, 1, o.rift.best + 1);
     const ru = o.runes || {}; o.runes = { eq: Array.from({ length: RUNE_SLOTS }, (_, i) => clampRune((ru.eq || [])[i])), bag: (Array.isArray(ru.bag) ? ru.bag : []).map(clampRune).filter(Boolean).slice(0, RUNE_BAG), dust: num(ru.dust, 0, 0, 1e15), slot: Array.from({ length: RUNE_SLOTS }, (_, i) => int((Array.isArray(ru.slot) ? ru.slot : [])[i], 0, 0, RUNE_SLOT_MAX)), auto: ru.auto !== false };
     const tws = o.towers || {}; o.towers = {}; for (const T of TOWERS) if (T.id !== 'inf') o.towers[T.id] = { best: int(tws[T.id] && tws[T.id].best, 0, 0, 1e6), tries: int(tws[T.id] && tws[T.id].tries, TOWER_TRIES, 0, TOWER_TRIES) }; }
   const tw = o.tower || {};
@@ -1506,7 +1574,7 @@ function sanitize(o, now = Date.now()) {
       const gn = bo.gain || {}; o.boss.gain = {}; for (const k of ['ess', 'stones', 'shards', 'keys']) if (gn[k]) o.boss.gain[k] = int(gn[k]);
     }
     else if (!isBossFloor(o.floor)) o.boss = null;
-    else { o.boss.max = bossHp(o.floor); o.boss.hp = dmin(o.boss.hp, o.boss.max); }
+    else { o.boss.max = bossHpS(o, o.floor); o.boss.hp = dmin(o.boss.hp, o.boss.max); }
   } else o.boss = null;
   o.hp = o.boss && o.hp != null ? big(o.hp) : null;
   // 오프라인 보고서
@@ -1525,6 +1593,7 @@ export function normalize(s) {
   const b = newSave();
   if (!s || typeof s !== 'object') return b;
   const o = { ...b, ...s };
+  o.rkUid = typeof s.rkUid === 'string' && /^[0-9a-f]{64}$/.test(s.rkUid) ? s.rkUid : '';   // 5.14.22 마지막 랭킹 식별자: 세이브 코드로 다른 플랫폼에 옮기면 랭킹 계정도 따라간다 (rank.js syncOwner)
   o.holy = int(s.holy, 0, 0, 1e9); { const e = s.engr && typeof s.engr === 'object' ? s.engr : {}; o.engr = {}; for (const sl of SLOTS) { const x = e[sl.id]; if (x && ENGR_KEYS.includes(x.k)) { const g = int(x.g, 0, 0, ENGR_R.length - 1); o.engr[sl.id] = { k: x.k, g, v: x.v > 0 ? int(x.v, 0, ENGR_R[g][0], ENGR_R[g][1]) : 0 }; } } }   // 5.14.10 장비 각인
   o.style = STYLES.includes(s.style) ? s.style : 'skill'; o.stRate = D0;   // 5.14.3 전투 스타일 (stRate = 옮겨 가는 초당 피해). 5.14.6: 불러올 때는 0부터 (몇 초면 다시 찬다. 옛 회차 값이 남지 않게)
   o.equip = { ...b.equip };
@@ -1622,7 +1691,7 @@ export function itemValue(it) {
 export function sellPrice(it) { return Math.ceil((1 + 0.25 * (it.a ? it.a.length : 0) + (it.u ? 1 : 0)) * (SLOT_BY_ID[it.s].flat ? itemValue(it) : itemValue(it) * 6) * 2.2 * Math.pow(1.25, it.t) * (1 + (it.f || 0) * 0.08)); }
 // ---------- 추가 옵션 ----------
 // 등급별 옵션 개수: 일반 0 · 고급 1 · 희귀 2 · 영웅 3 · 전설 3 + 고유 효과
-export const AFFIX_COUNT = [0, 1, 2, 3, 3];
+export const AFFIX_COUNT = [0, 1, 2, 3, 3, 4];   // 5.14.23 신화 4개
 export const AFFIXES = {
   atkP:    { base: 3,   pre: '예리한' },
   hpP:     { base: 4,   pre: '견고한' },
@@ -1702,8 +1771,9 @@ export function rarityWeights(floor, boss = false) {
     Math.min(22, 8 + 0.22 * f),
     Math.min(8, 1.8 + 0.1 * f),
     Math.min(1.6, 0.2 + 0.022 * f),
+    f >= DIV_STEP ? MYTH_GEAR_W * Math.min(4, Math.floor(f / DIV_STEP)) : 0,   // 5.14.23 신화: 위계 1부터 (5.14.25 위계 4까지 커짐)
   ];
-  if (boss) { w[0] = 0; w[1] = 0; w[4] *= 3; }
+  if (boss) { w[0] = 0; w[1] = 0; w[4] *= 3; w[5] *= 3; }
   return w;
 }
 export function rarityOdds(floor, boss = false) {
@@ -1728,7 +1798,7 @@ export function rollItem(floor, boss = false) {
     const keys = AFFIX_KEYS.slice().sort(() => Math.random() - 0.5).slice(0, n);
     it.a = keys.map(k => [k, Math.round(affixBase(k, t) * (0.7 + Math.random() * 0.6) * (1 + 0.15 * r) * 10) / 10]);
   }
-  if (r === 4) { const pool = UNIQ_BY_SLOT[sl.id]; it.u = pool[Math.floor(Math.random() * pool.length)]; }
+  if (r >= 4) { const pool = UNIQ_BY_SLOT[sl.id]; it.u = pool[Math.floor(Math.random() * pool.length)]; }
   return it;
 }
 export function rollSig(floor, uid) {
@@ -1850,7 +1920,7 @@ export function stats(s) {
       else if (k === 'pxp') { if (mu === 'a') m *= 2.5; else muAtk *= 1.2; }
       else if (k === 'pcomp') { if (mu === 'a') m *= 1.6; else muComp *= 1.5; }
     }
-    if (sd.eff === 'extra') { extra += c * m; if (mu === 'b') extraBoss += c * m; if (sd.heal) pHeal += aps * c * sd.heal; pasX[sd.id] = [c * m, mu === 'b' ? 2 * c * m : c * m]; }
+    if (sd.eff === 'extra') { extra += c * m; if (mu === 'b') extraBoss += c * m; if (sd.heal) pHeal += aps * c * sd.heal; if (sd.cdr) pCdr += aps * c * sd.cdr; if (sd.pblk) pShield += Math.min(1, aps * c * sd.pblk) * blk; pasX[sd.id] = [c * m, mu === 'b' ? 2 * c * m : c * m]; }
     else if (sd.eff === 'heal') pHeal += aps * c * m;
     else if (sd.eff === 'cdr') pCdr += aps * c * m;
     else if (sd.eff === 'shield') pShield += Math.min(1, aps * c * m) * blk;
@@ -1872,8 +1942,9 @@ export function stats(s) {
   const sb = setBonus(s), ap = ag.ach, kx = 1 + KARMA_POW * (s.karma || 0);
   const xcd = 1 + ENCHX_POW * enchXSum(s), pAtkX = (1 + pa.atk / 100) * (1 + cbn.atk / 100) * (1 + tb.atk / 100) * (1 + tw.atk / 100), pHpX = (1 + pa.hp / 100) * (1 + cbn.hp / 100) * (1 + tb.hp / 100) * (1 + tw.hp / 100);
   const mAtk = (1 + 0.03 * masteryLv(s, 'atk')) * (1 + (rt.atk || 0) / 100) * xcd * pAtkX, mHp = (1 + 0.03 * masteryLv(s, 'hp')) * (1 + (rt.hp || 0) / 100) * xcd * pHpX;
-  const trP = 1 + TRACE_POW * traceLv(s, 'power'), bf = blessFx(s);
-  const rAtk = (1 + relicVal(s, 'atk') / 100) * (1 + sb / 100) * ap.atk * kx * mAtk * trP * bf.atkX, rHp = (1 + relicVal(s, 'hp') / 100) * (1 + sb / 100) * ap.hp * kx * mHp * trP * bf.hpX;
+  const trP = Math.pow(1 + TRACE_POW, traceLv(s, 'power')), bf = blessFx(s);
+  const myX = Math.pow(MYTH_PIECE_X, mythCount(s));   // 5.14.23 신화의 힘
+  const rAtk = (1 + relicVal(s, 'atk') / 100) * (1 + sb / 100) * ap.atk * kx * mAtk * trP * bf.atkX * myX, rHp = (1 + relicVal(s, 'hp') / 100) * (1 + sb / 100) * ap.hp * kx * mHp * trP * bf.hpX * myX;
   // 공격력·체력은 Decimal: 작은 배율끼리 먼저 곱해도 넘치지 않게 한 묶음씩 곱한다
   const atkF = D(atk).mul(Math.max(0.1, 1 + a.atkP / 100) * Math.max(0.1, 1 + cx.atkP / 100)).mul(honorMult).mul(rAtk).mul(ebuffMult(s, 'atkX') * muAtk * xm.atkP * mrX.atk).mul(dv.all * dv.dmg * (1 + (twc.all || 0) / 100)).mul(ENG.atk);
   const hpF = D(hp).mul(Math.max(0.2, 1 + a.hpP / 100) * Math.max(0.2, 1 + cx.hpP / 100)).mul(rHp).mul(ebuffMult(s, 'hpX') * dv.hp * (1 + (twc.all || 0) / 100)).mul(ENG.hp);
@@ -2180,8 +2251,13 @@ function cast(s, st, sd, lv, ev) {
   };
   if (sd.eff === 'burst') {
     const muX = mu === 'a' ? (s.boss ? 1.6 : 1.1) : mu === 'b' ? (s.boss ? 1.1 : 1.5) : 1;
-    let dmg = st.heroDps.mul(muX * v * st.skillMult * (s.boss && sd.bossX ? sd.bossX : 1) * skillTierX(s, sd));
+    const exX = sd.exec && s.boss && s.boss.max && D(s.boss.hp).lte(D(s.boss.max).mul(sd.exec[0])) ? sd.exec[1] : 1;   // 5.14.25 처형: 보스 체력이 낮으면 피해 배수
+    let dmg = st.heroDps.mul(muX * v * st.skillMult * (s.boss && sd.bossX ? sd.bossX : 1) * skillTierX(s, sd) * exX);
     const dmg0 = dmg;
+    if (sd.seal && s.boss) s.boss.seal = Math.max(s.boss.seal || 0, sd.seal);   // 5.14.25 봉인: 보스가 n초간 공격 못 함
+    if (sd.cdAll) for (const k of Object.keys(s.cd)) if (k !== sd.id) s.cd[k] = Math.max(0, s.cd[k] - sd.cdAll);
+    if (sd.tAdd && s.boss) { const room = (s.boss.tmax || BOSS_TIME) - (s.boss.ext || 0); if (room > 0.05) { const a = Math.min(room, sd.tAdd); s.boss.timer += a; s.boss.ext = (s.boss.ext || 0) + a; } }   // 시간 연장 스킬과 같은 상한
+    if (sd.heal && s.boss && s.hp != null) s.hp = dmin(st.hp, D(s.hp).add(st.hp.mul(sd.heal / 100)));
     if (st.sfx && st.sfx.echo) { dmg = dmg.mul(1 + Math.min(135, st.sfx.echo) / 100); ev.soulEcho = (ev.soulEcho || 0) + 1; }
     mtAdd('sk:' + sd.id, dmg0); mtAdd('sw:echo', dmg.sub(dmg0));
     if (sd.weak) pushBuff(s, sd.id, sd.dur, { weak: sd.weak });
@@ -2364,7 +2440,8 @@ export function step(s, dt, ev) {
     h = h.add(st.hp.mul(st.regen / 100 * dt));
     const invuln = st.mech.invuln && s.boss.timer > tmx - 5;
     const tankCut = sf.tank ? Math.min(sf.tank, Math.min(100, st.crit)) / 100 * 0.5 : 0;
-    if (!invuln) h = h.sub(bossDps(s.floor).mul((1 - st.def / 100) * (1 - st.weak / 100) * (1 - titanN * Math.min(2, sf.titan) / 100) * (1 - tankCut) * dt));
+    const sealed = (s.boss.seal || 0) > 0; if (sealed) s.boss.seal = Math.max(0, s.boss.seal - dt);   // 5.14.25 봉인 중에는 보스가 공격하지 않는다
+    if (!invuln && !sealed) h = h.sub(bossDps(s.floor).mul((1 - st.def / 100) * (1 - st.weak / 100) * (1 - titanN * Math.min(2, sf.titan) / 100) * (1 - tankCut) * dt));
     if (h.lte(0) && st.mech.revive && !s.boss.revived) { s.boss.revived = true; h = st.hp.mul(0.3); ev.revive = true; }
     s.hp = dmin(st.hp, h);
     if (s.boss.hp.lte(0)) {
@@ -2388,7 +2465,7 @@ export function step(s, dt, ev) {
   }
 
   if (isBossFloor(s.floor)) {
-    const bh = bossHp(s.floor);
+    const bh = bossHpS(s, s.floor);
     const tmax = bossTime(s);
     s.boss = { hp: bh, max: bh, timer: tmax, tmax };
     s.hp = st.hp;
@@ -2396,7 +2473,7 @@ export function step(s, dt, ev) {
     return ev;
   }
 
-  const M = monHp(s.floor).mul(blessFx(s).monHpX * ebuffMult(s, 'monX'));
+  const M = monHpS(s, s.floor).mul(blessFx(s).monHpX * ebuffMult(s, 'monX'));
   meterCommit(st, dt, 1, false);
   s.prog += Math.min(1e9, dn(st.dps.mul(dt).add(burst).div(M)));   // 이번 스텝에 잡은 마리 수 (비율이라 작은 숫자)
   let k = Math.floor(s.prog);
@@ -2481,7 +2558,7 @@ function advanceFloor(s, ev) {
 }
 
 // 희귀 이상 장비는 팔 때 강화 재료인 정수를 남긴다 (희귀 1 · 영웅 3 · 전설 10)
-export const ESS_BY_R = [0, 0, 1, 3, 10];
+export const ESS_BY_R = [0, 0, 1, 3, 10, 30];
 function sellGain(s, it, cnt = 1) { const g = sellPrice(it) * cnt; s.gold = D(s.gold).add(g); s.ess = (s.ess || 0) + ESS_BY_R[it.r] * cnt; qAdd(s, 'sell', cnt); return g; }
 export function pickup(s, it, ev) {
   ev = ev || {}; markSeen(s, it);
@@ -2617,7 +2694,7 @@ export function honorGain(s) {
   if (s.maxFloor < REBIRTH_FLOOR) return D0;
   // 층이 깊을수록 기하급수로 증가: B30 3 · B35 4 · B40 7 · B45 12 · B50 20 · B60 52 · B70 135
   // B100 까지는 층당 1.10배, 그 이후는 윤회의 흔적(명예 증가율)만큼 더 가파르게
-  const deep = Math.max(0, floorEff(s.maxFloor) - 100), gr = 1.10 + TRACE_HONOR * traceLv(s, 'honorG');
+  const deep = Math.max(0, floorEff(s.maxFloor) - 100), gr = honorRate(traceLv(s, 'honorG'));
   return dmax((s.rebirths || 0) === 0 ? 5 : 1, Decimal.pow(gr, deep).mul(gboostX(s, 'h') * 3 * Math.pow(1.10, Math.min(s.maxFloor, 100) - HONOR_BASE) * (1 + KARMA_HONOR * (s.karma || 0)) * blessFx(s).honorX).floor());
 }
 // 환생·윤회 직전 남은 골드로 소환석을 산다 (가격 규칙은 일반 구매와 같음). 환경설정에서 끌 수 있다.
@@ -2670,26 +2747,29 @@ export const KARMA_POW = 0.15;    // 업보 1당 공격력·체력 +15% (곱연�
 // 5.13.5: B1000 이후는 명예처럼 실질 층(floorEff) 기준 (B1000까지는 같음)
 export function karmaGain(s) { const c = s.cycleBest || 0; return c < REINC_FLOOR ? 0 : Math.floor(gboostX(s, 'k') * Math.pow((floorEff(c) - 90) / 10, 2) * (1 + TRACE_KARMA * traceLv(s, 'karmaX')) * blessFx(s).karmaX); }
 // ---------- 윤회의 흔적: 윤회할 때 그 주기에 내려간 깊이만큼 얻는 영구 포인트 (환생·윤회해도 유지) ----------
-// honorG: B100 이후 층당 명예 증가율 +0.004 (1.10 → 최대 1.18) · karmaX: 업보 획득 +25%
+// honorG: B100 이후 층당 명예 증가율 +0.004 (1.10 → 최대 1.188, 5.14.19 상한 20 → 22) · karmaX: 업보 획득 +25%
 // deep: B300 이후 층당 처치 수 -2 · start: 환생하면 이번 윤회 최고층의 5%씩 더 높은 층에서 시작
 export const TRACES = [
-  { id: 'honorG', max: 20, base: 3, g: 1.5 },
+  { id: 'honorG', max: 50, base: 3, g: 1.5, x2: { from: 22, base: 5000, g: 1.1, d: 0.002 } },   // 5.14.25: 23~50레벨은 +0.002씩(기존 절반), 비용 5000부터 ×1.1
   { id: 'karmaX', max: 20, base: 4, g: 1.5 },
   { id: 'start',  max: 6,  base: 5, g: 1.6 },
   { id: 'deep',   max: 8,  base: 8, g: 2 },
   // 5.11 추가 3종. 5.12.1: 자동 강화도 7종 모두 가장 싼 것부터 (late 구분 없음, 사용자 결정)
   { id: 'offH',   max: 6,  base: 30, g: 1.8 },    // 오프라인 최대 시간 +1시간씩
   { id: 'expT',   max: 10, base: 20, g: 1.5 },    // 원정 시간 -4%씩
-  { id: 'power',  max: 200, base: 25, g: 1.12 },  // 공격력·체력 +3%씩 (곱연산)
+  { id: 'calm',   max: 10, base: 1000, g: 1.2 },  // 5.14.19 심층 완화: B1000 이후 층당 몬스터 체력 증가율 -0.0009씩
+  { id: 'power',  max: 200, base: 25, g: 1.12 },  // 공격력·체력 레벨마다 ×1.02 (5.14.19: +3% 합산 → ×1.02 곱연산, 비용은 그대로)
 ];
 export const TRACE_BY_ID = Object.fromEntries(TRACES.map(T => [T.id, T]));
 export const TRACE_HONOR = 0.004, TRACE_KARMA = 0.25, TRACE_START = 0.05, TRACE_DEEP_FLOOR = 300, TRACE_RETRO = 1;
-export const TRACE_OFFH = 1, TRACE_EXP = 0.04, TRACE_POW = 0.03;
+export const TRACE_OFFH = 1, TRACE_EXP = 0.04, TRACE_POW = 0.02, TRACE_CALM = 0.0009;
 export function offlineCapH(s) { return OFFLINE_CAP_H + TRACE_OFFH * traceLv(s, 'offH'); }
 export function expTimeMult(s) { return Math.max(0.5, 1 - TRACE_EXP * traceLv(s, 'expT')); }
 export function traceState(s) { return s.trace || (s.trace = { pts: 0, lv: {}, auto: true }); }
 export function traceLv(s, id) { return (s.trace && s.trace.lv && s.trace.lv[id]) || 0; }
-export function traceCost(id, lv) { const T = TRACE_BY_ID[id]; return Math.ceil(T.base * Math.pow(T.g, lv)); }
+export function traceCost(id, lv) { const T = TRACE_BY_ID[id]; if (T.x2 && lv >= T.x2.from) return Math.ceil(T.x2.base * Math.pow(T.x2.g, lv - T.x2.from)); return Math.ceil(T.base * Math.pow(T.g, lv)); }
+// 심층의 명예 층당 명예 배율: 22레벨까지 +0.004씩, 그 뒤로는 +0.002씩
+export function honorRate(lv) { const X = TRACE_BY_ID.honorG.x2; return 1.10 + TRACE_HONOR * Math.min(lv, X.from) + X.d * Math.max(0, lv - X.from); }
 // B100 1 · B200 6 · B300 22 · B360 36 · B400 48
 export function traceGain(s) { const c = s.cycleBest || 0; return c < REINC_FLOOR ? 0 : Math.max(1, Math.floor(Math.pow((floorEff(c) - 90) / 10, 2) / 20 * blessFx(s).traceX)); }
 export function buyTrace(s, id) {
@@ -2820,7 +2900,7 @@ export function giveReward(s, r) {
   if (r.ess) s.ess = (s.ess || 0) + r.ess;
   if (r.holy) s.holy = (s.holy || 0) + r.holy;   // 5.14.10 신성 조각 (레이드)
   if (r.boost) { s.boost ||= { until: 0, charges: 0 }; s.boost.charges = (s.boost.charges || 0) + r.boost; }
-  if (r.keys) { const rs = riftState(s); rs.keys = Math.min(KEY_MAX + 20, (rs.keys || 0) + r.keys); }
+  if (r.keys) { const rs = riftState(s); rs.keys = Math.min(KEY_HOLD, (rs.keys || 0) + r.keys); }
   if (r.abyc) s.abyc = (s.abyc || 0) + r.abyc;
   if (r.title && TITLE_BY_ID[r.title]) { const ts = titleState(s); if (!ts.own.includes(r.title)) { ts.own.push(r.title); TB_CACHE.ver = -1; } ts.eq = r.title; TB_CACHE.ver = -1; }   // 아레나 칭호는 받으면 바로 단다 (기록 카드에 보이게)
   if (r.hboost) gboostAdd(s, 'h', r.hboost);
@@ -2836,7 +2916,7 @@ export function giveReward(s, r) {
 // ---------- 우편함 (5.12.4) ----------
 // 게임 안 보상(소급 보상)과 서버 공지 우편을 같은 상자에 넣는다. 받은 우편 id는 got 에 남겨 다시 들어오지 않게 한다
 export const MAIL_MAX = 60, MAIL_GOT_MAX = 400;
-const MAIL_CAP = { holy: 1e6, stones: 1e9,   /* 5.14.10: 개간 비용 소급(성까지 연 사람은 수천만)이 잘리지 않게 1e6 → 1e9 */ shards: 1e6, ess: 1e7, boost: 100, keys: 50, abyc: 1e6, trace: 1e4 };
+const MAIL_CAP = { holy: 1e6, stones: 1e9,   /* 5.14.10: 개간 비용 소급(성까지 연 사람은 수천만)이 잘리지 않게 1e6 → 1e9 */ shards: 1e6, ess: 1e7, boost: 1000, keys: 999, abyc: 1e6, trace: 1e4 };   // 5.14.24 레이드 무한 단계 보상(부스트 단계/2, 열쇠 단계)이 잘리지 않게
 export function mailReward(r) { const o = {}; if (!r || typeof r !== 'object') return o; for (const [k, cap] of Object.entries(MAIL_CAP)) { const v = Math.floor(Number(r[k]) || 0); if (v > 0) o[k] = Math.min(cap, v); } for (const k of ['comp', 'pick']) { const v = Math.floor(Number(r[k]) || 0); if (v >= 2 && v <= 5) o[k] = v; } if (typeof r.title === 'string' && TITLE_BY_ID[r.title] && TITLE_BY_ID[r.title].c === 'arena') o.title = r.title; { const v = Math.floor(Number(r.arank) || 0); if (v >= 1 && v <= 1e6) o.arank = v; } for (const k of ['hboost', 'kboost']) { const v = Math.floor(Number(r[k]) || 0); if (v >= 1 && v <= 168) o[k] = v; } return o; }
 export function mailState(s) { const m = s.mail || (s.mail = { box: [], got: [], flags: [] }); m.box ||= []; m.got ||= []; m.flags ||= []; return m; }
 const mailTxt = (v, n) => String(v == null ? '' : v).replace(/[<>&"'\u0000-\u001f]/g, '').trim().slice(0, n);
@@ -2873,6 +2953,16 @@ export function claimMission(s, kind, id) {
   done[id] = true; giveReward(s, m.r); return m.r;
 }
 export function canAttend(s, now = Date.now()) { questRoll(s, now); const a = s.quest.att; return !a.last || localDay(now) > a.last; }
+// 5.14.18 출석 보상 한 번 더(광고): 오늘 받은 출석의 재화(소환석·조각·정수·부스트·열쇠)만 한 번 더. 동료·선택권·심연 보상은 빼고 하루 1번
+const ATT_BONUS_KEYS = ['stones', 'shards', 'ess', 'boost', 'keys'];
+export function attendBonusReward(s, now = Date.now()) {
+  questRoll(s, now); const a = s.quest.att;
+  if (!a.n || a.last !== localDay(now) || a.bd === a.last) return null;
+  const i = (a.n - 1) % 7, x = a.n - 1 < 7 ? ATTEND_NEW_X : 1, r = {};
+  for (const k of ATT_BONUS_KEYS) if (ATTEND[i][k]) r[k] = ATTEND[i][k] * x;
+  return Object.keys(r).length ? r : null;
+}
+export function attendBonus(s, now = Date.now()) { const r = attendBonusReward(s, now); if (!r) return null; s.quest.att.bd = s.quest.att.last; giveReward(s, r); return r; }
 export function attend(s, now = Date.now()) {
   if (!canAttend(s, now)) return null;
   const a = s.quest.att; const i = a.n % 7; const r = attendReward(s, i); a.n++; a.last = localDay(now);
@@ -3098,6 +3188,8 @@ function endChallenge(s) {
 
 // ---------- 차원 균열 (열쇠 1개, 5웨이브) → 룬 (환생·윤회에도 유지) ----------
 export const RIFT_UNLOCK = 50, RIFT_WAVES = 5, RIFT_TIME = 25, KEY_DAILY = 2, KEY_MAX = 10;
+// 5.14.23: 열쇠 보관 상한 (매일 저절로 차는 건 KEY_MAX 까지만). 예전 상한 30(KEY_MAX + 20)에서는 상점에서 사도 열쇠가 안 늘고 소환석만 빠졌다
+export const KEY_HOLD = 999;
 export function riftFloor(L) { return 25 + 10 * L; }                 // 균열 단계 L = 던전 B(25+10L) 보스 수준
 export function riftHp(L, w) { return bossHp(riftFloor(L)).mul(0.5 + 0.25 * w); }
 export function riftDps(L) { return bossDps(riftFloor(L)); }
@@ -3150,7 +3242,7 @@ function riftStep(s, st, dt, burst, ev) {
   return ev;
 }
 // ---- 룬: 4칸 장착, 효과는 모두 별도 곱연산. 가루로 +10까지 강화
-export const RUNE_SLOTS = 4, RUNE_BAG = 60, RUNE_UP_MAX = 10;
+export const RUNE_SLOTS = 4, RUNE_BAG = 200, RUNE_UP_MAX = 10;   // 5.14.23 가방 60 -> 200 (넘치면 점수 낮은 룬부터 가루)
 export const RUNE_STATS = { atk: 4, hp: 5, boss: 5, crit: 7, gold: 5, skill: 5, comp: 6, tower: 6 };
 export const RUNE_KEYS = Object.keys(RUNE_STATS);
 export const RUNE_RMULT = [1, 1.4, 2, 2.8, 4];
@@ -3235,7 +3327,7 @@ export function enchant(s, slot) {
   return true;
 }
 // 같은 등급 이상 장비를 4·8부위 맞추면 공격력·체력 보너스 (가장 높은 단계 하나만 적용)
-export const SETS = [{ r: 2, t: [[4, 10], [8, 25]] }, { r: 3, t: [[4, 20], [8, 50]] }, { r: 4, t: [[4, 40], [8, 100]] }];
+export const SETS = [{ r: 2, t: [[4, 10], [8, 25]] }, { r: 3, t: [[4, 20], [8, 50]] }, { r: 4, t: [[4, 40], [8, 100]] }, { r: 5, t: [[4, 70], [8, 200]] }];   // 5.14.23 신화 세트 (8부위 공격력·체력 ×3, 전설은 ×2)
 export function setInfo(s) {
   const eq = Object.values(s.equip || {}).filter(Boolean);
   let best = { v: 0, r: -1, n: 0 };

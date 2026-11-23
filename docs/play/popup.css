@@ -452,6 +452,9 @@ button.big.alt { background: linear-gradient(#c9e9ff, #8ec5f0); box-shadow: 0 3p
 .awin .grow { width: 100%; } .awin .grow .big { flex: 1; white-space: nowrap; }
 .gwin .gbtns { width: 100%; } .gwin .gbtns .big { flex: 1; }
 .gacha .grow .big.sm { padding: 6px 2px; font-size: 11px; }
+/* 5.14.23 N회 소환(100/1000, 옆 버튼으로 바꿈) · 광고 무료 1000회는 아래 얇은 한 줄 */
+.gacha .grow .pnsel { flex: 0 0 24px; padding: 6px 0; margin-left: -4px; font-size: 13px; }
+.gacha .pullad { margin-top: 6px; padding: 4px 8px; font-size: 11px; }
 .shardrow { display: flex; align-items: center; gap: 6px; } .shardrow .shardline { flex: 1; text-align: left; } .shardrow .mini { flex: none; } .shardrow .mini:disabled { opacity: .45; }
 /* v5.2 탑 3종 · 균열 · 룬 */
 .qcard.twc { border-left-width: 4px; } .tw-inf { border-left-color: #8a7cff; } .tw-storm { border-left-color: #4fc3ff; } .tw-iron { border-left-color: #b0b6c4; }
@@ -1110,3 +1113,17 @@ html.sleeping, html.sleeping body { overflow: hidden; }
 .slp-knob img { width: 24px; height: 24px; image-rendering: pixelated; pointer-events: none; }
 .slp-slide p { position: absolute; left: 50px; right: 6px; text-align: center; font-size: 13px; font-weight: 700; background: linear-gradient(90deg, #3a3550 0%, #a49dc2 50%, #3a3550 100%); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: slpShine 3.6s linear infinite; pointer-events: none; }
 @keyframes slpShine { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+
+/* 5.14.18 출석 보상 한 번 더 (토스판 광고) */
+.attad { margin-top: 6px; width: 100%; background: linear-gradient(#3a3160, #2a2448); border-color: #6b5f9c; color: #ffe27a; font-weight: 800; }
+.attad i { font-style: normal; color: #cfc8ef; font-weight: 600; }
+
+/* 5.14.26 오늘의 던전 공명: 카드 계열 표시와 진행 */
+.dlcard em.dlfam { font-style: normal; font-size: 8px; font-weight: 800; letter-spacing: 1px; padding: 0 5px; align-self: center; border-radius: 3px; color: #1a1426; }
+.f-fury.dlfam, .dlres .f-fury b { background: #ff8a6a; } .f-ward.dlfam, .dlres .f-ward b { background: #8ec8ff; } .f-rush.dlfam, .dlres .f-rush b { background: #9be38a; }
+.dlres { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: 4px 0; }
+.dlres span { display: flex; flex-direction: column; gap: 2px; padding: 4px; border: 1px solid #3d3566; background: rgba(20,16,36,.6); opacity: .75; }
+.dlres span.on { opacity: 1; border-color: #ffd98a; }
+.dlres b { font-size: 9.5px; color: #1a1426; padding: 1px 4px; border-radius: 3px; text-align: center; }
+.dlres i { font-style: normal; font-size: 8.5px; line-height: 1.3; color: #d8d0f2; text-align: center; }
+.dlres span.fav { border-style: dashed; } .dmod .dlfav { margin-top: 3px; font-weight: 700; } .dmod .dlfav.f-fury { color: #ff9a7a; } .dmod .dlfav.f-ward { color: #9fd0ff; } .dmod .dlfav.f-rush { color: #a8e898; }
