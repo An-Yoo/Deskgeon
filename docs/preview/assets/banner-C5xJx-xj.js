@@ -1,0 +1,1 @@
+import"./index-D6X6K5vc.js";import"./env-CVRqNDUd.js";function e(){}export{e as initBanner};
