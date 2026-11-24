@@ -456,6 +456,7 @@ export const GUIDE = [
   { id: 'upgrade', go: 'shop',    r: 10, ok: s => _sum(s.up) >= 10 },
   { id: 'skill',   go: 'skill',   r: 10, ok: s => _sum(s.skills) >= 3 || (s.rebirths || 0) > 0 },
   { id: 'boss',    go: 'dungeon', r: 15, ok: s => (s.bestFloor || s.maxFloor) >= 6 },
+  { id: 'daily',   go: 'daily',   r: 20, ok: s => !!(s.dl2 && ((s.dl2.runs || 0) > 0 || s.dl2.cur || s.dl2.best)) },   // 5.14.27 첫 몇 분 안에 오늘의 던전 (이 게임만의 모드) 안내
   { id: 'summon',  go: 'comp',    r: 20, ok: s => (s.pulls || 0) >= 10 },
   { id: 'team',    go: 'comp',    r: 15, ok: s => (s.team || []).length >= 3 },
   { id: 'exped',   go: 'comp',    r: 30, ok: s => ((s.life || {}).exped || 0) > 0 || ((s.exped || {}).slots || []).some(Boolean) },   // 5.12.6: 다음 접속 이유 만들기
@@ -470,6 +471,10 @@ export const GUIDE = [
 ];
 // 5.14.15: 환생 전 B20 이후 최고층이 GUIDE_STALL_SEC 동안 안 오르면 '환생' 단계를 순서보다 먼저 보여 준다 (rbNow). 먼저 끝낸 단계는 done 에 넣고 순서가 오면 건너뛴다
 export const GUIDE_STALL_SEC = 180;
+// 5.14.27 처음 하는 사람은 메뉴가 층마다 하나씩 열린다 (첫 10분에 시스템이 한꺼번에 쏟아지던 문제). 환생했거나 B30을 넘으면 전부 열림
+export const UNLOCK_AT = { quest: 6, town: 10, tower: 15, rebirth: 20, extra: 20 };
+export function menuFresh(s) { return !((s.rebirths || 0) > 0) && !((s.reinc || 0) > 0) && Math.max(s.bestFloor || 0, s.maxFloor || 0) < 30; }
+export function menuOpen(s, k) { return !menuFresh(s) || Math.max(s.bestFloor || 0, s.maxFloor || 0) >= (UNLOCK_AT[k] || 0); }
 const GUIDE_RB = GUIDE.findIndex(x => x.id === 'rebirth');
 export function guideStep(s) {
   const gd = s.guide || {}, n = gd.n || 0, done = gd.done || [];
@@ -482,7 +487,7 @@ export function guideClaim(s) {
   const gd = (s.guide ||= {}), i = GUIDE.indexOf(g);
   if (i > (gd.n || 0)) (gd.done ||= []).push(g.id);
   else { gd.n = i + 1; while (gd.n < GUIDE.length && (gd.done || []).includes(GUIDE[gd.n].id)) gd.n++; }
-  gd.v = 3; s.stones += g.r; if (g.gift) giveReward(s, g.gift);
+  gd.v = 4; s.stones += g.r; if (g.gift) giveReward(s, g.gift);
   // 5.14.26: 그 사이 이미 해낸 다음 단계들도 이어서 받는다 (자동 진행으로 B5 보스를 벌써 잡았는데 그 단계가 한참 뒤에 뜨던 문제)
   let got = g.r; for (let k = 0; k < GUIDE.length; k++) { const n = guideStep(s); if (!n || !n.ok(s)) break; const j = GUIDE.indexOf(n); if (j > (gd.n || 0)) (gd.done ||= []).push(n.id); else { gd.n = j + 1; while (gd.n < GUIDE.length && (gd.done || []).includes(GUIDE[gd.n].id)) gd.n++; } s.stones += n.r; got += n.r; if (n.gift) giveReward(s, n.gift); }
   return got;
@@ -1505,7 +1510,7 @@ function sanitize(o, now = Date.now()) {
     if (!o.mail.flags.includes('att5126')) { o.mail.flags.push('att5126'); const n = int(((o.quest || {}).att || {}).n, 0, 0, 1e5); const gifts = [[1, 'retro-ssr', { comp: 2 }], [2, 'retro-lr', { comp: 4 }], [7, 'retro-mr', { pick: 5 }]]; for (const [need, id, r] of gifts) if (n >= need) mailAdd(o, { id: id + '5126', tk: 'mail.retroComp', r, at: Date.now() }); }
     if (!o.mail.flags.includes('att5124')) { o.mail.flags.push('att5124'); const n = int(((o.quest || {}).att || {}).n, 0, 0, 1e5); const r = attendRetro(n); if (n > 0 && Object.keys(r).length) mailAdd(o, { id: 'retro-att5124', tk: 'mail.retroAtt', r, at: Date.now() }); } }
     const dl = o.daily; o.daily = dl && typeof dl === 'object' && isDay(dl.day) ? { day: dl.day, tries: int(dl.tries, DAILY_TRIES, 0, DAILY_TRIES), best: dl.best && typeof dl.best === 'object' ? { floor: int(dl.best.floor, 1, 1, 400), at: int(dl.best.at, 0, 0, DAILY_SEC), lv: int(dl.best.lv, 1, 1, 1000), cls: CLASSES[dl.best.cls] ? dl.best.cls : 'war', bless: DAILY_BLESS.some(x => x.id === dl.best.bless) ? dl.best.bless : 'power', mod: DAILY_MODS.some(x => x.id === dl.best.mod) ? dl.best.mod : DAILY_MODS[0].id, day: dl.day } : null, last: null } : null;
-    { const gn = int(o.guide && o.guide.n, 0, 0, GUIDE.length), gv = (o.guide && o.guide.v) || 1; const add = gv < 2 ? (gn >= 7 ? 3 : 0) : gv < 3 ? (gn >= 8 ? 2 : 0) : 0; const og = o.guide || {}; o.guide = { n: Math.min(GUIDE.length, gn + add), hide: !!og.hide, v: 3 }; const gdn = Array.isArray(og.done) ? [...new Set(og.done.filter(x => GUIDE.some(z => z.id === x)))] : []; if (gdn.length) o.guide.done = gdn; if (og.rbNow) o.guide.rbNow = 1; if (og.sb > 0) { o.guide.sb = int(og.sb, 0, 0, 1e9); o.guide.st = Math.max(0, Math.min(GUIDE_STALL_SEC, +og.st || 0)); } }   // v2: 6번째 뒤 '원정', v3: 그 뒤 '부스트'·'동료 키우기'
+    { const gn = int(o.guide && o.guide.n, 0, 0, GUIDE.length), gv = (o.guide && o.guide.v) || 1; const add = (gv < 2 ? (gn >= 7 ? 3 : 0) : gv < 3 ? (gn >= 8 ? 2 : 0) : 0), n1 = gn + add, add4 = gv < 4 && n1 >= 4 ? 1 : 0; const og = o.guide || {}; o.guide = { n: Math.min(GUIDE.length, n1 + add4), hide: !!og.hide, v: 4 }; const gdn = Array.isArray(og.done) ? [...new Set(og.done.filter(x => GUIDE.some(z => z.id === x)))] : []; if (gdn.length) o.guide.done = gdn; if (og.rbNow) o.guide.rbNow = 1; if (og.sb > 0) { o.guide.sb = int(og.sb, 0, 0, 1e9); o.guide.st = Math.max(0, Math.min(GUIDE_STALL_SEC, +og.st || 0)); } }   // v2: 6번째 뒤 '원정', v3: 그 뒤 '부스트'·'동료 키우기'
     o.autoSeen = Array.isArray(o.autoSeen) ? o.autoSeen.filter(x => AUTO.some(a => a.id === x)) : AUTO.filter(a => a.need(o)).map(a => a.id);
     o.noEv = false; o.noSig = false; o.goldConv = o.goldConv !== false; o.lowFx = o.lowFx === true; o.cgAuto = o.cgAuto !== false;
     o.autoNew = (Array.isArray(o.autoNew) ? o.autoNew : []).filter((x, i, a) => AUTO.some(z => z.id === x) && a.indexOf(x) === i);
@@ -1579,7 +1584,7 @@ function sanitize(o, now = Date.now()) {
   o.hp = o.boss && o.hp != null ? big(o.hp) : null;
   // 오프라인 보고서
   const p = o.pending;
-  o.pending = p && typeof p === 'object' ? { seconds: num(p.seconds), gold: big(p.gold), floors: int(p.floors, 0, 0, 1e6), kills: num(p.kills), levels: int(p.levels, 0, 0, 1e6), stones: int(p.stones, 0, 0, 1e9), rebirths: int(p.rebirths), honor: big(p.honor), reincs: int(p.reincs), karma: num(p.karma), drops: (Array.isArray(p.drops) ? p.drops : []).map(clampItem).filter(Boolean).slice(0, 8) } : null;
+  o.pending = p && typeof p === 'object' ? { seconds: num(p.seconds), gold: big(p.gold), floors: int(p.floors, 0, 0, 1e6), kills: num(p.kills), levels: int(p.levels, 0, 0, 1e6), stones: int(p.stones, 0, 0, 1e9), rebirths: int(p.rebirths), honor: big(p.honor), reincs: int(p.reincs), karma: num(p.karma), trace: int(p.trace, 0, 0, 1e12), drops: (Array.isArray(p.drops) ? p.drops : []).map(clampItem).filter(Boolean).slice(0, 8) } : null;
   return o;
 }
 function cleanBp(p) {
@@ -1593,6 +1598,7 @@ export function normalize(s) {
   const b = newSave();
   if (!s || typeof s !== 'object') return b;
   const o = { ...b, ...s };
+  delete o.omen;   // 5.14.27 검토판의 환생의 징조는 뺐다 (미리보기 세이브 정리)
   o.rkUid = typeof s.rkUid === 'string' && /^[0-9a-f]{64}$/.test(s.rkUid) ? s.rkUid : '';   // 5.14.22 마지막 랭킹 식별자: 세이브 코드로 다른 플랫폼에 옮기면 랭킹 계정도 따라간다 (rank.js syncOwner)
   o.holy = int(s.holy, 0, 0, 1e9); { const e = s.engr && typeof s.engr === 'object' ? s.engr : {}; o.engr = {}; for (const sl of SLOTS) { const x = e[sl.id]; if (x && ENGR_KEYS.includes(x.k)) { const g = int(x.g, 0, 0, ENGR_R.length - 1); o.engr[sl.id] = { k: x.k, g, v: x.v > 0 ? int(x.v, 0, ENGR_R[g][0], ENGR_R[g][1]) : 0 }; } } }   // 5.14.10 장비 각인
   o.style = STYLES.includes(s.style) ? s.style : 'skill'; o.stRate = D0;   // 5.14.3 전투 스타일 (stRate = 옮겨 가는 초당 피해). 5.14.6: 불러올 때는 0부터 (몇 초면 다시 찬다. 옛 회차 값이 남지 않게)
@@ -3035,7 +3041,7 @@ function autoTick(s, dt, ev) {
   // 윤회: honor = 명예 기준 이상 · time = 지난 윤회 후 N분마다 (둘 다 이번 주기 B100 이상 필요)
   const riOk = s.auto.riMode === 'time' ? (s.riT || 0) >= (s.auto.riEvery || 30) * 60 : riTarget(s).gt(0) && D(s.honor).gte(riTarget(s));
   if (autoOn(s, 'reinc') && !s.boss && canReinc(s) && riOk) {
-    const k = reincarnate(s); ev.autoReinc = (ev.autoReinc || 0) + k; ev.autoReincs = (ev.autoReincs || 0) + 1; ev.convStones = (ev.convStones || 0) + LAST_CONV.stones;
+    const tg = traceGain(s); const k = reincarnate(s); ev.autoReinc = (ev.autoReinc || 0) + k; ev.autoTrace = (ev.autoTrace || 0) + tg; ev.autoReincs = (ev.autoReincs || 0) + 1; ev.convStones = (ev.convStones || 0) + LAST_CONV.stones;
     return;
   }
   if (autoOn(s, 'rebirth') && !s.boss && honorGain(s).gt(0)) {
@@ -3397,8 +3403,10 @@ export function advance(s, now = Date.now()) {
   const ev = {};
   // 긴 오프라인은 큰 간격으로 묶어서 계산 (12시간이어도 약 9천 번 → 1초 안팎)
   // 영구 2배속이면 계산할 시간이 2배라 횟수 상한도 배율만큼 늘린다 (간격은 같게 해서 정확도 유지, 1배속은 기존과 같음)
+  // 5.14.27: 계산 횟수 상한을 시간에 맞춤. 전에는 상한(12000×최대시간/12)에 걸려 오프라인 최대 18시간(긴 휴식 6레벨) 중 15시간만 진행되고 나머지가 버려졌다.
+  // 간격은 그대로 최대 3초 (간격을 키우면 보스전이 거칠어져 오히려 덜 진행됨)
   const CH = sec > 600 ? Math.min(3, Math.max(0.5, sec / 8000)) : 0.5;
-  const n = Math.min(Math.ceil(sec / CH), Math.ceil(12000 * px * offlineCapH(s) / OFFLINE_CAP_H));
+  const n = Math.min(Math.ceil(sec / CH), 45000);
   // 자동 환생 '새 층 없이 N분'은 실제 시간으로 셈다: 오프라인 배율(60%)·부스트로 늘어난 계산 시간을 실제 시간으로 되돌린다
   RT = sec > 0 ? Math.min(10, (offline ? Math.min(realSec, capS) : realSec) / (n * CH)) : 1;
   AGG = { s: null };
@@ -3409,13 +3417,13 @@ export function advance(s, now = Date.now()) {
     gold: D(ev.gold), floors: ev.autoRebirths ? 0 : Math.max(0, s.floor - before.floor),
     kills: ((s.life && s.life.kills) || 0) - before.kills, levels: ev.autoRebirths ? 0 : Math.max(0, s.level - before.level),
     stones: s.stones - before.stones, drops: ev.drops || [], rebirths: ev.autoRebirths || 0,
-    honor: D(ev.autoRebirth), reincs: ev.autoReincs || 0, karma: ev.autoReinc || 0,
+    honor: D(ev.autoRebirth), reincs: ev.autoReincs || 0, karma: ev.autoReinc || 0, trace: ev.autoTrace || 0,
   };
   if (offline) {
     const p = s.pending || { seconds: 0, gold: D0, floors: 0, kills: 0, levels: 0, stones: 0, drops: [] };
     p.seconds += res.seconds; p.gold = D(p.gold).add(res.gold); p.floors += res.floors;
     p.kills += res.kills; p.levels += res.levels; p.stones += res.stones; p.rebirths = (p.rebirths || 0) + res.rebirths;
-    p.honor = D(p.honor).add(res.honor); p.reincs = (p.reincs || 0) + res.reincs; p.karma = (p.karma || 0) + res.karma;
+    p.honor = D(p.honor).add(res.honor); p.reincs = (p.reincs || 0) + res.reincs; p.karma = (p.karma || 0) + res.karma; p.trace = (p.trace || 0) + (res.trace || 0);
     if (aby) { const q = p.aby || (p.aby = { n: 0, crystal: 0, trace: 0, d: 0 }); q.n += aby.n; q.crystal = (q.crystal || 0) + aby.crystal; q.trace += aby.trace; q.d = Math.max(q.d, aby.d); }
     p.drops = p.drops.concat(res.drops).sort((a, b) => (b.r * 10 + b.t) - (a.r * 10 + a.t)).slice(0, 8);
     s.pending = p;

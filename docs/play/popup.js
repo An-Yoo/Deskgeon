@@ -1,6 +1,6 @@
 import {
   SLOTS, SLOT_BY_ID, SLOT_STAT_NAME, RARITIES, MYTH_PIECE_X, MONSTERS, FLOOR_NAMES, FLOOR_TILES, UPGRADES, SKILLS, SKILL_BY_ID, SKILL_MAX, CLASSES, CLASS_IDS, COMPANIONS, COMP_BY_ID, C_RARITY, TEAM_MAX, AWAKEN_MAX, PULL_COST, PULL10_COST, PITY, BOSS_TIME, REBIRTH_FLOOR, OFFLINE_RATE, STAT_LABEL, load, save, advance, step, stats, monsterIndex, killsNeeded, xpNeed, itemValue, itemName, itemIcon, itemDoll, sellPrice, equipFromBag, sellFromBag, sellAllWorse, buyUpgrade, upgradeCost, upgradeCostN, buyStone, buyStoneMax, stoneMaxCount, bagCount, sellByRarity, itemKey, stonePrice, learnSkill, skillUnlocked, skillVal, skillDesc, passiveChance, passiveMult, classSkills, changeClass, teamValue, ownValue, compCoef, ownSummary, statText, pull, toggleTeam, honorGain, rebirth, fmt, fmtDur, syncState, backup, listBackups, exportCode, importCode, SYNC_EVERY_MS, driveState, driveStatus, driveLink, driveUnlink, driveSync, itemScore, baseName, AFFIXES, UNIQUES, rarityOdds, canChallenge, challengeBoss, savePreset, applyPreset, PRESET_MAX, t, setLang, getLang, LANGS, resetSkills, stoneDiscount, serialize, compPassive, compActive, compSkillName, compSkillDesc, CSK_AW_P, CSK_AW_A, RELICS, relicLv, relicCost, buyRelic, offlineRate, BREAK_EVERY, BREAK_X, BREAK_IDS, breakMult, SHARD_GAIN, CLV_MAX, CLV_STEP, compLvCost, compLevelUp, MASTERY, masteryLv, masteryUnlocked, buyMastery, skillsMaxed, masterySkills, spTotal, compLevelUpAll, ZONES, zoneStart, loopOf, LOOP_LEN, ESS_BY_R, gearEssence, REINC_FLOOR, KARMA_HONOR, KARMA_POW, karmaGain, canReinc, rbFloorTarget, riTarget, reincarnate, DAILY, WEEKLY, DAILY_ALL, WEEKLY_ALL, ATTEND, BOOST_MIN, BOOST_X, questRoll, missionState, claimMission, canAttend, attend, boostLeft, boostMult, speedMult, useBoost, AUTO, autoOn, bossRetryWait, TOWER_TRIES, TOWER_TIME, towerMon, canTower, towerStart, mutKind, mutOf, setMut, mutPending, EVENTS, EVENT_BY_ID, EVENT_TTL, resolveEvent, eventOptOk, eventReward, GUIDE, guideStep, guideClaim, guideTick, DAILY_TRIES, DAILY_MODS, DAILY_BLESS, dailyState, dailyMod, dailyRun, sigOf, SIG_PITY, TOWERS, towerState, riftState, canRift, riftStart, riftUnlocked, riftFloor, RIFT_UNLOCK, RIFT_WAVES, RIFT_TIME, KEY_DAILY, KEY_MAX, RUNE_SLOTS, RUNE_BAG, RUNE_UP_MAX, runeState, runeVal, runeEquip, runeUnequip, runeUpgrade, runeUpCost, runeDismantle, runeDustOf, runeSum, runeScore, ENCH_MAX, ENCH_STEP, enchLv, enchCost, enchant, SETS, setInfo, ACH, ACH_REWARD, ACH_PCT, BEST_STARS, BEST_PCT, achMet, achClaimed, achPoints, claimAch, bestStars, convPreview, LAST_CONV, COS_SLOTS, COSTUMES, COS_BY_ID, lookOf, lookOptions, setLook, cosCount, EXP_SLOTS, EXP_SIZE, EXP_DUR, expSlots, onExped, expFree, expPower, expMult, expAutoPick, expPreview, expStart, expRecall, expClaim, CG_KINDS, CG_BAG, CG_DUST, cgVal, cgBag, cgEq, cgEquip, cgUnequip, cgDismantle, cgMerge, cgAutoEquip, cgScore, C_MAXR, STONE_SHOP, MILE_LR, MILE_MR, shopKeyLeft, rushCost, shopBuy, mileBuy, expCap, EXP_MAX, MR_POW, MRP_MAX, mrpNeed, mrpLv, mrpXp, cgBladeSum, cgExpVal, BASIC_SKILL_K, renamePreset, enchX, enchNextCost, enchXSum, ENCHX_POW, PETS, PET_MAX, PET_UNLOCK, PET_FX, PET_FX_KEYS, petUnlocked, petCap, petOwned, petLeft, petDrawCost, petRollCost, petLvCost, petVal, petAgg, petDraw, petLevelUp, petRoll, petKeep, petSetAct, petPot, petDeposit, SOUL_REINC, SOUL_MAXLV, SOUL_SLOT_AT, SOUL_FX_KEYS, SOUL_LOOKS, soulUnlocked, soulMade, soulCap, soulNeed, soulSlots, soulCraft, soulSetLook, soulRename, soulSetOpt, soulShow, soulFeedCost, soulFeed, soulVal, petAutoRoll, petAutoOdds, petWant, rushAllCost, cosLeftN, shopBuyN, expSendAll, expClaimAll, cgTakeMoved, soulAwakenSkill, cosBonus, cosFxOf, COS_FX, COS_FX_V, petLevelUpAll, compSyn, teamMax, TEAM5_FLOOR, METER, meterReset, TITLES, TITLE_BY_ID, titleState, titleNeed, titleOwned, titleEquip, titleBonus, TITLE_KEYS, TOWN_N, TOWN_B, TOWN_BY_ID, TOWN_MAXLV, TOWN_PAIR, townState, townCount, townCopies, townCopyMax, townTileCost, townBuildCost, townUpCost, townCanOpen, townOpen, townBuild, townUp, townMove, townSell, townTileMult, townAgg, townVal, dl2State, dl2Cur, dl2Start, dl2Pick, dl2Buy, dlWeekSum, DL_WEEK, DL_SHOP, DL_EVERY, towerBestAll, masterySpent, canTowerSweep, towerSweep, towerSweepAll, canRiftSweep, riftSweep, riftSweepAll, townUsed, townRes, townResMult, townCostOf, TOWN_RES_PCT, TOWN_RES_CAP, townOpenable, townOpenNext, townOpenMany, townOpenAffordable, TOWN_FLOORS, TOWN_FLOOR_BY_ID, TOWN_RESERVES, townFloor, townPaint, townCheapest, townUpCheap, BOSS_EVERY, tpreOn, tpreSave, tpreSet, tpreSameAsNow, setSaveHooks, loadLocal, cosPool, hwOn, HW_END, HW_GIFT, monPick, HW_MOBS, HW_MOB_X, exportCodeShort, importCodeAny, sigTypes, SIG_BOOK, SIG_ORDER, RUNE_RMULT,
-  TRACES, traceState, traceLv, traceCost, traceGain, buyTrace, autoTraces, honorRate, DL_FAM, DL_RES, dlResCount, dlResN, DL_FAV_X, TRACE_HONOR, TRACE_KARMA, TRACE_START, TRACE_DEEP_FLOOR,
+  TRACES, traceState, traceLv, traceCost, traceGain, buyTrace, autoTraces, honorRate, UNLOCK_AT, menuFresh, menuOpen, DL_FAM, DL_RES, dlResCount, dlResN, DL_FAV_X, TRACE_HONOR, TRACE_KARMA, TRACE_START, TRACE_DEEP_FLOOR,
   MDEX_KEYS, MDEX_PCT, mdexStars, BLESS, BLESS_BY_ID, BLESS_BOOK, blessState, blessFx, blessSeenN, chooseBless, TRACE_OFFH, TRACE_EXP, TRACE_POW, TRACE_CALM, OFFLINE_CAP_H as OFF_CAP0,
   soulFree, SOUL_FREE_FLOOR,
   RUNE_SLOT_MAX, RUNE_SLOT_PCT, runeSlotPct, runeSlotCost, runeSlotUp, runeAutoSpend,
@@ -36,6 +36,24 @@ function changeLang(l) {
   document.getElementById('clsBan')?.remove(); document.querySelectorAll('[data-sig]').forEach(x => { x.dataset.sig = ''; });   // 5.14.26 이미 그려 둔 글자도 새 언어로
   render();
 }
+// 5.14.27 빨간 점: 그 탭을 열어 본 뒤 3분 동안은 다시 켜지 않는다 (늘 켜져 있으면 의미가 없어서)
+let rbArmedUntil = 0;
+// 5.14.27 메뉴 단계별 열림
+const subOpen = k => k === 'rebirth' ? menuOpen(S, 'rebirth') : k === 'reinc' ? !menuFresh(S) : true;
+let unlockSig = null;
+function applyUnlocks() {
+  if (!S) return;
+  const st = { quest: menuOpen(S, 'quest'), town: menuOpen(S, 'town'), tower: menuOpen(S, 'tower'), rebirth: menuOpen(S, 'rebirth'), extra: menuOpen(S, 'extra') };
+  const sig = JSON.stringify(st); if (sig === unlockSig) return;
+  const prev = unlockSig ? JSON.parse(unlockSig) : null; unlockSig = sig;
+  document.querySelector('.tabs button[data-go="quest"]')?.classList.toggle('hidden', !st.quest);
+  for (const id of ['cosBtn', 'engrBtn', 'soulBtn']) document.getElementById(id)?.classList.toggle('lockhide', !st.extra);
+  const sb = $('#subTabs'); if (sb && !sb.classList.contains('hidden')) { const on = sb.querySelector('button.on'); if (on) renderSubTabs(on.dataset.sub); }
+  renderDockBar();
+  if (prev) for (const k of Object.keys(st)) if (st[k] && !prev[k]) { const m = t('unl.' + k); toast(t('unl.toast', { m })); addLog('<b>' + t('unl.toast', { m }) + '</b>'); }
+}   // 5.14.27 환생 확인 (6초)
+const dotSeenAt = {}; const DOT_QUIET_MS = 180000;
+const dotQuiet = k => Date.now() - (dotSeenAt[k] || 0) < DOT_QUIET_MS;
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pick = a => a[Math.floor(Math.random() * a.length)];
 const A = {};
@@ -801,12 +819,22 @@ function castFx(c) {
   }
 }
 
-// ================= 메인 루프 =================
+// 5.14.27 앱을 끄지 않고 다른 앱에 갔다 돌아오면(백그라운드 → 복귀) 진행은 되는데 보고서를 버려서, 오프라인 보상이 '아예 안 들어온' 것처럼 보였다.
+// 1분 넘게 비웠으면 앱을 새로 켰을 때와 같은 보고서를 띄우고, 그 사이 환생·윤회했으면 화면도 새로 그린다
+function catchUpReport() {
+  const p = S.pending; S.pending = null;
+  if (!p || !(p.seconds > 60) || !(p.kills > 0 || D(p.gold).gt(0) || p.rebirths > 0 || p.reincs > 0)) return;
+  if (p.rebirths > 0 || p.reincs > 0) { logLines = []; hudSig = ''; buildSlots(); buildBag(); buildSkills(); buildComps(); buildRelics(); }
+  showReport(p);
+}// ================= 메인 루프 =================
 let last = performance.now(), lastFrame = 0;
 let slp = null, slpUI = 0, slpInput = Date.now(), slpLock = null, slpSig = '', slpShiftAt = 0;   // 5.14.16 절전 모드 상태 (아래 '절전 모드' 절)
 function frame(now) {
   let real = Math.max(0, (now - last) / 1000);
-  if (real > 5) { const t0 = performance.now(); const cr = advance(S); if (cr && cr.aby) abyLog(cr.aby); S.pending = null; real = 0; (window.__dmLog || (() => {}))('catch-up ' + Math.round(performance.now() - t0) + 'ms'); }
+  // 5.14.27: 휴대폰이 화면을 끈 채 잠들면 performance.now() 가 멈춰 있다가 깨어나도 몇 초만 흐른 것으로 나온다.
+  // 그래서 따라잡기를 건너뛰고 아래에서 lastTick 을 지금으로 덮어써 자리 비운 시간이 통째로 사라졌다 → 실제 시계(lastTick) 차이로도 판단한다
+  const gapWall = (Date.now() - (S.lastTick || Date.now())) / 1000;
+  if (real > 5 || gapWall > 5) { const t0 = performance.now(); const cr = advance(S); if (cr && cr.aby) abyLog(cr.aby); catchUpReport(); real = 0; (window.__dmLog || (() => {}))('catch-up ' + Math.round(performance.now() - t0) + 'ms'); }
   const dt = Math.min(.25, real);
   last = now; lastFrame = now;
   for (let i = timers.length - 1; i >= 0; i--) { timers[i].t -= dt; if (timers[i].t <= 0) { const f = timers[i].fn; timers.splice(i, 1); f(); } }
@@ -970,16 +998,37 @@ function handleEvents(ev, prevBoss) {
       if (it.r >= 3) { pillar = { x: b.cx, w: 14, t: 0, d: .9, color: RARITIES[it.r].color }; }
     }
     if (ev.bagKeys) for (const k of ev.bagKeys) recentKeys.add(k);
-    if (!$('[data-tab="gear"]').classList.contains('hidden')) { buildSlots(); buildBag(); }
+    if (!$('[data-tab="gear"]').classList.contains('hidden')) scheduleGear();
   }
 }
 
 let logLines = [], lastFloorBanner = 0;
+// 5.14.27 낮은 층을 초당 수십 층씩 지날 때 로그를 한 줄마다 통째로 다시 써서(초당 수천 요소) 휴대폰에서 터치가 씹혔다.
+// → 0.25초에 한 번만 쓰고, 화면에 안 보이면 보일 때까지 미루고, 손가락이 눌려 있는 동안은 쓰지 않는다
+let logDirty = false, logTm = 0, logAt = 0;
+let ptrDown = false, ptrUpAt = 0;
+const inputBusy = () => ptrDown || performance.now() - ptrUpAt < 120;
+function flushLog() {
+  logTm = 0; if (!logDirty) return;
+  const el = $('#log'); if (!el) return;
+  if (!el.offsetParent || inputBusy()) { logTm = setTimeout(flushLog, 400); return; }
+  logDirty = false; logAt = performance.now();
+  el.innerHTML = logLines.slice().reverse().map(l => `<div>${l}</div>`).join('');
+}
 function addLog(html) {
   logLines.push(html);
   if (logLines.length > 30) logLines.shift();
-  $('#log').innerHTML = logLines.slice().reverse().map(l => `<div>${l}</div>`).join('');
+  logDirty = true;
+  if (!logTm) logTm = setTimeout(flushLog, Math.max(0, 250 - (performance.now() - logAt)));
 }
+// 장비 탭: 아이템이 쏟아질 때 가방·슬롯을 0.7초에 한 번만 다시 그리고, 누르고 있는 동안은 미룬다
+let gearTm = 0, gearAt = 0;
+function scheduleGear() {
+  if (gearTm) return;
+  const run = () => { gearTm = 0; if ($('[data-tab="gear"]').classList.contains('hidden')) return; if (inputBusy()) { gearTm = setTimeout(run, 300); return; } gearAt = performance.now(); buildSlots(); buildBag(); };
+  gearTm = setTimeout(run, Math.max(0, 700 - (performance.now() - gearAt)));
+}
+for (const [evn, down] of [['pointerdown', true], ['pointerup', false], ['pointercancel', false]]) document.addEventListener(evn, () => { ptrDown = down; if (!down) ptrUpAt = performance.now(); }, true);
 
 // ================= 전투 HUD (쿨타임 / 버프 / 패시브) =================
 let hudSig = '';
@@ -1096,14 +1145,14 @@ function render() {
     const bk = row.querySelector('.brk');
     if (bk) setTxt(bk, t('ui.breakNext', { m: fmtX(breakMult(u.id, n)), x: BREAK_X, n: (Math.floor(n / BREAK_EVERY) + 1) * BREAK_EVERY }));
   }
-  $('#shopDot').classList.toggle('hidden', autoOn(S, 'upgrade') || !UPGRADES.some(u => D(S.gold).gte(upgradeCost(u, S.up[u.id] || 0))));
-  $('#skillDot').classList.toggle('hidden', autoOn(S, 'skill') || (S.sp <= 0 && !mutPending(S)));
-  renderGuide(); renderGrowBox(); renderEvents(); autoNotice();
+  $('#shopDot').classList.toggle('hidden', autoOn(S, 'upgrade') || dotQuiet('shop') || !UPGRADES.some(u => D(S.gold).gte(upgradeCost(u, S.up[u.id] || 0))));
+  $('#skillDot').classList.toggle('hidden', autoOn(S, 'skill') || dotQuiet('skill') || (S.sp <= 0 && !mutPending(S)));
+  renderGuide(); renderGrowBox(); renderEvents(); autoNotice(); applyUnlocks();
   if (!document.querySelector('[data-tab="comp"]').classList.contains('hidden')) { renderExped(); renderPetBox(); }
-  $('#compDot').classList.toggle('hidden', !expSlots(S).some(x => x && Date.now() >= x.end) && !(S.abyss && S.abyss.run && Date.now() >= S.abyss.run.end) && S.stones < PULL_COST && !(S.team || []).some(id => { const c = COMP_BY_ID[id], o = S.comp[id]; return c && o && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(c, o.lv || 0); }));
+  $('#compDot').classList.toggle('hidden', !expSlots(S).some(x => x && Date.now() >= x.end) && !(S.abyss && S.abyss.run && Date.now() >= S.abyss.run.end) && (S.stones < PULL10_COST || dotQuiet('comp')) && !(S.team || []).some(id => { const c = COMP_BY_ID[id], o = S.comp[id]; return c && o && (o.lv || 0) < CLV_MAX && (S.shards || 0) >= compLvCost(c, o.lv || 0); }));
   if (!render._gd || performance.now() - render._gd > 1000) {
     render._gd = performance.now();
-    $('#gearDot').classList.toggle('hidden', !S.bag.some(it => !S.equip[it.s] || itemScore(it) > itemScore(S.equip[it.s])));
+    $('#gearDot').classList.toggle('hidden', S.autoEquip !== false || dotQuiet('gear') || !S.bag.some(it => !S.equip[it.s] || itemScore(it) > itemScore(S.equip[it.s])));
   }
   $('#spLeft').textContent = S.sp;
   $('#stoneCost').textContent = fmt(stonePrice(S));
@@ -1125,7 +1174,7 @@ function render() {
   $('#honor').textContent = fmtN(S.honor);
   $('#rebirths').textContent = S.rebirths;
   $('#kills').textContent = fmt(S.totalKills);
-  $('#rbBtn').disabled = hg.lte(0);
+  $('#rbBtn').disabled = hg.lte(0); if (rbArmedUntil > Date.now() && $('#rbBtn').textContent !== t('ui.rbAgain')) { $('#rbBtn').textContent = t('ui.rbAgain'); $('#rbBtn').classList.add('armed'); }
   $('#rbBar').style.width = Math.min(100, (S.maxFloor / REBIRTH_FLOOR) * 100) + '%';
   $('#rbHint').textContent = hg.gt(0) ? t('ui.rbGain', { h: fmtN(hg), p: fmtP(hg.mul(5)) }) : t('ui.rbNeed', { n: REBIRTH_FLOOR, m: S.maxFloor });
   { let gl = document.getElementById('gbLine'); if (!gl) { gl = document.createElement('div'); gl.id = 'gbLine'; gl.className = 'gbline'; $('#rbHint').after(gl); } const hl = gboostLeft(S, 'h'), kl = gboostLeft(S, 'k'); const tx = [hl ? t('gb.h', { t: fmtClock(hl) }) : '', kl ? t('gb.k', { t: fmtClock(kl) }) : ''].filter(Boolean).join(' · '); if (gl.textContent !== tx) gl.textContent = tx; gl.classList.toggle('hidden', !tx); }
@@ -1997,18 +2046,19 @@ function renderMile() {
 // ---------- 소환석 상점 ----------
 function buildStoneShop() {
   const box = $('#stoneShop'); if (!box) return;
+  const vet = (S.rebirths || 0) > 0 || Math.max(S.bestFloor || 0, S.maxFloor || 0) >= 30, near = c => vet || S.stones >= c * 0.5;   // 5.14.27
   const sb = S.shopBuy || {}, nSlot = sb.expSlot || 0, keyLeft = shopKeyLeft(S), cosLeft = cosPool(S);
   const nBtn = (id, n) => { const k = Math.min(n, Math.floor(S.stones / STONE_SHOP[id])); return k > 1 ? `<button class="mini" data-ssn="${id}" data-n="${k}" title="${t('ss.nT')}">×${k} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(k * STONE_SHOP[id])}</button>` : ''; };
   const row = (id, title, desc, cost, ok, extra = '') => `<div class="ssrow ss-${id}"><div class="t"><b>${title}</b><span>${desc}</span></div>${extra}<button class="mini ${ok ? 'hot' : ''}" data-ss="${id}" ${ok ? '' : 'disabled'}><img src="assets/ui/stone.png" class="px i14" alt=""> ${cost}</button></div>`;
   const sig = [Math.floor(S.stones / 2000), keyLeft, towerBestAll(S) >= MYTH_BOX_FLOOR, abyUnlocked(S), nSlot, cosLeft.length, S.stones >= STONE_SHOP.costume, S.stones >= STONE_SHOP.key, nSlot < 2 && S.stones >= STONE_SHOP.expSlot[nSlot], getLang(), shopCos].join('|');
   if (box.dataset.sig === sig) return; box.dataset.sig = sig;
   box.innerHTML = `<div class="ssh"><b>${t('ss.title')}</b><span>${t('ss.sub')}</span></div>` +
-    row('gearBox', t('ss.gearBox'), t('ss.gearBox.d'), fmtN(STONE_SHOP.gearBox), S.stones >= STONE_SHOP.gearBox, nBtn('gearBox', 10)) +
-    row('gearBoxHi', t('ss.gearBoxHi'), t('ss.gearBoxHi.d'), fmtN(STONE_SHOP.gearBoxHi), S.stones >= STONE_SHOP.gearBoxHi, nBtn('gearBoxHi', 10)) +
+    (near(STONE_SHOP.gearBox) ? row('gearBox', t('ss.gearBox'), t('ss.gearBox.d'), fmtN(STONE_SHOP.gearBox), S.stones >= STONE_SHOP.gearBox, nBtn('gearBox', 10)) : '') +
+    (near(STONE_SHOP.gearBoxHi) ? row('gearBoxHi', t('ss.gearBoxHi'), t('ss.gearBoxHi.d'), fmtN(STONE_SHOP.gearBoxHi), S.stones >= STONE_SHOP.gearBoxHi, nBtn('gearBoxHi', 10)) : '') +
     (towerBestAll(S) >= MYTH_BOX_FLOOR ? row('gearBoxMyth', t('ss.gearBoxMyth'), t('ss.gearBoxMyth.d', { p: Math.round(MYTH_BOX_P * 100), f: MYTH_BOX_FLOOR }), fmtN(STONE_SHOP.gearBoxMyth), S.stones >= STONE_SHOP.gearBoxMyth, nBtn('gearBoxMyth', 10)) : '') +
-    row('key', t('ss.key'), t('ss.key.d', { n: keyLeft, m: STONE_SHOP.keyDaily }), fmtN(STONE_SHOP.key), keyLeft > 0 && S.stones >= STONE_SHOP.key) +
-    (!abyUnlocked(S) && nSlot < EXP_MAX - 2 ? row('expSlot', t('ss.expSlot', { n: expCap(S) + 1 }), t('ss.expSlot.d'), fmtN(STONE_SHOP.expSlot[nSlot]), S.stones >= STONE_SHOP.expSlot[nSlot]) : '') +
-    (cosLeft.length ? row('costume', t('ss.cos'), t('ss.cos.d', { n: cosLeft.length }), fmtN(STONE_SHOP.costume), S.stones >= STONE_SHOP.costume && !!shopCos && cosLeft.some(z => z.id === shopCos),
+    (vet || riftUnlocked(S) ? row('key', t('ss.key'), t('ss.key.d', { n: keyLeft, m: STONE_SHOP.keyDaily }), fmtN(STONE_SHOP.key), keyLeft > 0 && S.stones >= STONE_SHOP.key) : '') +
+    (!abyUnlocked(S) && nSlot < EXP_MAX - 2 && near(STONE_SHOP.expSlot[nSlot]) ? row('expSlot', t('ss.expSlot', { n: expCap(S) + 1 }), t('ss.expSlot.d'), fmtN(STONE_SHOP.expSlot[nSlot]), S.stones >= STONE_SHOP.expSlot[nSlot]) : '') +
+    (cosLeft.length && near(STONE_SHOP.costume) ? row('costume', t('ss.cos'), t('ss.cos.d', { n: cosLeft.length }), fmtN(STONE_SHOP.costume), S.stones >= STONE_SHOP.costume && !!shopCos && cosLeft.some(z => z.id === shopCos),
       (S.stones >= STONE_SHOP.costume ? `<button class="mini" data-ss="cosAll" title="${t('ss.cosAllT')}">${t('ss.cosAll', { n: Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) })} <img src="assets/ui/stone.png" class="px i14" alt=""> ${fmtN(Math.min(cosLeft.length, Math.floor(S.stones / STONE_SHOP.costume)) * STONE_SHOP.costume)}</button>` : '') + `<select data-sc="1"><option value="">${t('ss.cosPick')}</option>${cosLeft.map(z => `<option value="${z.id}" ${shopCos === z.id ? 'selected' : ''}>${t('slot.' + z.slot)} · ${t('cos.n.' + z.id)} (${cosFxTxt(z.id)})</option>`).join('')}</select>`) : '') +
     (abyUnlocked(S) ? '' : `<div class="qx">${t('ss.note')}</div>`);
 }
@@ -2216,7 +2266,7 @@ function bindEngr() {
 
 
 // ---------- 5.14.10 패치노트 (업데이트 뒤 처음 한 번 + 설정 버튼) ----------
-const PATCH_NOTES = [{"v":"5.14.26","ko":["<b>오늘의 던전 공명</b>: 카드가 광폭·수호·질주로 나뉘고 매번 계열마다 1장씩 나와요. 같은 계열 3장·6장이면 공명이 켜져요(광폭 공격력, 수호 보스 잡으면 층 건너뛰기, 질주 잡을 수 감소·시간 연장). 그날의 <b>오늘의 공명</b> 계열은 2장·4장에 켜지고 효과 ×3.","<b>초보자 가이드</b>: 이미 해낸 단계 보상을 한 번에 받아요. 강화 위치 안내를 고쳤어요.","처음 시작하면 출석 창은 첫 보스를 잡은 뒤에 떠요. 언어를 바꾸면 화면 글자가 바로 바뀌어요."],"en":["<b>Daily Dungeon Resonance</b>: cards are now Fury, Ward or Rush, one of each per pick. Collect 3 and 6 of one kind to trigger a Resonance (Fury: ATK, Ward: boss kills skip floors, Rush: fewer kills per floor and more time). Each day's <b>Today's Resonance</b> kind triggers at 2 and 4 cards with ×3 effect.","<b>Starter guide</b>: rewards for steps you already finished are claimed together. Fixed the upgrade location hint.","New players see the check-in window after the first boss. Changing language now updates text already on screen."]},{"v":"5.14.25","ko":["<b>위계 3·4 신격 스킬</b>: 상위신(B3000)·주신(B4000)에 직업마다 2개씩. 보스 공격 봉인, 쿨타임 초기화, 제한시간 연장, 처형, 피해 차단처럼 전투 규칙이 바뀌어요.","<b>심층의 명예</b>: 최대 레벨 22 → 50 (23레벨부터 레벨마다 +0.002).","<b>신화 장비</b> 드롭 확률이 위계 4까지 올라가요.","<b>보스 레이드</b>: 30단계 이후 전투창 표시와 '/ 9999' 표시를 고쳤어요."],"en":["<b>Rank 3 and 4 divine skills</b>: 2 per class at Greater God (B3000) and High God (B4000), each with a rule effect: boss seal, cooldown reset, extra time, execute, damage block.","<b>Deep Honor</b>: max level 22 → 50 (+0.002 per level from 23).","<b>Mythic gear</b> drop rate keeps rising up to rank 4.","<b>Boss Raid</b>: fixed the battle view after stage 30 and removed the '/ 9999' label."]},{"v":"5.14.20","ko":["<b>하단 배너 광고 제거</b>: 화면 맨 아래 배너 광고를 없앴어요. 게임 화면이 다시 아래까지 넓어져요."],"en":["<b>Bottom banner removed</b>: the banner ad at the bottom of the screen is gone, and the game uses the full height again."]},{"v":"5.14.19","ko":["<b>윤회의 흔적</b>: 명예 증가 최대 레벨 20 → 22, 새 강화 <b>심층 완화</b>(B1000부터 층당 몬스터 체력 배율 레벨마다 −0.0009, 최대 10레벨) 추가.","<b>영원의 힘</b>: 레벨마다 공격력·체력 ×1.02 곱연산으로 바뀌었어요(기존 +3% 합산).","상단 레벨 옆 스킬 포인트(SP) 표시를 없앴어요."],"en":["<b>Reincarnation Traces</b>: Honor Growth max level 20 → 22, new <b>Deep Easing</b> (from B1000, per-floor monster HP rate −0.0009 per level, max 10).","<b>Eternal Power</b>: now ×1.02 ATK and HP per level (multiplicative, was +3% additive).","Removed the skill point (SP) badge next to the level at the top."]},{"v":"5.14.18","ko":["<b>출석 보상 한 번 더</b>: 출석한 뒤 광고를 보면 오늘 받은 재화(소환석·조각·정수·부스트·열쇠)를 한 번 더 받아요 (하루 1번)."],"en":["<b>Check-in bonus</b>: after checking in, watch an ad to get today's currency rewards (stones, shards, essence, boosts, keys) once more (once a day)."]},{"v":"5.14.17","ko":["<b>장비 각인</b>: 각인 효과를 바꿔도 이미 돌린 등급과 수치가 그대로 남아요."],"en":["<b>Engravings</b>: changing an engraving effect keeps the grade and value you already rolled."]},{"v":"5.14.16","ko":["<b>절전 모드</b>: 위쪽 달 버튼을 누르면 검은 화면에 층 진행만 보여 주고, 화면이 꺼지지 않게 해요. 전투는 그대로 진행돼요(화면이 꺼지면 오프라인 60% 속도). 밀어서 돌아가요.","<b>자동 절전</b>: 설정에서 조작이 없을 때 1·3·5·10분 뒤 자동으로 절전 모드에 들어가게 할 수 있어요.","탑 일괄 소탕 결과 알림에 글자 코드가 보이던 문제를 고쳤어요."],"en":["<b>Power save</b>: tap the moon button for a dark screen that shows only floor progress and keeps the screen on. Combat keeps running (with the screen off it would drop to 60% offline speed). Slide to return.","<b>Auto power save</b>: in Settings, enter power save automatically after 1, 3, 5 or 10 minutes without input.","Fixed markup text showing in the tower bulk-sweep notice."]},{"v":"5.14.15","ko":["<b>동료형 각인</b>: 동료 피해 각인도 펫·룬처럼 스킬 피해로 바뀌어 효과가 생겨요(지금까지는 효과가 없었어요). 파티에 동료가 없으면 동료 피해 환산은 하지 않아요.","<b>출석</b>: 출석한 뒤 내일 받을 보상을 보여 줘요.","<b>초보자 가이드</b>: 첫 환생 전에 B20 이후 3분 동안 층이 오르지 않으면 환생 단계를 먼저 알려 줘요.","<b>원정</b>: 원정대가 돌아오는 시각을 함께 보여 줘요.","<b>랭킹</b>: 밸런스 조정을 위해 랭킹 기록을 보낼 때 최신 세이브 1개를 함께 보관해요(개인정보 처리방침 9항)."],"en":["<b>Companion style engravings</b>: companion DMG engravings now count as skill damage like pets and runes (they did nothing before). With no companion in the party, companion DMG is not converted.","<b>Check-in</b>: after checking in, you can see tomorrow's reward.","<b>Starter guide</b>: before your first rebirth, if your floor stops rising for 3 minutes past B20, the guide shows the rebirth step first.","<b>Expeditions</b>: shows the time your expedition comes back.","<b>Ranking</b>: to tune balance, your latest save is kept when you send a ranking record (privacy policy section 9)."]},{"v":"5.14.14","ko":["<b>평타형 펫</b>: 도적·전사 평타형에서 평타 피해 펫 효과가 평타에 더 많이(75%) 들어가요. 평타 펫을 끼면 평타형이 더 약하던 문제를 고쳤어요.","<b>마법사·성직자 평타형</b>: 평타 위주 세팅이면 평타 피해 펫을 평타에 그대로 쓰는 방식을 자동으로 골라, 평타형이 스킬형과 비슷해요."],"en":["<b>Basic-style pets</b>: for rogues and warriors in basic style, basic DMG pets now count much more (75%) on basic attacks, so basic pets no longer make basic style the weakest.","<b>Mage/cleric basic style</b>: basic-heavy builds now keep basic DMG pets on basic attacks, so basic style is about as strong as skill style."]},{"v":"5.14.13","ko":["<b>평타형(도적·전사)</b>: 신격 영역을 스킬 피해로 바꾸는 방식과 평타에 그대로 두는 방식 중 더 센 쪽을 자동으로 골라요. 평타 위주 세팅에서 평타형이 크게 강해져요.","<b>동료형</b>: 동료 피해%가 주는 보너스가 줄었어요. 모든 직업에서 동료형만 앞서던 것을 맞췄어요.","<b>추천 세팅 찾기</b>: 스킬 탭 전투 스타일 칸에서 지금 스타일 기준으로 무엇을 바꾸면 세지는지 계산해 보여 주고, 바로 적용할 수 있어요."],"en":["<b>Basic style (rogue, warrior)</b>: the game now picks the stronger of two ways to use your divine domain (as skill damage, or kept on basic attacks). Basic-heavy builds get much stronger.","<b>Companion style</b>: the bonus from companion DMG% is smaller, so companion style no longer leads for every class.","<b>Find best setup</b>: in the combat style box on the skill tab, see which change (style, domain, mutation, soul weapon, party, pet effect) makes you stronger and apply it."]},{"v":"5.14.12","ko":["<b>동료 장비 일괄 분해</b>: 등급(일반~<b>전설</b>)을 골라 그 등급 이하를 한 번에 분해해요. 영웅·전설은 한 번 더 눌러야 분해되고, 신화와 장착 중인 장비는 분해되지 않아요."],"en":["<b>Ally gear bulk salvage</b>: pick a rarity (Common to <b>Legendary</b>) and salvage everything at or below it. Epic and Legendary need a second tap; Mythic and equipped gear are never salvaged."]},{"v":"5.14.11","ko":["<b>탑 상위 이름·신화 장비 기준 조정</b>: 동료 장비 <b>신화</b> 보상이 탑 1001층부터 나와요(2000층·3000층부터 1개씩 더). 탑 기록이 1000층 이상이면 그 탑은 상위 탑 이름으로 바뀌어요. 신화 동료 장비 상자도 탑 기록 1000층부터 상점에 보여요."],"en":["<b>Upper towers and mythic gear moved to 1000F</b>: <b>mythic</b> companion gear now starts at 1001F (+1 from 2000F and 3000F). A tower with a record of 1000F or more takes its upper name. The mythic ally gear box shows from tower record 1000F."]},
+const PATCH_NOTES = [{"v":"5.14.27","ko":["처음 하는 사람은 메뉴가 층마다 하나씩 열려요(모험 B6, 마을 B10, 탑 B15, 환생 B20). 가이드에 오늘의 던전 단계 추가.","빨간 점 줄이기, 환생 확인 6초, 스탯 표 글자 키움, 일본어·중국어 번역 보강.","<b>버그 수정</b>: 낮은 층을 빠르게 지날 때 터치가 씹히던 문제, 휴대폰이 잠들었다 깨면 오프라인 진행이 사라지던 문제, 오프라인 18시간 중 15시간만 진행되던 문제."],"en":["New players unlock menus floor by floor (Quest B6, Village B10, Towers B15, Rebirth B20). Starter guide adds a Daily Dungeon step.","Fewer red dots, 6s rebirth confirm, larger stat text, more Japanese and Chinese text.","<b>Fixes</b>: dropped taps while racing through low floors, offline progress lost when the phone slept with the game open, 18h offline cut to 15h."]},{"v":"5.14.26","ko":["<b>오늘의 던전 공명</b>: 카드가 광폭·수호·질주로 나뉘고 매번 계열마다 1장씩 나와요. 같은 계열 3장·6장이면 공명이 켜져요(광폭 공격력, 수호 보스 잡으면 층 건너뛰기, 질주 잡을 수 감소·시간 연장). 그날의 <b>오늘의 공명</b> 계열은 2장·4장에 켜지고 효과 ×3.","<b>초보자 가이드</b>: 이미 해낸 단계 보상을 한 번에 받아요. 강화 위치 안내를 고쳤어요.","처음 시작하면 출석 창은 첫 보스를 잡은 뒤에 떠요. 언어를 바꾸면 화면 글자가 바로 바뀌어요."],"en":["<b>Daily Dungeon Resonance</b>: cards are now Fury, Ward or Rush, one of each per pick. Collect 3 and 6 of one kind to trigger a Resonance (Fury: ATK, Ward: boss kills skip floors, Rush: fewer kills per floor and more time). Each day's <b>Today's Resonance</b> kind triggers at 2 and 4 cards with ×3 effect.","<b>Starter guide</b>: rewards for steps you already finished are claimed together. Fixed the upgrade location hint.","New players see the check-in window after the first boss. Changing language now updates text already on screen."]},{"v":"5.14.25","ko":["<b>위계 3·4 신격 스킬</b>: 상위신(B3000)·주신(B4000)에 직업마다 2개씩. 보스 공격 봉인, 쿨타임 초기화, 제한시간 연장, 처형, 피해 차단처럼 전투 규칙이 바뀌어요.","<b>심층의 명예</b>: 최대 레벨 22 → 50 (23레벨부터 레벨마다 +0.002).","<b>신화 장비</b> 드롭 확률이 위계 4까지 올라가요.","<b>보스 레이드</b>: 30단계 이후 전투창 표시와 '/ 9999' 표시를 고쳤어요."],"en":["<b>Rank 3 and 4 divine skills</b>: 2 per class at Greater God (B3000) and High God (B4000), each with a rule effect: boss seal, cooldown reset, extra time, execute, damage block.","<b>Deep Honor</b>: max level 22 → 50 (+0.002 per level from 23).","<b>Mythic gear</b> drop rate keeps rising up to rank 4.","<b>Boss Raid</b>: fixed the battle view after stage 30 and removed the '/ 9999' label."]},{"v":"5.14.20","ko":["<b>하단 배너 광고 제거</b>: 화면 맨 아래 배너 광고를 없앴어요. 게임 화면이 다시 아래까지 넓어져요."],"en":["<b>Bottom banner removed</b>: the banner ad at the bottom of the screen is gone, and the game uses the full height again."]},{"v":"5.14.19","ko":["<b>윤회의 흔적</b>: 명예 증가 최대 레벨 20 → 22, 새 강화 <b>심층 완화</b>(B1000부터 층당 몬스터 체력 배율 레벨마다 −0.0009, 최대 10레벨) 추가.","<b>영원의 힘</b>: 레벨마다 공격력·체력 ×1.02 곱연산으로 바뀌었어요(기존 +3% 합산).","상단 레벨 옆 스킬 포인트(SP) 표시를 없앴어요."],"en":["<b>Reincarnation Traces</b>: Honor Growth max level 20 → 22, new <b>Deep Easing</b> (from B1000, per-floor monster HP rate −0.0009 per level, max 10).","<b>Eternal Power</b>: now ×1.02 ATK and HP per level (multiplicative, was +3% additive).","Removed the skill point (SP) badge next to the level at the top."]},{"v":"5.14.18","ko":["<b>출석 보상 한 번 더</b>: 출석한 뒤 광고를 보면 오늘 받은 재화(소환석·조각·정수·부스트·열쇠)를 한 번 더 받아요 (하루 1번)."],"en":["<b>Check-in bonus</b>: after checking in, watch an ad to get today's currency rewards (stones, shards, essence, boosts, keys) once more (once a day)."]},{"v":"5.14.17","ko":["<b>장비 각인</b>: 각인 효과를 바꿔도 이미 돌린 등급과 수치가 그대로 남아요."],"en":["<b>Engravings</b>: changing an engraving effect keeps the grade and value you already rolled."]},{"v":"5.14.16","ko":["<b>절전 모드</b>: 위쪽 달 버튼을 누르면 검은 화면에 층 진행만 보여 주고, 화면이 꺼지지 않게 해요. 전투는 그대로 진행돼요(화면이 꺼지면 오프라인 60% 속도). 밀어서 돌아가요.","<b>자동 절전</b>: 설정에서 조작이 없을 때 1·3·5·10분 뒤 자동으로 절전 모드에 들어가게 할 수 있어요.","탑 일괄 소탕 결과 알림에 글자 코드가 보이던 문제를 고쳤어요."],"en":["<b>Power save</b>: tap the moon button for a dark screen that shows only floor progress and keeps the screen on. Combat keeps running (with the screen off it would drop to 60% offline speed). Slide to return.","<b>Auto power save</b>: in Settings, enter power save automatically after 1, 3, 5 or 10 minutes without input.","Fixed markup text showing in the tower bulk-sweep notice."]},{"v":"5.14.15","ko":["<b>동료형 각인</b>: 동료 피해 각인도 펫·룬처럼 스킬 피해로 바뀌어 효과가 생겨요(지금까지는 효과가 없었어요). 파티에 동료가 없으면 동료 피해 환산은 하지 않아요.","<b>출석</b>: 출석한 뒤 내일 받을 보상을 보여 줘요.","<b>초보자 가이드</b>: 첫 환생 전에 B20 이후 3분 동안 층이 오르지 않으면 환생 단계를 먼저 알려 줘요.","<b>원정</b>: 원정대가 돌아오는 시각을 함께 보여 줘요.","<b>랭킹</b>: 밸런스 조정을 위해 랭킹 기록을 보낼 때 최신 세이브 1개를 함께 보관해요(개인정보 처리방침 9항)."],"en":["<b>Companion style engravings</b>: companion DMG engravings now count as skill damage like pets and runes (they did nothing before). With no companion in the party, companion DMG is not converted.","<b>Check-in</b>: after checking in, you can see tomorrow's reward.","<b>Starter guide</b>: before your first rebirth, if your floor stops rising for 3 minutes past B20, the guide shows the rebirth step first.","<b>Expeditions</b>: shows the time your expedition comes back.","<b>Ranking</b>: to tune balance, your latest save is kept when you send a ranking record (privacy policy section 9)."]},{"v":"5.14.14","ko":["<b>평타형 펫</b>: 도적·전사 평타형에서 평타 피해 펫 효과가 평타에 더 많이(75%) 들어가요. 평타 펫을 끼면 평타형이 더 약하던 문제를 고쳤어요.","<b>마법사·성직자 평타형</b>: 평타 위주 세팅이면 평타 피해 펫을 평타에 그대로 쓰는 방식을 자동으로 골라, 평타형이 스킬형과 비슷해요."],"en":["<b>Basic-style pets</b>: for rogues and warriors in basic style, basic DMG pets now count much more (75%) on basic attacks, so basic pets no longer make basic style the weakest.","<b>Mage/cleric basic style</b>: basic-heavy builds now keep basic DMG pets on basic attacks, so basic style is about as strong as skill style."]},{"v":"5.14.13","ko":["<b>평타형(도적·전사)</b>: 신격 영역을 스킬 피해로 바꾸는 방식과 평타에 그대로 두는 방식 중 더 센 쪽을 자동으로 골라요. 평타 위주 세팅에서 평타형이 크게 강해져요.","<b>동료형</b>: 동료 피해%가 주는 보너스가 줄었어요. 모든 직업에서 동료형만 앞서던 것을 맞췄어요.","<b>추천 세팅 찾기</b>: 스킬 탭 전투 스타일 칸에서 지금 스타일 기준으로 무엇을 바꾸면 세지는지 계산해 보여 주고, 바로 적용할 수 있어요."],"en":["<b>Basic style (rogue, warrior)</b>: the game now picks the stronger of two ways to use your divine domain (as skill damage, or kept on basic attacks). Basic-heavy builds get much stronger.","<b>Companion style</b>: the bonus from companion DMG% is smaller, so companion style no longer leads for every class.","<b>Find best setup</b>: in the combat style box on the skill tab, see which change (style, domain, mutation, soul weapon, party, pet effect) makes you stronger and apply it."]},{"v":"5.14.12","ko":["<b>동료 장비 일괄 분해</b>: 등급(일반~<b>전설</b>)을 골라 그 등급 이하를 한 번에 분해해요. 영웅·전설은 한 번 더 눌러야 분해되고, 신화와 장착 중인 장비는 분해되지 않아요."],"en":["<b>Ally gear bulk salvage</b>: pick a rarity (Common to <b>Legendary</b>) and salvage everything at or below it. Epic and Legendary need a second tap; Mythic and equipped gear are never salvaged."]},{"v":"5.14.11","ko":["<b>탑 상위 이름·신화 장비 기준 조정</b>: 동료 장비 <b>신화</b> 보상이 탑 1001층부터 나와요(2000층·3000층부터 1개씩 더). 탑 기록이 1000층 이상이면 그 탑은 상위 탑 이름으로 바뀌어요. 신화 동료 장비 상자도 탑 기록 1000층부터 상점에 보여요."],"en":["<b>Upper towers and mythic gear moved to 1000F</b>: <b>mythic</b> companion gear now starts at 1001F (+1 from 2000F and 3000F). A tower with a record of 1000F or more takes its upper name. The mythic ally gear box shows from tower record 1000F."]},
   {"v":"5.14.10","ko":["<b>보스 레이드 참여 확대</b>: 성을 가진 모험가도 위계와 상관없이 레이드에 참여할 수 있어요.","<b>장비 각인</b>: 레이드 보상으로 <b>신성 조각</b>이 새로 생겨요(깬 단계마다 10개). 장비 화면의 <b>각인</b> 버튼에서 장비 칸마다 효과(공격력·체력·보스·스킬·평타·동료·탑·골드)를 직접 고르고, 신성 조각으로 값(고급 3~6% ~ 신화 33~50%)을 돌려요. 장비를 바꾸거나 환생·윤회해도 남아요.","<b>탑 100층 위</b>: 100층부터 이름이 바뀌고 동료 장비 <b>신화</b> 등급이 나와요(500층·1000층부터 더 많이).","<b>신화 동료 장비 상자</b>: 탑 기록 100층부터 소환석 상점에 생겨요(전설 이상 확정, 신화 25%).","<b>마을 땅값 40% 인하</b>: 이미 산 땅은 차액을 우편으로 돌려드려요.","<b>짧은 세이브 코드</b>: 세이브 코드 복사가 DM6-XXXXXXXX 형태의 짧은 코드로 바뀌었어요(30일 보관).","<b>원정 정리</b>: 심연 원정이 열리면(최고 300층) 심연 원정만, 그 전에는 일반 원정만 보여요. 진행 중이던 일반 원정은 끝나면 받을 수 있어요. 동료 탭의 보유 효과 요약은 닫았어요.","전투 화면에서 스킬·버프 아이콘이 겹치거나 깨지던 문제를 고쳤어요."],"en":["<b>Boss Raid</b>: castle owners can now join regardless of divine tier.","<b>Gear engraving</b>: raids now also give <b>holy shards</b> (10 per stage cleared). Tap <b>Engrave</b> in the gear screen, pick an effect (ATK, HP, boss, skill, basic, companion, tower, gold) for each slot and reroll its value with holy shards (common 3~6% up to mythic 33~50%). Stays through gear swaps, rebirth and reincarnation.","<b>Towers above 100F</b>: new names from 100F, and <b>mythic</b> companion gear drops (more from 500F and 1000F).","<b>Mythic ally gear box</b>: appears in the stone shop from tower record 100F (legendary or better, 25% mythic).","<b>Village plots 40% cheaper</b>: the difference for plots you already bought is refunded by mail.","<b>Short save codes</b>: copying a save code now gives a short DM6-XXXXXXXX code (kept for 30 days).","<b>Expeditions</b>: once Abyss expeditions unlock (best 300F) only those are shown; before that only normal expeditions. Running normal expeditions can still be claimed. The owned-effects summary in the Companion tab is closed.","Fixed skill and buff icons overlapping or breaking in the battle HUD."]},
   {"v":"5.14.9","ko":["도적 평타형 조정: 평타에는 그림자 영역·평타 펫 효과의 30%만 남아요(스킬형의 약 1.2~1.3배).","전사 광전 하향: 광전 영역 평타 피해 위계마다 +125 → +80, 평타형 스킬 피해 전환 ×1.1 → ×0.95."],"en":["Rogue basic style: only 30% of Shadow Domain and basic-attack pet effects stay on basic attacks (about 1.2~1.3x skill style).","Warrior Berserk nerf: domain basic damage +125 → +80 per tier, basic-style conversion x1.1 → x0.95."]},
   {"v":"5.14.8","ko":["탑 기록이 60층 단위로 뛰고 기기 프레임에 따라 달라지던 문제를 고쳤어요. 이제 체력과 보스 피해 둘 다로 높이가 정해져요.","도적 평타형 강화."],"en":["Tower records no longer jump in 60-floor steps or depend on frame rate. Height now depends on both HP and boss damage.","Rogue basic style buff."]},
@@ -2524,7 +2574,7 @@ function qDaily() {
     <div class="dmod"><b>${t('dl.m.' + mod.id)}</b><span>${t('dl.m.' + mod.id + '.d')}</span>${mod.fav ? `<span class="dlfav f-${mod.fav}">${t('dl2.fav', { f: t('dl2.f.' + mod.fav), x: DL_FAV_X })}</span>` : ''}</div>${cur && cur.pause ? '' : run}</div>${cur && cur.pause ? run : ''}${last}${best}${week}${shop}`;
 }
 // ---------- 초보자 가이드 ----------
-function goTo(where) { if (where === 'settings') { $('#setBtn').click(); return; } const b = document.querySelector(`.tabs button[data-go="${where}"]`); if (b) b.click(); }
+function goTo(where) { if (where === 'settings') { $('#setBtn').click(); return; } if (where === 'daily') { goTo('quest'); qTab = 'daily'; buildQuest(); return; } const b = document.querySelector(`.tabs button[data-go="${where}"]`); if (b) b.click(); }
 
 // ---------- 던전 아래 칸 (5.13.2): 로그 자리에 마을·탑·균열·아레나를 띄운다. 전투는 위에서 계속 흐른다 ----------
 // 창(.modal)이나 모험 탭 본문(#qBody)을 이 칸으로 옮겨 와서 그대로 쓴다 (버튼·갱신 코드가 바뀌지 않게). 닫으면 원래 자리로 돌려 놓는다
@@ -3024,7 +3074,7 @@ function renderSubTabs(go) {
   if (!g) { bar.classList.add('hidden'); return; }
   const pg = document.querySelector('.page[data-tab="' + go + '"]'); if (pg && bar.parentElement !== pg) pg.prepend(bar);
   bar.classList.remove('hidden'); tabLast[g] = go;
-  bar.innerHTML = TAB_GRP[g].map(k => `<button class="${k === go ? 'on' : ''}" data-sub="${k}">${t('ui.tab.' + k)}<i class="dot ${$('#' + TAB_DOT[k]).classList.contains('hidden') ? 'hidden' : ''}" data-subdot="${k}"></i></button>`).join('');
+  bar.innerHTML = TAB_GRP[g].filter(k => subOpen(k) || k === go).map(k => `<button class="${k === go ? 'on' : ''}" data-sub="${k}">${t('ui.tab.' + k)}<i class="dot ${$('#' + TAB_DOT[k]).classList.contains('hidden') ? 'hidden' : ''}" data-subdot="${k}"></i></button>`).join('');
 }
 function syncTabDots() {
   for (const [g, list] of Object.entries(TAB_GRP)) { const on = list.some(k => !$('#' + TAB_DOT[k]).classList.contains('hidden')); $('#' + (g === 'char' ? 'charDot' : 'growDot')).classList.toggle('hidden', !on); }
@@ -3037,6 +3087,7 @@ function bindUI() {
   document.querySelectorAll('.tabs button[data-grp]').forEach(b => { b.onclick = () => goTo(tabLast[b.dataset.grp]); });
   document.querySelectorAll('.tabs button[data-go]').forEach(b => {
     b.onclick = () => {
+      dotSeenAt[b.dataset.go] = Date.now();
       const g = grpOf(b.dataset.go);
       document.querySelectorAll('.tabs button').forEach(x => x.classList.toggle('on', x === b || (!!g && x.dataset.grp === g)));
       document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.dataset.tab !== b.dataset.go));
@@ -3142,11 +3193,12 @@ function bindUI() {
   let armed = false, tm = null;
   $('#rbBtn').onclick = async () => {
     if (honorGain(S).lte(0)) return;
-    if (!armed) {
-      armed = true; $('#rbBtn').textContent = t('ui.rbAgain'); $('#rbBtn').classList.add('armed');
-      clearTimeout(tm); tm = setTimeout(() => { armed = false; $('#rbBtn').textContent = t('ui.doRebirth'); $('#rbBtn').classList.remove('armed'); }, 4000);
+    if (!armed || Date.now() > rbArmedUntil) {
+      armed = true; rbArmedUntil = Date.now() + 6000; $('#rbBtn').textContent = t('ui.rbAgain'); $('#rbBtn').classList.add('armed');
+      clearTimeout(tm); tm = setTimeout(() => { armed = false; rbArmedUntil = 0; $('#rbBtn').textContent = t('ui.doRebirth'); $('#rbBtn').classList.remove('armed'); }, 6000);
       return;
     }
+    rbArmedUntil = 0;
     clearTimeout(tm); armed = false; $('#rbBtn').textContent = t('ui.doRebirth'); $('#rbBtn').classList.remove('armed');
     await backup(S, 'rebirth');
     const g = rebirth(S);
@@ -3286,7 +3338,7 @@ function showReport(res) {
     (res.levels > 0 ? t('ui.rep.lv', { l: `<b>${res.levels}</b>` }) + '<br>' : '') +
     (res.rebirths > 0 ? t('ui.rep.rebirths', { n: `<b>${res.rebirths}</b>` }) + (D(res.honor).gt(0) ? ' · ' + t('ui.rep.honor', { h: `<b>${fmt(res.honor)}</b>` }) : '') + '<br>' : '') +
     (res.aby && res.aby.n ? t('aby.rep', { n: `<b>${res.aby.n}</b>`, d: res.aby.d, c: `<b>${fmtN(res.aby.crystal || 0)}</b>`, tr: `<b>${fmtN(res.aby.trace)}</b>` }) + '<br>' : '') +
-    (res.reincs > 0 ? t('ui.rep.reincs', { n: `<b>${res.reincs}</b>`, k: `<b>${fmt(res.karma || 0)}</b>` }) + '<br>' : '') +
+    (res.reincs > 0 ? t('ui.rep.reincs', { n: `<b>${res.reincs}</b>`, k: `<b>${fmt(res.karma || 0)}</b>` }) + (res.trace > 0 ? t('trace.gain', { n: `<b>${fmtN(res.trace)}</b>` }) : '') + '<br>' : '') +
     ((S.events || []).length ? '<b class="hi">' + t('ev.waiting', { n: S.events.length }) + '</b><br>' : '') +
     (AUTO.some(a => a.need(S) && !(S.autoSeen || []).includes(a.id)) ? '<b class="hi">' + t('auto.repNew') + '</b><br>' : '') +
     (expSlots(S).some(x => x && Date.now() >= x.end) || (S.abyss && S.abyss.run && Date.now() >= S.abyss.run.end) ? '<b class="hi">' + t('exp.repDone') + '</b><br>' : '');
@@ -3309,7 +3361,7 @@ async function init() {
   applyI18n(); applyLowFx();
   advance(S);
   cgSnap = cgSnapNow(); if (S.cgAuto !== false) cgAutoEquip(S);   // 예전 세이브: 가방에 남은 장비를 한 번 정리
-  if (S.pending && S.pending.seconds > 60 && (S.pending.kills > 0 || D(S.pending.gold).gt(0))) { showReport(S.pending); S.pending = null; }
+  if (S.pending && S.pending.seconds > 60 && (S.pending.kills > 0 || D(S.pending.gold).gt(0) || S.pending.rebirths > 0 || S.pending.reincs > 0)) { showReport(S.pending); S.pending = null; }
   await save(S);
   st = stats(S);
   (window.__dmLog || (() => {}))('advance done ' + Math.round(performance.now() - _adv0) + 'ms');
@@ -3731,10 +3783,10 @@ function npcTick() {
   if (townNpc.length && now > npcTalkT) { npcTalkT = now + 6000 + Math.random() * 5000; npcSay(townNpc[Math.floor(Math.random() * townNpc.length)]); }
 }
 dockAdd({ id: 'log', label: () => t('dock.log') });
-dockAdd({ id: 'town', label: () => isCastle(S) ? t('town.castle') : t('town.title'), el: () => $('#townModal'),
+dockAdd({ id: 'town', label: () => isCastle(S) ? t('town.castle') : t('town.title'), show: () => menuOpen(S, 'town'), el: () => $('#townModal'),
   open: () => { dockMount($('#townModal')); openTownRaw(); },
   close: () => { const m = $('#townModal'); if (!m.classList.contains('hidden')) { m.classList.add('hidden'); clearInterval(npcIv); npcIv = 0; $('#townBox').dataset.sig = ''; renderTownBox(); } dockUnmount(m); } });
-for (const id of ['tower', 'rift']) dockAdd({ id, label: () => t('q.tab.' + id), show: id === 'rift' ? () => riftUnlocked(S) : null, dot: () => qDot(id),
+for (const id of ['tower', 'rift']) dockAdd({ id, label: () => t('q.tab.' + id), show: id === 'rift' ? () => riftUnlocked(S) : () => menuOpen(S, 'tower'), dot: () => qDot(id),
   open: () => { qTab = id; dockMount($('#qBody')); buildQuest(); },
   close: () => { dockUnmount($('#qBody')); qTab = 'mission'; } });
 function openTown() { openDock('town'); }
