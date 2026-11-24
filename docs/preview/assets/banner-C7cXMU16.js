@@ -1,1 +1,0 @@
-import"./index-C7Lj5D1W.js";import"./env-pdPfMA7l.js";function e(){}export{e as initBanner};
