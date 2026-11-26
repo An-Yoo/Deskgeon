@@ -241,3 +241,5 @@ r
 .dgthb { display: flex; flex-direction: column; gap: 4px; } .dgthb .mini { min-width: 64px; }
 .dgnote { font-size: 10.5px; color: #a9a0c8; margin: 4px 2px 8px; }
 .dgstone { margin-top: 10px; }
+
+.dgthb .mini.hot { border-color: #ffd98a; color: #ffe27a; } .dgthb .mini.on { border-color: #6b5f9c; color: #cfc6ff; }
