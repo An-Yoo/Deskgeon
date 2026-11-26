@@ -1010,8 +1010,8 @@ export const HW_START = Date.UTC(2026, 9, 18, 15), HW_END = Date.UTC(2026, 10, 9
 export const HW_BOSS_DROP = 0.01;
 export const HW_GIFT = 'head_hoodorange';   // 이벤트 시작 선물 (한 번만)   // 보스 처치 1번마다 없는 할로윈 코스튬 1개가 나올 확률
 export function hwOn(now = Date.now()) { return now >= HW_START && now < HW_END; }
-// 5.15.0 크리스마스 이벤트: 2026-12-15 00:00 ~ 2027-01-05 00:00 (KST). 기간 중 몬스터·코스튬·출석·썰매·접속 선물, 겨울 테마
-export const XM_START = Date.UTC(2026, 11, 14, 15), XM_END = Date.UTC(2027, 0, 4, 15);
+// 5.15.0 크리스마스 이벤트 (5.15.1에서 기간 변경): 2026-11-26 00:00 ~ 2026-12-27 00:00 (KST), 즉 12/26까지. 기간 중 몬스터·코스튬·출석·썰매·접속 선물, 겨울 테마
+export const XM_START = Date.UTC(2026, 10, 25, 15), XM_END = Date.UTC(2026, 11, 26, 15);
 export function xmOn(now = Date.now()) { const t = Number(globalThis.__dgXmNow) || now; return t >= XM_START && t < XM_END; }   // __dgXmNow: 미리보기·테스트에서만 날짜를 바꿔 본다
 export const XM_GIFT = 'head_santa', XM_BOSS_DROP = 0.01;
 export const XM_COS = ['head_santa', 'head_antler', 'head_elfhat', 'body_santa', 'body_robewhitered', 'body_robewhitegreen', 'cloak_santa', 'cloak_holly', 'weapon_candycane', 'weapon_icecrystal', 'offhand_gift', 'offhand_snowstorm', 'offhand_icespark', 'gloves_mitten', 'boots_santa'];
