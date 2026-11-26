@@ -1,0 +1,1 @@
+import"./index-7dLIe_A1.js";import"./env-BtOiNwBB.js";function e(){}export{e as initBanner};

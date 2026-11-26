@@ -230,3 +230,14 @@ html.dgtoss body:has(.page[data-tab="dungeon"].hidden) .hud .xpbar { display: no
 #dgRaidTip .rtip b { font-size: 15px; color: #ffd98a; } #dgRaidTip .rtip span { font-size: 11.5px; color: #cfc6ff; line-height: 1.45; }
 #dgRaidTip .rtipb { display: flex; gap: 8px; margin-top: 6px; width: 100%; } #dgRaidTip .rtipb button { flex: 1; padding: 8px 4px; }
 #dgRaidTip .rtipb .rhit { background: linear-gradient(#ff9a7a, #c8442e); color: #fff; font-weight: 800; border-color: rgba(255,170,140,.6); }
+r
+/* 5.15.0 상점 탭 · 테마 카드 */
+.dgtabs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; margin: 0 0 8px; }
+.dgtabs button { padding: 7px 4px; font-size: 12px; font-weight: 800; background: #1b1728; border: 1px solid #3a3358; color: #b9b0d8; }
+.dgtabs button.on { background: #2c2546; border-color: #ffd98a; color: #ffe27a; }
+.dgth { display: grid; grid-template-columns: 40px 1fr auto; gap: 8px; align-items: center; padding: 8px; margin: 0 0 6px; background: #14111f; border: 1px solid #3a3358; }
+.dgth img { width: 40px; height: 40px; image-rendering: pixelated; }
+.dgtht b { display: block; font-size: 12.5px; color: #ffe27a; } .dgtht span { font-size: 10.5px; color: #cfc6ff; line-height: 1.3; }
+.dgthb { display: flex; flex-direction: column; gap: 4px; } .dgthb .mini { min-width: 64px; }
+.dgnote { font-size: 10.5px; color: #a9a0c8; margin: 4px 2px 8px; }
+.dgstone { margin-top: 10px; }
