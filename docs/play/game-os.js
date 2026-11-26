@@ -150,10 +150,12 @@ export function monsterIndex(f) { const g = ((Math.max(1, f) - 1) % LOOP_LEN) + 
 // 할로윈 이벤트 중에는 HW_MOB_EVERY 마리에 1마리꼴로 할로윈 몬스터가 나오고 골드·경험치 HW_MOB_X배.
 // 같은 층·같은 처치 순번이면 항상 같은 몬스터라서 게임 계산과 화면이 어긋나지 않는다.
 export const MON_VARIANTS = 3, HW_MOBS = 8, HW_MOB_EVERY = 4, HW_MOB_X = 3;
+// 5.15.0 크리스마스 이벤트 몬스터 8종 (할로윈과 같은 규칙: 4마리에 1마리, 골드·경험치 3배)
+export const XM_MOBS = 8;
 function monHash(f, k) { let h = (Math.imul(f | 0, 2654435761) ^ Math.imul((k | 0) + 1, 40503)) >>> 0; h ^= h >>> 15; h = Math.imul(h, 2246822519) >>> 0; return (h ^ (h >>> 13)) >>> 0; }
-export function isHwMob(f, k, now = Date.now()) { return hwOn(now) && monHash(f, k) % HW_MOB_EVERY === 0; }
+export function isHwMob(f, k, now = Date.now()) { return (hwOn(now) || xmOn(now)) && monHash(f, k) % HW_MOB_EVERY === 0; }   // 이벤트 몬스터 (할로윈·크리스마스 공통)
 // 반환: { hw: 0..HW_MOBS-1 } 또는 { v: 0(기본)·1·2 }
-export function monPick(f, k, now = Date.now()) { const h = monHash(f, k); return isHwMob(f, k, now) ? { hw: (h >>> 4) % HW_MOBS } : { v: (h >>> 7) % MON_VARIANTS }; }
+export function monPick(f, k, now = Date.now()) { const h = monHash(f, k); return isHwMob(f, k, now) ? (xmOn(now) ? { xm: (h >>> 4) % XM_MOBS } : { hw: (h >>> 4) % HW_MOBS }) : { v: (h >>> 7) % MON_VARIANTS }; }
 export function zoneStart(z) { return z < 16 ? z * 3 + 1 : 49 + (z - 16) * 8; }
 export function isBossFloor(f) { return f % BOSS_EVERY === 0; }
 export function killsNeeded(f, s) { const n = Math.min(30, 10 + Math.floor((f - 1) / 10) * 3), m = s && f > TRACE_DEEP_FLOOR ? Math.max(10, n - 2 * traceLv(s, 'deep')) : n; const kx = s ? blessFx(s).killsX * (s.ebuffs && s.ebuffs.length ? ebuffMult(s, 'killsX') : 1) : 1; return kx === 1 ? m : Math.max(5, Math.round(m * kx)); }
@@ -1008,12 +1010,18 @@ export const HW_START = Date.UTC(2026, 9, 18, 15), HW_END = Date.UTC(2026, 10, 9
 export const HW_BOSS_DROP = 0.01;
 export const HW_GIFT = 'head_hoodorange';   // 이벤트 시작 선물 (한 번만)   // 보스 처치 1번마다 없는 할로윈 코스튬 1개가 나올 확률
 export function hwOn(now = Date.now()) { return now >= HW_START && now < HW_END; }
+// 5.15.0 크리스마스 이벤트: 2026-12-15 00:00 ~ 2027-01-05 00:00 (KST). 기간 중 몬스터·코스튬·출석·썰매·접속 선물, 겨울 테마
+export const XM_START = Date.UTC(2026, 11, 14, 15), XM_END = Date.UTC(2027, 0, 4, 15);
+export function xmOn(now = Date.now()) { const t = Number(globalThis.__dgXmNow) || now; return t >= XM_START && t < XM_END; }   // __dgXmNow: 미리보기·테스트에서만 날짜를 바꿔 본다
+export const XM_GIFT = 'head_santa', XM_BOSS_DROP = 0.01;
+export const XM_COS = ['head_santa', 'head_antler', 'head_elfhat', 'body_santa', 'body_robewhitered', 'body_robewhitegreen', 'cloak_santa', 'cloak_holly', 'weapon_candycane', 'weapon_icecrystal', 'offhand_gift', 'offhand_snowstorm', 'offhand_icespark', 'gloves_mitten', 'boots_santa'];
 for (const id of ['base_mummyf', 'base_mummym', 'base_ghoul2f', 'base_demonspawnblackf', 'head_hornevil', 'head_hoodorange', 'head_wizardpurple', 'head_hoodblack2', 'head_eternaltorment', 'head_straw',
   'body_robeblackhood', 'body_robepurple', 'body_bloody', 'body_robeblackgold', 'cloak_red', 'cloak_gray', 'weapon_scythe', 'weapon_staffskull', 'weapon_staffevil', 'weapon_bonelantern', 'weapon_lantern',
   'offhand_shieldskull', 'offhand_lantern', 'offhand_firedark', 'gloves_gloveorange', 'boots_spider']) COSTUMES.push({ id, slot: id.slice(0, id.indexOf('_')), hw: 1 });
+for (const id of XM_COS) COSTUMES.push({ id, slot: id.slice(0, id.indexOf('_')), xm: 1 });
 export const COS_BY_ID = Object.fromEntries(COSTUMES.map(c => [c.id, c]));
 // 아직 없고 지금 얻을 수 있는 코스튬 (할로윈 코스튬은 이벤트 기간에만)
-export function cosPool(s, now = Date.now()) { const own = ((s.cos || {}).own) || []; return COSTUMES.filter(z => !z.free && !own.includes(z.id) && (!z.hw || hwOn(now))); }
+export function cosPool(s, now = Date.now()) { const own = ((s.cos || {}).own) || []; return COSTUMES.filter(z => !z.free && !own.includes(z.id) && (!z.hw || hwOn(now)) && (!z.xm || xmOn(now))); }
 const COS_TIERS = { weapon: 8, body: 8, head: 6, cloak: 5, boots: 5, gloves: 5, offhand: 0, base: 0, hair: 0 };
 const COS_NOHIDE = { body: 1, base: 1, hair: 1, offhand: 1 };   // hair·offhand는 "장비대로"가 곧 없음
 export function cosHas(s, id) { const z = COS_BY_ID[id]; return !!z && (!!z.free || ((s.cos || {}).own || []).includes(id)); }
@@ -1369,7 +1377,7 @@ export function shopBuy(s, what, arg, now = Date.now()) {
   if (what === 'key') { if (shopKeyLeft(s, now) <= 0 || !pay(STONE_SHOP.key)) return null; if (b.keyDay !== localDay(now)) { b.keyDay = localDay(now); b.keyN = 0; } b.keyN++; const rs = riftState(s); rs.keys = Math.min(KEY_HOLD, rs.keys + 1); return { keys: 1 }; }
   if (what === 'rush') { const c = rushCost(s, arg, now); if (!c || !pay(c)) return null; expSlots(s)[arg].end = now; return { rush: arg }; }
   if (what === 'expSlot') { const n = b.expSlot || 0; if (n >= EXP_MAX - EXP_SLOTS || !pay(STONE_SHOP.expSlot[n])) return null; b.expSlot = n + 1; expState(s); return { expSlot: expCap(s) }; }
-  if (what === 'costume') { const c = cosState(s); if (!COS_BY_ID[arg] || COS_BY_ID[arg].free || (COS_BY_ID[arg].hw && !hwOn()) || c.own.includes(arg) || !pay(STONE_SHOP.costume)) return null; c.own.push(arg); return { cos: arg }; }
+  if (what === 'costume') { const c = cosState(s); if (!COS_BY_ID[arg] || COS_BY_ID[arg].free || (COS_BY_ID[arg].hw && !hwOn()) || (COS_BY_ID[arg].xm && !xmOn()) || c.own.includes(arg) || !pay(STONE_SHOP.costume)) return null; c.own.push(arg); return { cos: arg }; }
   return null;
 }
 export function mileBuy(s, id) {
@@ -1450,6 +1458,12 @@ function sanitize(o, now = Date.now()) {
   o.pulls = int(o.pulls); o.pity = int(o.pity, 0, 0, PITY); o.stoneBuys = int(o.stoneBuys, 0, 0, 1e5);
   o.rebirths = int(o.rebirths, 0, 0, 1e8); o.karma = int(o.karma, 0, 0, 1e9); o.reinc = int(o.reinc, 0, 0, 1e8);
   o.hwGift = o.hwGift ? 1 : 0;
+  o.theme = typeof o.theme === 'string' && (o.theme === 'none' || THEMES.includes(o.theme)) ? o.theme : '';   // 5.15.0 고른 테마
+  { const p = o.pg && typeof o.pg === 'object' ? o.pg : {}; o.pg = { day: typeof p.day === 'string' ? p.day.slice(0, 10) : '', on: num(p.on, 0, 0, 86400), got: int(p.got, 0, 0, 15) }; }   // 5.15.0 접속 시간 선물
+  { const x = o.xm && typeof o.xm === 'object' ? o.xm : {};   // 5.15.0 크리스마스: 선물·출석·겨울 테마·썰매·접속 시간
+    o.xm = { gift: x.gift ? 1 : 0, n: int(x.n, 0, 0, XM_ATT.length), last: typeof x.last === 'string' ? x.last.slice(0, 10) : '', theme: x.theme ? 1 : 0, themeOn: x.themeOn === false ? false : true,
+      day: typeof x.day === 'string' ? x.day.slice(0, 10) : '', sl: int(x.sl, 0, 0, 99),
+      snow: int(x.snow, 0, 0, 1e6), mk: num(x.mk, 0, 0, 1e6), sm: int(x.sm, 0, 0, 1e4), buy: Object.fromEntries(Object.entries(x.buy && typeof x.buy === 'object' ? x.buy : {}).filter(([k]) => XM_SHOP.some(i => i.k === k)).map(([k, v]) => [k, int(v, 0, 0, 99)])) }; }
   o.stuckT = num(o.stuckT, 0, 0, 1e8); o.rbT = num(o.rbT, 0, 0, 1e8); o.riT = num(o.riT, 0, 0, 1e9);
   { const tr = o.trace;   // 윤회의 흔적: 처음 열릴 때 지금까지의 윤회 1회당 1포인트를 소급해서 준다
     o.trace = tr && typeof tr === 'object'
@@ -2057,13 +2071,19 @@ export function xpNeed(level) { return xpPerKill(Math.max(1, Math.round(level * 
 const _mrN = () => COMPANIONS.filter(c => c.r === 5).length;
 const _twB = (s, id) => (towerState(s, id).best || 0);
 const _dl = s => s.dl2 || {};
-const _hwN = s => ((s.cos && s.cos.own) || []).filter(id => COS_BY_ID[id] && COS_BY_ID[id].hw).length;   // 가진 할로윈 코스튬 수
+const _hwN = s => ((s.cos && s.cos.own) || []).filter(id => COS_BY_ID[id] && COS_BY_ID[id].hw).length;
+const _xmN = s => ((s.cos && s.cos.own) || []).filter(id => COS_BY_ID[id] && COS_BY_ID[id].xm).length;   // 가진 크리스마스 코스튬 수   // 가진 할로윈 코스튬 수
 export const TITLES = [
   // 할로윈 이벤트 칭호 (할로윈 코스튬을 모을수록. 이벤트 선물 호박 두건으로 첫 칭호는 모두 받음)
   { id: 'hw0', c: 'event', m: _hwN, t: 1,  fx: ['xp', 15] },
   { id: 'hw1', c: 'event', m: _hwN, t: 5,  fx: ['gold', 25] },
   { id: 'hw2', c: 'event', m: _hwN, t: 13, fx: ['atk', 20] },
   { id: 'hw3', c: 'event', m: _hwN, t: 26, fx: ['boss', 30] },
+  // 5.15.0 크리스마스 칭호 (가진 크리스마스 코스튬 수)
+  { id: 'xm0', c: 'xmas', m: _xmN, t: 1,  fx: ['xp', 15] },
+  { id: 'xm1', c: 'xmas', m: _xmN, t: 5,  fx: ['gold', 25] },
+  { id: 'xm2', c: 'xmas', m: _xmN, t: 10, fx: ['atk', 20] },
+  { id: 'xm3', c: 'xmas', m: _xmN, t: 15, fx: ['boss', 30] },
   { id: 'deep1',  c: 'floor', m: s => s.bestFloor || 0, t: 100,  fx: ['atk', 5] },
   { id: 'deep2',  c: 'floor', m: s => s.bestFloor || 0, t: 200,  fx: ['hp', 8] },
   { id: 'deep3',  c: 'floor', m: s => s.bestFloor || 0, t: 300,  fx: ['atk', 10] },
@@ -2088,7 +2108,7 @@ export const TITLES = [
   { id: 'rift3', c: 'tower', m: s => (s.rift && s.rift.best) || 0, t: 50, fx: ['atk', 15] },
   { id: 'colComp', c: 'col', m: s => Object.keys(s.comp || {}).filter(id => COMP_BY_ID[id]).length, t: () => COMPANIONS.length, fx: ['comp', 20] },
   { id: 'colMr',   c: 'col', m: s => Object.keys(s.comp || {}).filter(id => COMP_BY_ID[id] && COMP_BY_ID[id].r === 5).length, t: () => _mrN(), fx: ['atk', 12] },
-  { id: 'colCos',  c: 'col', m: s => ((s.cos && s.cos.own) || []).filter(id => !(COS_BY_ID[id] && COS_BY_ID[id].hw)).length, t: () => COSTUMES.filter(z => !z.free && !z.hw).length, fx: ['hp', 10] },
+  { id: 'colCos',  c: 'col', m: s => ((s.cos && s.cos.own) || []).filter(id => !(COS_BY_ID[id] && (COS_BY_ID[id].hw || COS_BY_ID[id].xm))).length, t: () => COSTUMES.filter(z => !z.free && !z.hw && !z.xm).length, fx: ['hp', 10] },
   { id: 'colPet',  c: 'col', m: s => Object.keys((s.pets && s.pets.own) || {}).length, t: () => PETS.length, fx: ['gold', 30] },
   { id: 'pull1', c: 'col', m: s => s.pulls || 0, t: 10000,   fx: ['gold', 15] },
   { id: 'pull2', c: 'col', m: s => s.pulls || 0, t: 100000,  fx: ['comp', 10] },
@@ -2452,6 +2472,7 @@ export function step(s, dt, ev) {
     s.hp = dmin(st.hp, h);
     if (s.boss.hp.lte(0)) {
       ev.bossWin = true;
+      if (xmOn() && Math.random() < XM_BOSS_DROP) { const xp = cosPool(s).filter(z => z.xm); if (xp.length) { const id = xp[Math.floor(Math.random() * xp.length)].id; cosState(s).own.push(id); (ev.xmCos ||= []).push(id); } }
       if (hwOn() && Math.random() < HW_BOSS_DROP) { const hp = cosPool(s).filter(z => z.hw); if (hp.length) { const id = hp[Math.floor(Math.random() * hp.length)].id; cosState(s).own.push(id); (ev.hwCos ||= []).push(id); } }
       if (AGG) AGG.cos = null;
       gainKill(s, st, true, ev, 1); mrGain(s, 1, ev); soulGain(s, 1, ev); if (soulMade(s)) s.soulKills = (s.soulKills || 0) + 1;
@@ -2513,7 +2534,7 @@ export function challengeBoss(s) {
 function gainKill(s, st, boss, ev, n) {
   const f = s.floor;
   // 할로윈 몬스터는 골드·경험치 HW_MOB_X배 (이번에 잡는 n마리 중 할로윈 몬스터 수만큼)
-  let hwN = 0; if (!boss && hwOn()) { if (n <= 2000) { for (let i = 0; i < n; i++) if (isHwMob(f, (s.kills || 0) + i)) hwN++; } else hwN = n / HW_MOB_EVERY; if (hwN) ev.hwMob = (ev.hwMob || 0) + hwN; }
+  let hwN = 0; if (!boss && (hwOn() || xmOn())) { if (n <= 2000) { for (let i = 0; i < n; i++) if (isHwMob(f, (s.kills || 0) + i)) hwN++; } else hwN = n / HW_MOB_EVERY; if (hwN) { ev.hwMob = (ev.hwMob || 0) + hwN; if (xmOn()) { ev.xmMob = 1; const sn = xmMobSnow(s, hwN); if (sn) ev.xmSnow = (ev.xmSnow || 0) + sn; } } }
   const nEff = n + hwN * (HW_MOB_X - 1);
   const g = goldPerKill(f).mul(st.goldMult).mul((boss ? 20 : 1) * nEff);
   s.gold = D(s.gold).add(g); petGain(s, g);
@@ -2909,10 +2930,14 @@ export function giveReward(s, r) {
   if (r.keys) { const rs = riftState(s); rs.keys = Math.min(KEY_HOLD, (rs.keys || 0) + r.keys); }
   if (r.abyc) s.abyc = (s.abyc || 0) + r.abyc;
   if (r.title && TITLE_BY_ID[r.title]) { const ts = titleState(s); if (!ts.own.includes(r.title)) { ts.own.push(r.title); TB_CACHE.ver = -1; } ts.eq = r.title; TB_CACHE.ver = -1; }   // 아레나 칭호는 받으면 바로 단다 (기록 카드에 보이게)
+  if (r.trace) { const tr = s.trace || (s.trace = { pts: 0, lv: {}, auto: true }); tr.pts = (tr.pts || 0) + r.trace; }   // 5.15.0 흔적 (접속 선물의 심연 원정 1회분)
   if (r.hboost) gboostAdd(s, 'h', r.hboost);
   if (r.kboost) gboostAdd(s, 'k', r.kboost);
   if (r.arank) s.arenaBest = s.arenaBest ? Math.min(s.arenaBest, r.arank) : r.arank;
   if (r.comp) { const got = giftCompanion(s, r.comp); if (got) (s._gifts ||= []).push(got); }
+  if (r.cos) for (const id of [].concat(r.cos)) { if (COS_BY_ID[id]) { const c = cosState(s); if (!c.own.includes(id)) c.own.push(id); } }   // 5.15.0 코스튬 보상
+  if (r.theme) { xmState(s).theme = 1; }
+  if (r.snow) { const x = xmState(s); x.snow = (x.snow || 0) + r.snow; }   // 5.15.0 눈송이 (교환소 재화)
   if (r.pick) { (s.picks ||= []).push(r.pick); if (s.picks.length > PICK_MAX) s.picks.splice(0, s.picks.length - PICK_MAX); }
   let tp = r.trace || 0;
   if (r.aby) { const a = abyGift(s, r.aby); s.abyc = (s.abyc || 0) + a.crystal; tp += a.trace; }
@@ -2974,6 +2999,91 @@ export function attend(s, now = Date.now()) {
   const a = s.quest.att; const i = a.n % 7; const r = attendReward(s, i); a.n++; a.last = localDay(now);
   giveReward(s, r); return { day: i + 1, r };
 }
+// ---------- 5.15.0 크리스마스 이벤트: 출석 14일, 썰매 선물, 접속 시간 선물 ----------
+// 출석은 기간(21일) 안에 아무 날이나 하루 한 번씩 14번. 이어서 안 와도 된다
+export const XM_ATT = [
+  { stones: 300 }, { cos: 'head_elfhat' }, { shards: 150, boost: 1 }, { cos: 'cloak_holly' }, { stones: 500, boost: 2 }, { cos: 'gloves_mitten' }, { theme: 1, stones: 1000 },
+  { ess: 150, keys: 2 }, { cos: 'boots_santa' }, { stones: 800, boost: 2 }, { cos: 'cloak_santa' }, { shards: 300, keys: 3 }, { cos: 'weapon_candycane' }, { cos: 'body_santa', stones: 2000, boost: 3 },
+];
+export function xmState(s) { const x = s.xm || (s.xm = {}); x.n ||= 0; x.last ||= ''; x.theme ||= 0; if (x.themeOn === undefined) x.themeOn = true; x.day ||= ''; x.sl ||= 0; x.snow ||= 0; x.mk ||= 0; x.sm ||= 0; x.buy ||= {}; return x; }
+// 하루가 바뀌면 썰매·접속 시간을 새로 센다
+export function xmRoll(s, now = Date.now()) { const x = xmState(s), d = localDay(now); if (x.day !== d) { x.day = d; x.sl = 0; x.sm = 0; x.buy = {}; } return x; }
+export function canXmAttend(s, now = Date.now()) { if (!xmOn(now)) return false; const x = xmState(s); return x.n < XM_ATT.length && x.last !== localDay(now); }
+export function xmAttend(s, now = Date.now()) {
+  if (!canXmAttend(s, now)) return null;
+  const x = xmState(s), i = x.n, r = { ...XM_ATT[i], snow: XM_SNOW.att }; x.n++; x.last = localDay(now); giveReward(s, r); return { day: i + 1, r };
+}
+// ---------- 5.15.0 접속 시간 선물 (상시, 매일): 앱이 화면에 보인 시간이 5·15·30·60분이 되면 받는다 ----------
+// 고인물도 쓸 수 있게 진행도에 맞춰 커지는 보상 위주: 시간 가속(그 시간만큼 바로 진행), 명예·업보 부스터, 심연 원정 1회분(심연 결정·흔적), 신성 조각
+export const PLAY_GIFTS = [
+  { m: 5,  r: { stones: 150, warpM: 30 } },
+  { m: 15, r: { hboost: 1, kboost: 1, holy: 20 } },
+  { m: 30, r: { aby: 1, warpM: 60 } },
+  { m: 60, r: { aby: 1, warpM: 120, boost: 1 } },
+];
+export const PLAY_SNOW = [10, 20, 30, 50], PLAY_XM_COS = 0.25;   // 크리스마스 기간: 눈송이 추가, 60분 선물에 코스튬 확률
+export function playState(s, now = Date.now()) { const p = s.pg || (s.pg = {}), d = localDay(now); if (p.day !== d) { p.day = d; p.on = 0; p.got = 0; } p.on ||= 0; p.got ||= 0; return p; }
+export function playAdd(s, sec, now = Date.now()) { if (!s.cls || !(sec > 0)) return; const p = playState(s, now); p.on = Math.min(86400, p.on + Math.min(sec, 5)); }
+export function playNext(s, now = Date.now()) { const p = playState(s, now); return PLAY_GIFTS.findIndex((g, i) => !(p.got & (1 << i))); }
+export function playReady(s, now = Date.now()) { const p = playState(s, now); return PLAY_GIFTS.some((g, i) => !(p.got & (1 << i)) && p.on >= g.m * 60); }
+// 반환값의 warpM(분)은 화면 쪽에서 시간 가속으로 적용한다
+export function playClaim(s, i, now = Date.now()) {
+  const p = playState(s, now), g = PLAY_GIFTS[i]; if (!s.cls || !g || (p.got & (1 << i)) || p.on < g.m * 60) return null;
+  p.got |= 1 << i; const r = { ...g.r };
+  if (r.aby) { const a = abyGift(s, r.aby); delete r.aby; if (a.crystal > 0) { r.abyc = a.crystal; if (a.trace > 0) r.trace = a.trace; } else r.stones = (r.stones || 0) + 200; }   // 심연을 아직 못 연 사람은 소환석
+  if (xmOn(now)) { r.snow = PLAY_SNOW[i]; if (i === PLAY_GIFTS.length - 1 && Math.random() < PLAY_XM_COS) { const pool = cosPool(s, now).filter(z => z.xm); if (pool.length) r.cos = pool[Math.floor(Math.random() * pool.length)].id; } }
+  const give = { ...r }; delete give.warpM; giveReward(s, give); return r;
+}
+// 썰매: 앱을 켜 두면 몇 분마다 화면 위로 산타 썰매가 지나간다. 눌러서 잡으면 선물 (하루 XM_SLEIGH_MAX번)
+export const XM_SLEIGH_MAX = 12, XM_SLEIGH_COS = 0.06, XM_SLEIGH_GAP = [180, 360];   // 3~6분마다
+export function xmSleighLeft(s, now = Date.now()) { return xmOn(now) ? Math.max(0, XM_SLEIGH_MAX - xmRoll(s, now).sl) : 0; }
+export function xmSleigh(s, rnd = Math.random, now = Date.now()) {
+  if (xmSleighLeft(s, now) <= 0) return null; const x = xmRoll(s, now); x.sl++;
+  const roll = rnd(), r = roll < .35 ? { stones: 120 } : roll < .6 ? { shards: 60 } : roll < .8 ? { ess: 60 } : roll < .92 ? { boost: 1 } : { keys: 1 };
+  if (rnd() < XM_SLEIGH_COS) { const p = cosPool(s, now).filter(z => z.xm); if (p.length) r.cos = p[Math.floor(rnd() * p.length)].id; }
+  r.snow = XM_SNOW.sleigh; giveReward(s, r); return r;
+}
+// ---------- 눈송이 교환소: 이벤트에서 모은 눈송이로 원하는 보상을 고른다 (기간 중에만 열림) ----------
+// 얻는 곳: 출석 30, 썰매 10(하루 12번), 접속 선물 10·20·30·50, 크리스마스 몬스터 100마리마다 1 (하루 100까지)
+export const XM_SNOW = { att: 30, sleigh: 10, mobPer: 100, mobDay: 100 };
+export const XM_SHOP = [
+  { k: 'cos', cost: 400 },                         // 크리스마스 코스튬 하나 골라서 (없는 것만)
+  { k: 'theme', cost: 1500 },                      // 겨울 테마 (출석 7일째를 못 받은 사람용)
+  { k: 'stones', cost: 60, n: 300, day: 5 },
+  { k: 'boost', cost: 40, n: 1, day: 3 },
+  { k: 'keys', cost: 50, n: 1, day: 3 },
+  { k: 'shards', cost: 50, n: 150, day: 3 },
+];
+export function xmMobSnow(s, n, now = Date.now()) {
+  if (!xmOn(now) || !(n > 0)) return 0; const x = xmRoll(s, now);
+  x.mk += n; const got = Math.min(Math.floor(x.mk / XM_SNOW.mobPer), Math.max(0, XM_SNOW.mobDay - x.sm)); x.mk -= Math.floor(x.mk / XM_SNOW.mobPer) * XM_SNOW.mobPer;
+  if (got > 0) { x.sm += got; x.snow += got; } return got;
+}
+export function xmShopLeft(s, k, now = Date.now()) { const it = XM_SHOP.find(i => i.k === k); if (!it || !it.day) return Infinity; return Math.max(0, it.day - (xmRoll(s, now).buy[k] || 0)); }
+export function xmBuy(s, k, arg, now = Date.now()) {
+  if (!xmOn(now)) return null; const it = XM_SHOP.find(i => i.k === k), x = xmRoll(s, now); if (!it || x.snow < it.cost || xmShopLeft(s, k, now) <= 0) return null;
+  let r;
+  if (k === 'cos') { const z = COS_BY_ID[arg]; if (!z || !z.xm || cosHas(s, arg)) return null; r = { cos: arg }; }
+  else if (k === 'theme') { if (x.theme) return null; r = { theme: 1 }; }
+  else r = { [k]: it.n };
+  x.snow -= it.cost; if (it.day) x.buy[k] = (x.buy[k] || 0) + 1; giveReward(s, r); return r;
+}
+// 겨울 테마: 이벤트 기간에는 항상, 끝난 뒤에는 출석 7일째 보상으로 받은 사람이 설정에서 켜 둔 동안
+// ---------- 5.15.0 테마: 겨울(크리스마스 보상) + 판매 테마 4종 ----------
+// 판매 테마의 보유 여부는 세이브가 아니라 결제 내역이 정한다 (토스판 rewards.js 가 globalThis.__dgThemeOwned 로 알려 준다)
+export const THEMES = ['winter', 'sakura', 'gold', 'deep', 'hwnight'], THEME_PAID = ['sakura', 'gold', 'deep', 'hwnight'];
+export function themeOwned(s, id) { if (id === 'winter') return !!(s && s.xm && s.xm.theme); if (!THEME_PAID.includes(id)) return false; try { return !!(globalThis.__dgThemeOwned && globalThis.__dgThemeOwned(id)); } catch (e) { return false; } }
+// s.theme: '' = 자동(이벤트 기간엔 이벤트 테마), 'none' = 기본, 그 밖 = 고른 테마 (가지고 있을 때만)
+export function activeTheme(s, now = Date.now()) {
+  const pv = globalThis.__dgThemePreview; if (pv && THEMES.includes(pv)) return pv;   // 상점 미리 보기
+  const sel = s && s.theme;
+  if (sel && sel !== 'none' && themeOwned(s, sel)) return sel;
+  if (sel === 'none') return '';
+  if (xmOn(now)) return 'winter';
+  const x = s && s.xm; return x && x.theme && x.themeOn !== false ? 'winter' : '';
+}
+export function winterOn(s, now = Date.now()) { return activeTheme(s, now) === 'winter'; }
+
 export function boostLeft(s, now = Date.now()) { return Math.max(0, ((s.boost && s.boost.until) || 0) - now); }
 export function boostMult(s, now = Date.now()) { return boostLeft(s, now) > 0 ? BOOST_X : 1; }
 // 영구 배율 (앱인토스 '평생 2배속' 구매자만 2). 세이브에 넣지 않고 플랫폼 코드가 globalThis.__dgPermX 로 알려 준다.
@@ -3362,15 +3472,15 @@ export const BEST_STARS = [100, 1000, 10000];          // 몬스터 처치 도�
 export const BEST_PCT = 1;                             // 별 1개당 공격력·골드 +1%
 // 추가 몬스터 도감: 구역마다 2종(a·b) + 할로윈 몬스터 8종. 처치 수 기준은 기본 도감과 같고, 별 1개당 공격력·골드 +0.5%
 export const MDEX_PCT = 0.5;
-export const MDEX_KEYS = [...Array.from({ length: ZONES }, (_, z) => [z + 'a', z + 'b']).flat(), ...Array.from({ length: HW_MOBS }, (_, i) => 'hw' + i)];
+export const MDEX_KEYS = [...Array.from({ length: ZONES }, (_, z) => [z + 'a', z + 'b']).flat(), ...Array.from({ length: HW_MOBS }, (_, i) => 'hw' + i), ...Array.from({ length: XM_MOBS }, (_, i) => 'xm' + i)];
 export function mdexStars(s) { let n = 0; const d = s.mdex || {}; for (const k of MDEX_KEYS) for (const t of BEST_STARS) if ((d[k] || 0) >= t) n++; return n; }
 function mdexAdd(s, f, k0, n) {
   const d = s.mdex || (s.mdex = {}), z = monsterIndex(f);
-  if (n <= 2000) { for (let i = 0; i < n; i++) { const p = monPick(f, k0 + i); const key = p.hw != null ? 'hw' + p.hw : p.v ? z + (p.v === 1 ? 'a' : 'b') : null; if (key) d[key] = (d[key] || 0) + 1; } return; }
+  if (n <= 2000) { for (let i = 0; i < n; i++) { const p = monPick(f, k0 + i); const key = p.xm != null ? 'xm' + p.xm : p.hw != null ? 'hw' + p.hw : p.v ? z + (p.v === 1 ? 'a' : 'b') : null; if (key) d[key] = (d[key] || 0) + 1; } return; }
   // 아주 많이 한꺼번에 잡을 때(긴 오프라인)는 비율로 나눈다
-  const hw = hwOn() ? n / HW_MOB_EVERY : 0, rest = n - hw;
+  const xm = xmOn(), hw = (hwOn() || xm) ? n / HW_MOB_EVERY : 0, rest = n - hw;
   for (const key of [z + 'a', z + 'b']) d[key] = (d[key] || 0) + rest / MON_VARIANTS;
-  if (hw) for (let i = 0; i < HW_MOBS; i++) d['hw' + i] = (d['hw' + i] || 0) + hw / HW_MOBS;
+  if (hw) { const P = xm ? 'xm' : 'hw', N = xm ? XM_MOBS : HW_MOBS; for (let i = 0; i < N; i++) d[P + i] = (d[P + i] || 0) + hw / N; }
 }
 export function achMet(s, a) { const v = a.m(s); return a.t.filter(x => v >= x).length; }
 export function achClaimed(s, id) { return (s.ach && s.ach[id]) || 0; }

@@ -1,0 +1,1 @@
+import"./index-CdmAGE1J.js";import"./env-B1x7ekVb.js";function e(){}export{e as initBanner};

@@ -4,7 +4,8 @@ import {
   MDEX_KEYS, MDEX_PCT, mdexStars, BLESS, BLESS_BY_ID, BLESS_BOOK, blessState, blessFx, blessSeenN, chooseBless, TRACE_OFFH, TRACE_EXP, TRACE_POW, TRACE_CALM, OFFLINE_CAP_H as OFF_CAP0,
   soulFree, SOUL_FREE_FLOOR,
   RUNE_SLOT_MAX, RUNE_SLOT_PCT, runeSlotPct, runeSlotCost, runeSlotUp, runeAutoSpend,
-  AW_TOP, awCost, compAwaken, compNextCost, compAwNextCost, ABY_FLOOR, ABY_H, ABY_SIZE, abyUnlocked, abyState, abyNeed, abyAutoPick, abyPreview, abyReward, abyStart, abyClaim, abyRecall, abyAuto , SIG_TYPES , attendNew, attendReward, ATTEND_NEW_X , abyGift, mailState, mailCount, mailAdd, mailClaim, mailClaimAll , pickCount, pickUse , divTier, divDom, divSetDom, divNew, divSeen, DIV_DOMS, DIV_ALL, DIV_STEP , townN, isCastle, castleReady, castleUp, CASTLE_NEED, CASTLE_COST , divScale , divBand , gboostLeft, D, dn, dmin, dmax, Decimal, STYLES, STYLE_FLOOR, styleOf, styleUnlocked, setStyle, TOWER_MYTH_FLOOR, CG_MYTH, MYTH_BOX_FLOOR, MYTH_BOX_P, ENGR_KEYS, ENGR_V, ENGR_R, ENGR_W, ENGR_COST, engrFx, engrRoll, engrPick, engrRollUntil, simJob, simRun, simSnap, adviceCands, basicModeDue , isBossFloor , attendBonusReward } from './game-os.js';
+  AW_TOP, awCost, compAwaken, compNextCost, compAwNextCost, ABY_FLOOR, ABY_H, ABY_SIZE, abyUnlocked, abyState, abyNeed, abyAutoPick, abyPreview, abyReward, abyStart, abyClaim, abyRecall, abyAuto , SIG_TYPES , attendNew, attendReward, ATTEND_NEW_X , abyGift, mailState, mailCount, mailAdd, mailClaim, mailClaimAll , pickCount, pickUse , divTier, divDom, divSetDom, divNew, divSeen, DIV_DOMS, DIV_ALL, DIV_STEP , townN, isCastle, castleReady, castleUp, CASTLE_NEED, CASTLE_COST , divScale , divBand , gboostLeft, D, dn, dmin, dmax, Decimal, STYLES, STYLE_FLOOR, styleOf, styleUnlocked, setStyle, TOWER_MYTH_FLOOR, CG_MYTH, MYTH_BOX_FLOOR, MYTH_BOX_P, ENGR_KEYS, ENGR_V, ENGR_R, ENGR_W, ENGR_COST, engrFx, engrRoll, engrPick, engrRollUntil, simJob, simRun, simSnap, adviceCands, basicModeDue , isBossFloor , attendBonusReward,
+  XM_MOBS, XM_GIFT, XM_START, XM_END, XM_ATT, XM_SLEIGH_GAP, PLAY_GIFTS, PLAY_SNOW, playState, playAdd, playNext, playReady, playClaim, xmOn, xmState, xmRoll, canXmAttend, xmAttend, xmSleigh, xmSleighLeft, winterOn, activeTheme, themeOwned, THEMES, THEME_PAID, XM_SHOP, XM_SNOW, XM_COS, xmBuy, xmShopLeft, cosHas } from './game-os.js';
 // 크롬(chrome.*)·파이어폭스(browser.*) 공용: promise 기반 확장 API
 const chrome = globalThis.browser ?? globalThis.chrome;
 
@@ -71,6 +72,8 @@ async function preload() {
   for (const s of ['cloak', 'gloves', 'boots']) for (let t = 0; t < 5; t++) n.push(`gear/${s}${t}_d`);
   for (let i = 0; i < ZONES; i++) n.push('mon/m' + i, 'mon/m' + i + 'a', 'mon/m' + i + 'b');
   for (let i = 0; i < HW_MOBS; i++) n.push('mon/hw' + i);
+  for (let i = 0; i < XM_MOBS; i++) n.push('mon/xm' + i);
+  n.push('deco/xm_tree', 'deco/th_sakura', 'deco/th_gold', 'deco/th_deep', 'deco/th_hwnight');
   for (let i = 0; i < 22; i++) n.push('floor/f' + i);
   for (let z = 0; z < ZONES; z++) n.push('wall/w' + z + '_0', 'wall/w' + z + '_1');
   for (const d of ['col1', 'col2', 'col3', 'idol', 'wraith', 'demon', 'evil', 'dragon', 'iron']) n.push('deco/' + d);
@@ -277,13 +280,14 @@ function drawBackdrop(dt, now, zi) {
   wg.addColorStop(1, 'rgba(8,7,16,.5)');
   cx.fillStyle = wg; cx.fillRect(-6, -6, W + 12, GROUND + 6);
   // 석상 (벽과 같은 시차, 횃불 사이)
-  const dim = A['deco/' + z.deco];
+  const th = activeTheme(S), winter = th === 'winter', dim = th ? A[TH_DECO[th]] : A['deco/' + z.deco];
   const SP = 96;
   const t0 = Math.floor((wx - 60) / SP);
   for (let k = t0; k < t0 + 4; k++) {
     const x = Math.round(k * SP + 48 - wx);
-    if (dim && hash(k * 31 + zi) < .55) { cx.globalAlpha = .55; cx.drawImage(dim, x - 16, GROUND - 32); cx.globalAlpha = 1; }
+    if (dim && hash(k * 31 + zi) < .55) { cx.globalAlpha = th ? .95 : .55; cx.drawImage(dim, x - 16, GROUND - 32); cx.globalAlpha = 1; }
   }
+  if (TH_LIGHTS[th]) drawLights(now, wx, TH_LIGHTS[th]);
   // 벽-바닥 경계 그림자
   cx.fillStyle = 'rgba(0,0,0,.35)'; cx.fillRect(-6, GROUND - 3, W + 12, 3);
   // 바닥
@@ -294,6 +298,7 @@ function drawBackdrop(dt, now, zi) {
   fg.addColorStop(0, 'rgba(10,8,18,.25)'); fg.addColorStop(1, 'rgba(6,5,12,.8)');
   cx.fillStyle = fg; cx.fillRect(-6, GROUND, W + 12, H - GROUND + 6);
   cx.fillStyle = 'rgba(255,255,255,.07)'; cx.fillRect(-6, GROUND, W + 12, 1);
+  if (winter) drawSnowFloor(fx0); else if (th) drawThemeFloor(th);
   // 횃불 (벽 시차)
   for (let k = t0; k < t0 + 4; k++) {
     const x = Math.round(k * SP - wx), y = 20;
@@ -335,10 +340,69 @@ function drawBackdrop(dt, now, zi) {
     cx.fillRect(Math.round(m.x), Math.round(m.y), 1, z.mote === 'drip' ? 2 : 1);
   }
   cx.restore(); cx.globalAlpha = 1;
+  if (winter) drawSnowfall(dt, now); else if (th) drawThemeFx(th, dt, now);
   // 바닥 안개
   cx.save(); cx.globalAlpha = boss ? .1 : .07; cx.fillStyle = boss ? '#ff4d6a' : '#b9b3d9';
   for (let i = 0; i < 3; i++) { const fx2 = ((now * (6 + i * 3) + i * 70) % (W + 80)) - 40; cx.beginPath(); cx.ellipse(fx2, GROUND + 4 + i * 3, 38, 3, 0, 0, 7); cx.fill(); }
   cx.restore();
+}
+// ---------- 5.15.0 겨울 테마: 벽 위 전구 줄, 바닥에 쌓인 눈, 내리는 눈 (코드로 그린 도트) ----------
+const LIGHT_C = ['#ff4d4d', '#ffd23f', '#4dd36b', '#5fb4ff', '#ff8af0'];
+// 5.15.0 테마별: 석상 자리 장식, 위쪽 줄 등불 색 (없으면 안 그림)
+const TH_DECO = { winter: 'deco/xm_tree', sakura: 'deco/th_sakura', gold: 'deco/th_gold', deep: 'deco/th_deep', hwnight: 'deco/th_hwnight' };
+const TH_LIGHTS = { winter: LIGHT_C, sakura: ['#ffb3cf', '#ffe3ee', '#ff7fa8'], hwnight: ['#ff8a1f', '#b05cff', '#ffb347'] };
+function drawThemeFloor(th) {
+  const col = th === 'sakura' ? '#ffb3cf' : th === 'gold' ? '#ffe08a' : th === 'deep' ? '#9fe6ff' : '#ff9a3c';
+  cx.fillStyle = col;
+  for (let x = -32; x < W + 32; x += 6) { const q = hash(Math.floor((x + bgX) / 6) * 7 + 3); if (q < .4) cx.fillRect(Math.round(x - (((bgX % 6) + 6) % 6)), GROUND + 2 + Math.floor(q * 50) % 22, q < .15 ? 2 : 1, 1); }
+}
+const thFx = [];
+function drawThemeFx(th, dt, now) {
+  const want = lowFx() ? 16 : 36;
+  while (thFx.length < want) thFx.push({ x: rnd(0, W), y: rnd(0, H), s: rnd(.4, 1), p: rnd(0, 6.28) });
+  if (th === 'deep') { cx.save(); cx.globalAlpha = .27; cx.fillStyle = '#1a6fb0'; cx.fillRect(-6, -6, W + 12, H + 12); cx.globalAlpha = .07; cx.fillStyle = '#bff0ff'; for (let i = 0; i < 3; i++) { const x0 = ((now * 6 + i * 70) % (W + 60)) - 30; cx.beginPath(); cx.moveTo(x0, -4); cx.lineTo(x0 + 14, -4); cx.lineTo(x0 - 16, GROUND); cx.lineTo(x0 - 26, GROUND); cx.fill(); } cx.restore(); }
+  if (th === 'hwnight') { cx.save(); cx.globalAlpha = .1; cx.fillStyle = '#6a2fa0'; cx.fillRect(-6, -6, W + 12, H + 12); cx.restore(); }
+  for (const f of thFx) {
+    let col, w = 1, h2 = 1, a = .8;
+    if (th === 'sakura') { f.y += dt * (7 + 6 * f.s); f.x += (Math.sin(now * 1.3 + f.p) * 8 - 5) * dt; col = f.s > .7 ? '#ffb3cf' : '#ff8fb5'; w = 2; h2 = f.s > .8 ? 2 : 1; a = .95; }
+    else if (th === 'gold') { f.y += dt * 2 * f.s; a = Math.max(0, Math.sin(now * 3 + f.p * 3)); col = '#ffe08a'; if (a > .85) { cx.globalAlpha = a * .9; cx.fillStyle = '#fff6c8'; cx.fillRect(Math.round(f.x) - 1, Math.round(f.y), 3, 1); cx.fillRect(Math.round(f.x), Math.round(f.y) - 1, 1, 3); } }
+    else if (th === 'deep') { f.y -= dt * (6 + 8 * f.s); f.x += Math.sin(now * 2 + f.p) * dt * 4; col = '#cfefff'; a = .7; if (f.s > .55) { cx.globalAlpha = a; cx.strokeStyle = col; cx.lineWidth = 1; cx.strokeRect(Math.round(f.x) + .5, Math.round(f.y) + .5, 2, 2); } }
+    else { f.y -= dt * (5 + 7 * f.s); f.x += Math.sin(now * 1.7 + f.p) * dt * 5; col = f.s > .6 ? '#ffb347' : '#ff6a2a'; a = .6; }
+    if (f.y > GROUND + 24) { f.y = rnd(-10, -2); f.x = rnd(0, W + 20); } if (f.y < -6) { f.y = GROUND + rnd(2, 20); f.x = rnd(0, W); } if (f.x < -4) f.x = W + 2; if (f.x > W + 24) f.x = -2;
+    cx.globalAlpha = a; cx.fillStyle = col; cx.fillRect(Math.round(f.x), Math.round(f.y), w, h2);
+  }
+  cx.globalAlpha = 1;
+}
+function drawLights(now, wx, cols = LIGHT_C) {
+  const SP = 18, y0 = 22, o = ((wx % SP) + SP) % SP;   // 위쪽 스킬 칸에 가리지 않는 높이
+  cx.fillStyle = '#4a6b4e';
+  for (let x = -SP; x < W + SP; x++) { const u = ((x + o) % SP + SP) % SP / SP; cx.fillRect(x, Math.round(y0 + Math.sin(u * Math.PI) * 4), 1, 1); }
+  const k0 = Math.floor(wx / SP);
+  for (let i = -1; i < W / SP + 2; i++) {
+    const k = k0 + i, x = Math.round(i * SP - o + SP / 2), y = Math.round(y0 + 4) + 1, c = cols[((k % cols.length) + cols.length) % cols.length];
+    const on = lowFx() ? 1 : (Math.sin(now * 2.2 + k * 1.7) > -.35 ? 1 : .35);
+    cx.save(); cx.globalAlpha = .45 * on; cx.globalCompositeOperation = 'lighter'; cx.fillStyle = c; cx.beginPath(); cx.arc(x, y + 1, 5, 0, 7); cx.fill(); cx.restore();
+    cx.fillStyle = '#2b2b2b'; cx.fillRect(x, y - 1, 1, 1);
+    cx.globalAlpha = 1; cx.fillStyle = on > .5 ? c : '#3a3440'; cx.fillRect(x - 1, y, 2, 2); if (on > .5) { cx.fillStyle = '#ffffff'; cx.fillRect(x - 1, y, 1, 1); }
+  }
+}
+function drawSnowFloor(fx0) {
+  cx.fillStyle = '#e9f1ff';
+  for (let x = -2; x < W + 2; x++) { const h = 1 + (hash(Math.floor(x + bgX) * 13 + 5) < .35 ? 1 : 0); cx.fillRect(x, GROUND, 1, h); }
+  cx.fillStyle = 'rgba(233,241,255,.55)';
+  for (let x = -32; x < W + 32; x += 7) { const xx = Math.round(x - (((bgX * 1) % 7) + 7) % 7), q = hash(Math.floor((x + bgX) / 7) * 7 + 11); if (q < .45) cx.fillRect(xx, GROUND + 4 + Math.floor(q * 40) % 20, q < .2 ? 2 : 1, 1); }
+}
+const snowFl = [];
+function drawSnowfall(dt, now) {
+  const want = lowFx() ? 14 : 30;
+  while (snowFl.length < want) snowFl.push({ x: rnd(0, W), y: rnd(-H, GROUND), s: rnd(.4, 1), p: rnd(0, 6.28) });
+  cx.fillStyle = '#f4f8ff';
+  for (const f of snowFl) {
+    f.y += dt * (6 + 9 * f.s); f.x += (Math.sin(now * .9 + f.p) * 4 - 3) * dt;
+    if (f.y > GROUND + 22 || f.x < -3) { f.y = rnd(-12, -2); f.x = rnd(0, W + 20); }
+    cx.globalAlpha = .45 + .45 * f.s; cx.fillRect(Math.round(f.x), Math.round(f.y), f.s > .8 ? 2 : 1, f.s > .8 ? 2 : 1);
+  }
+  cx.globalAlpha = 1;
 }
 const inTower = () => !!(S && S.boss && S.boss.tower);
 const inRift = () => !!(S && S.boss && S.boss.tower === 'rift');
@@ -891,7 +955,9 @@ function compSkillFx(e) {
   }
 }
 function handleEvents(ev, prevBoss) {
-  if (ev.hwMob && performance.now() - (handleEvents._hw || 0) > 700) { handleEvents._hw = performance.now(); const b = monBox(); popText(t('hw.mobX', { x: HW_MOB_X }), b.cx, b.cy - 18, 'proc'); }
+  if (ev.hwMob && performance.now() - (handleEvents._hw || 0) > 700) { handleEvents._hw = performance.now(); const b = monBox(); popText(t(ev.xmMob ? 'xm.mobX' : 'hw.mobX', { x: HW_MOB_X }), b.cx, b.cy - 18, 'proc'); }
+  if (ev.xmSnow && performance.now() - (handleEvents._xs || 0) > 900) { handleEvents._xs = performance.now(); const b = monBox(); popText(t('xm.snowN', { n: '+' + ev.xmSnow }), b.cx, b.cy - 28, 'proc'); }
+  if (ev.xmCos) for (const id of ev.xmCos) { const m = t('xm.got', { c: t('cos.n.' + id) }); addLog('<b style="color:#ff6b6b">' + m + '</b>'); toast(m, '#ff6b6b'); }
   if (ev.hwCos) for (const id of ev.hwCos) { const m = t('hw.got', { c: t('cos.n.' + id) }); addLog('<b style="color:#ffa04d">' + m + '</b>'); toast(m, '#ffa04d'); }
   if (ev.newEvent) addLog('<b>' + t('ev.newLog', { e: t('ev.' + ev.newEvent) }) + '</b>');
   if (ev.evAuto) for (const r of ev.evAuto.slice(-3)) addLog(t('ev.autoLog', { e: t('ev.' + r.id), o: t('ev.' + r.id + '.o' + r.c) }));
@@ -1118,7 +1184,7 @@ function render() {
     $('#bossTimer').classList.toggle('hidden', false);
     $('#btime').textContent = Math.max(0, S.boss.timer).toFixed(1);
   } else {
-    { const hw = huntMon().hw != null; $('#mname').textContent = monLabel(mi); $('#mname').classList.toggle('hwname', hw); }
+    { const hp = huntMon(), hw = hp.hw != null; $('#mname').textContent = monLabel(mi); $('#mname').classList.toggle('hwname', hw); $('#mname').classList.toggle('xmname', hp.xm != null); }
     $('#mcount').textContent = canChallenge(S) ? t('ui.bossWaitShort') : `${S.kills} / ${killsNeeded(S.floor, S)}`;
     $('#mbar').style.width = Math.max(0, 100 - S.prog * 100) + '%';
     $('#heroWrap').classList.toggle('hidden', true);
@@ -2266,7 +2332,7 @@ function bindEngr() {
 
 
 // ---------- 5.14.10 패치노트 (업데이트 뒤 처음 한 번 + 설정 버튼) ----------
-const PATCH_NOTES = [{"v":"5.14.27","ko":["처음 하는 사람은 메뉴가 층마다 하나씩 열려요(모험 B6, 마을 B10, 탑 B15, 환생 B20). 가이드에 오늘의 던전 단계 추가.","빨간 점 줄이기, 환생 확인 6초, 스탯 표 글자 키움, 일본어·중국어 번역 보강.","<b>버그 수정</b>: 낮은 층을 빠르게 지날 때 터치가 씹히던 문제, 휴대폰이 잠들었다 깨면 오프라인 진행이 사라지던 문제, 오프라인 18시간 중 15시간만 진행되던 문제."],"en":["New players unlock menus floor by floor (Quest B6, Village B10, Towers B15, Rebirth B20). Starter guide adds a Daily Dungeon step.","Fewer red dots, 6s rebirth confirm, larger stat text, more Japanese and Chinese text.","<b>Fixes</b>: dropped taps while racing through low floors, offline progress lost when the phone slept with the game open, 18h offline cut to 15h."]},{"v":"5.14.26","ko":["<b>오늘의 던전 공명</b>: 카드가 광폭·수호·질주로 나뉘고 매번 계열마다 1장씩 나와요. 같은 계열 3장·6장이면 공명이 켜져요(광폭 공격력, 수호 보스 잡으면 층 건너뛰기, 질주 잡을 수 감소·시간 연장). 그날의 <b>오늘의 공명</b> 계열은 2장·4장에 켜지고 효과 ×3.","<b>초보자 가이드</b>: 이미 해낸 단계 보상을 한 번에 받아요. 강화 위치 안내를 고쳤어요.","처음 시작하면 출석 창은 첫 보스를 잡은 뒤에 떠요. 언어를 바꾸면 화면 글자가 바로 바뀌어요."],"en":["<b>Daily Dungeon Resonance</b>: cards are now Fury, Ward or Rush, one of each per pick. Collect 3 and 6 of one kind to trigger a Resonance (Fury: ATK, Ward: boss kills skip floors, Rush: fewer kills per floor and more time). Each day's <b>Today's Resonance</b> kind triggers at 2 and 4 cards with ×3 effect.","<b>Starter guide</b>: rewards for steps you already finished are claimed together. Fixed the upgrade location hint.","New players see the check-in window after the first boss. Changing language now updates text already on screen."]},{"v":"5.14.25","ko":["<b>위계 3·4 신격 스킬</b>: 상위신(B3000)·주신(B4000)에 직업마다 2개씩. 보스 공격 봉인, 쿨타임 초기화, 제한시간 연장, 처형, 피해 차단처럼 전투 규칙이 바뀌어요.","<b>심층의 명예</b>: 최대 레벨 22 → 50 (23레벨부터 레벨마다 +0.002).","<b>신화 장비</b> 드롭 확률이 위계 4까지 올라가요.","<b>보스 레이드</b>: 30단계 이후 전투창 표시와 '/ 9999' 표시를 고쳤어요."],"en":["<b>Rank 3 and 4 divine skills</b>: 2 per class at Greater God (B3000) and High God (B4000), each with a rule effect: boss seal, cooldown reset, extra time, execute, damage block.","<b>Deep Honor</b>: max level 22 → 50 (+0.002 per level from 23).","<b>Mythic gear</b> drop rate keeps rising up to rank 4.","<b>Boss Raid</b>: fixed the battle view after stage 30 and removed the '/ 9999' label."]},{"v":"5.14.20","ko":["<b>하단 배너 광고 제거</b>: 화면 맨 아래 배너 광고를 없앴어요. 게임 화면이 다시 아래까지 넓어져요."],"en":["<b>Bottom banner removed</b>: the banner ad at the bottom of the screen is gone, and the game uses the full height again."]},{"v":"5.14.19","ko":["<b>윤회의 흔적</b>: 명예 증가 최대 레벨 20 → 22, 새 강화 <b>심층 완화</b>(B1000부터 층당 몬스터 체력 배율 레벨마다 −0.0009, 최대 10레벨) 추가.","<b>영원의 힘</b>: 레벨마다 공격력·체력 ×1.02 곱연산으로 바뀌었어요(기존 +3% 합산).","상단 레벨 옆 스킬 포인트(SP) 표시를 없앴어요."],"en":["<b>Reincarnation Traces</b>: Honor Growth max level 20 → 22, new <b>Deep Easing</b> (from B1000, per-floor monster HP rate −0.0009 per level, max 10).","<b>Eternal Power</b>: now ×1.02 ATK and HP per level (multiplicative, was +3% additive).","Removed the skill point (SP) badge next to the level at the top."]},{"v":"5.14.18","ko":["<b>출석 보상 한 번 더</b>: 출석한 뒤 광고를 보면 오늘 받은 재화(소환석·조각·정수·부스트·열쇠)를 한 번 더 받아요 (하루 1번)."],"en":["<b>Check-in bonus</b>: after checking in, watch an ad to get today's currency rewards (stones, shards, essence, boosts, keys) once more (once a day)."]},{"v":"5.14.17","ko":["<b>장비 각인</b>: 각인 효과를 바꿔도 이미 돌린 등급과 수치가 그대로 남아요."],"en":["<b>Engravings</b>: changing an engraving effect keeps the grade and value you already rolled."]},{"v":"5.14.16","ko":["<b>절전 모드</b>: 위쪽 달 버튼을 누르면 검은 화면에 층 진행만 보여 주고, 화면이 꺼지지 않게 해요. 전투는 그대로 진행돼요(화면이 꺼지면 오프라인 60% 속도). 밀어서 돌아가요.","<b>자동 절전</b>: 설정에서 조작이 없을 때 1·3·5·10분 뒤 자동으로 절전 모드에 들어가게 할 수 있어요.","탑 일괄 소탕 결과 알림에 글자 코드가 보이던 문제를 고쳤어요."],"en":["<b>Power save</b>: tap the moon button for a dark screen that shows only floor progress and keeps the screen on. Combat keeps running (with the screen off it would drop to 60% offline speed). Slide to return.","<b>Auto power save</b>: in Settings, enter power save automatically after 1, 3, 5 or 10 minutes without input.","Fixed markup text showing in the tower bulk-sweep notice."]},{"v":"5.14.15","ko":["<b>동료형 각인</b>: 동료 피해 각인도 펫·룬처럼 스킬 피해로 바뀌어 효과가 생겨요(지금까지는 효과가 없었어요). 파티에 동료가 없으면 동료 피해 환산은 하지 않아요.","<b>출석</b>: 출석한 뒤 내일 받을 보상을 보여 줘요.","<b>초보자 가이드</b>: 첫 환생 전에 B20 이후 3분 동안 층이 오르지 않으면 환생 단계를 먼저 알려 줘요.","<b>원정</b>: 원정대가 돌아오는 시각을 함께 보여 줘요.","<b>랭킹</b>: 밸런스 조정을 위해 랭킹 기록을 보낼 때 최신 세이브 1개를 함께 보관해요(개인정보 처리방침 9항)."],"en":["<b>Companion style engravings</b>: companion DMG engravings now count as skill damage like pets and runes (they did nothing before). With no companion in the party, companion DMG is not converted.","<b>Check-in</b>: after checking in, you can see tomorrow's reward.","<b>Starter guide</b>: before your first rebirth, if your floor stops rising for 3 minutes past B20, the guide shows the rebirth step first.","<b>Expeditions</b>: shows the time your expedition comes back.","<b>Ranking</b>: to tune balance, your latest save is kept when you send a ranking record (privacy policy section 9)."]},{"v":"5.14.14","ko":["<b>평타형 펫</b>: 도적·전사 평타형에서 평타 피해 펫 효과가 평타에 더 많이(75%) 들어가요. 평타 펫을 끼면 평타형이 더 약하던 문제를 고쳤어요.","<b>마법사·성직자 평타형</b>: 평타 위주 세팅이면 평타 피해 펫을 평타에 그대로 쓰는 방식을 자동으로 골라, 평타형이 스킬형과 비슷해요."],"en":["<b>Basic-style pets</b>: for rogues and warriors in basic style, basic DMG pets now count much more (75%) on basic attacks, so basic pets no longer make basic style the weakest.","<b>Mage/cleric basic style</b>: basic-heavy builds now keep basic DMG pets on basic attacks, so basic style is about as strong as skill style."]},{"v":"5.14.13","ko":["<b>평타형(도적·전사)</b>: 신격 영역을 스킬 피해로 바꾸는 방식과 평타에 그대로 두는 방식 중 더 센 쪽을 자동으로 골라요. 평타 위주 세팅에서 평타형이 크게 강해져요.","<b>동료형</b>: 동료 피해%가 주는 보너스가 줄었어요. 모든 직업에서 동료형만 앞서던 것을 맞췄어요.","<b>추천 세팅 찾기</b>: 스킬 탭 전투 스타일 칸에서 지금 스타일 기준으로 무엇을 바꾸면 세지는지 계산해 보여 주고, 바로 적용할 수 있어요."],"en":["<b>Basic style (rogue, warrior)</b>: the game now picks the stronger of two ways to use your divine domain (as skill damage, or kept on basic attacks). Basic-heavy builds get much stronger.","<b>Companion style</b>: the bonus from companion DMG% is smaller, so companion style no longer leads for every class.","<b>Find best setup</b>: in the combat style box on the skill tab, see which change (style, domain, mutation, soul weapon, party, pet effect) makes you stronger and apply it."]},{"v":"5.14.12","ko":["<b>동료 장비 일괄 분해</b>: 등급(일반~<b>전설</b>)을 골라 그 등급 이하를 한 번에 분해해요. 영웅·전설은 한 번 더 눌러야 분해되고, 신화와 장착 중인 장비는 분해되지 않아요."],"en":["<b>Ally gear bulk salvage</b>: pick a rarity (Common to <b>Legendary</b>) and salvage everything at or below it. Epic and Legendary need a second tap; Mythic and equipped gear are never salvaged."]},{"v":"5.14.11","ko":["<b>탑 상위 이름·신화 장비 기준 조정</b>: 동료 장비 <b>신화</b> 보상이 탑 1001층부터 나와요(2000층·3000층부터 1개씩 더). 탑 기록이 1000층 이상이면 그 탑은 상위 탑 이름으로 바뀌어요. 신화 동료 장비 상자도 탑 기록 1000층부터 상점에 보여요."],"en":["<b>Upper towers and mythic gear moved to 1000F</b>: <b>mythic</b> companion gear now starts at 1001F (+1 from 2000F and 3000F). A tower with a record of 1000F or more takes its upper name. The mythic ally gear box shows from tower record 1000F."]},
+const PATCH_NOTES = [{"v":"5.15.0","ko":["<b>크리스마스 이벤트</b> (12/15~1/4): 크리스마스 몬스터 8종(눈사람·진저브레드맨·루돌프·선물 미믹 등, 골드·경험치 3배), 크리스마스 코스튬 15종, 칭호 4종. 시작하면 산타 모자를 선물로 줘요.","<b>크리스마스 출석</b>: 기간 안에 아무 날이나 14번. 요정 모자·망토·장갑·장화·지팡이 사탕·산타 옷, 7일째에는 <b>겨울 테마</b>(눈·전구·트리, 이벤트가 끝나도 설정에서 계속 쓸 수 있어요).","<b>산타 썰매</b>: 게임을 켜 두면 몇 분마다 썰매가 지나가요. 눌러서 잡으면 선물(하루 12번). <b>접속 시간 선물</b>(매일): 5·15·30·60분, 전투 화면 오른쪽 아래. <b>눈송이 교환소</b>: 모은 눈송이로 원하는 코스튬·겨울 테마·재료를 골라요.","<b>테마 4종</b>(벚꽃 정원·황금 보물고·심해·할로윈 밤): 상점 테마 탭에서 미리 보고 사서 적용/해제. 전투 화면 스킬 아이콘을 작게 줄였어요."],"en":["<b>Christmas event</b> (12/15-1/4): 8 Christmas monsters (Snowman, Gingerbread Man, Rudolph, Gift Mimic and more, 3x gold/XP), 15 Christmas costumes, 4 titles. A Santa Hat is gifted at the start.","<b>Christmas check-in</b>: any 14 days during the event. Elf Hat, cloaks, mittens, boots, Candy Cane, Santa Suit, and on day 7 the <b>Winter theme</b> (snow, lights, trees; keep it on in Settings after the event).","<b>Santa sleigh</b>: keep the game open and a sleigh flies by every few minutes. Tap it for a gift (12 a day). <b>Play-time gifts</b> (daily) at 5/15/30/60 minutes, bottom right of the battle screen. <b>Snowflake Exchange</b>: trade snowflakes for the costume, theme or materials you want.","<b>4 themes</b> (Cherry Blossom Garden, Golden Vault, Deep Sea, Halloween Night): preview, buy, apply or remove in the shop Themes tab. Smaller skill icons on the battle screen."]},{"v":"5.14.27","ko":["처음 하는 사람은 메뉴가 층마다 하나씩 열려요(모험 B6, 마을 B10, 탑 B15, 환생 B20). 가이드에 오늘의 던전 단계 추가.","빨간 점 줄이기, 환생 확인 6초, 스탯 표 글자 키움, 일본어·중국어 번역 보강.","<b>버그 수정</b>: 낮은 층을 빠르게 지날 때 터치가 씹히던 문제, 휴대폰이 잠들었다 깨면 오프라인 진행이 사라지던 문제, 오프라인 18시간 중 15시간만 진행되던 문제."],"en":["New players unlock menus floor by floor (Quest B6, Village B10, Towers B15, Rebirth B20). Starter guide adds a Daily Dungeon step.","Fewer red dots, 6s rebirth confirm, larger stat text, more Japanese and Chinese text.","<b>Fixes</b>: dropped taps while racing through low floors, offline progress lost when the phone slept with the game open, 18h offline cut to 15h."]},{"v":"5.14.26","ko":["<b>오늘의 던전 공명</b>: 카드가 광폭·수호·질주로 나뉘고 매번 계열마다 1장씩 나와요. 같은 계열 3장·6장이면 공명이 켜져요(광폭 공격력, 수호 보스 잡으면 층 건너뛰기, 질주 잡을 수 감소·시간 연장). 그날의 <b>오늘의 공명</b> 계열은 2장·4장에 켜지고 효과 ×3.","<b>초보자 가이드</b>: 이미 해낸 단계 보상을 한 번에 받아요. 강화 위치 안내를 고쳤어요.","처음 시작하면 출석 창은 첫 보스를 잡은 뒤에 떠요. 언어를 바꾸면 화면 글자가 바로 바뀌어요."],"en":["<b>Daily Dungeon Resonance</b>: cards are now Fury, Ward or Rush, one of each per pick. Collect 3 and 6 of one kind to trigger a Resonance (Fury: ATK, Ward: boss kills skip floors, Rush: fewer kills per floor and more time). Each day's <b>Today's Resonance</b> kind triggers at 2 and 4 cards with ×3 effect.","<b>Starter guide</b>: rewards for steps you already finished are claimed together. Fixed the upgrade location hint.","New players see the check-in window after the first boss. Changing language now updates text already on screen."]},{"v":"5.14.25","ko":["<b>위계 3·4 신격 스킬</b>: 상위신(B3000)·주신(B4000)에 직업마다 2개씩. 보스 공격 봉인, 쿨타임 초기화, 제한시간 연장, 처형, 피해 차단처럼 전투 규칙이 바뀌어요.","<b>심층의 명예</b>: 최대 레벨 22 → 50 (23레벨부터 레벨마다 +0.002).","<b>신화 장비</b> 드롭 확률이 위계 4까지 올라가요.","<b>보스 레이드</b>: 30단계 이후 전투창 표시와 '/ 9999' 표시를 고쳤어요."],"en":["<b>Rank 3 and 4 divine skills</b>: 2 per class at Greater God (B3000) and High God (B4000), each with a rule effect: boss seal, cooldown reset, extra time, execute, damage block.","<b>Deep Honor</b>: max level 22 → 50 (+0.002 per level from 23).","<b>Mythic gear</b> drop rate keeps rising up to rank 4.","<b>Boss Raid</b>: fixed the battle view after stage 30 and removed the '/ 9999' label."]},{"v":"5.14.20","ko":["<b>하단 배너 광고 제거</b>: 화면 맨 아래 배너 광고를 없앴어요. 게임 화면이 다시 아래까지 넓어져요."],"en":["<b>Bottom banner removed</b>: the banner ad at the bottom of the screen is gone, and the game uses the full height again."]},{"v":"5.14.19","ko":["<b>윤회의 흔적</b>: 명예 증가 최대 레벨 20 → 22, 새 강화 <b>심층 완화</b>(B1000부터 층당 몬스터 체력 배율 레벨마다 −0.0009, 최대 10레벨) 추가.","<b>영원의 힘</b>: 레벨마다 공격력·체력 ×1.02 곱연산으로 바뀌었어요(기존 +3% 합산).","상단 레벨 옆 스킬 포인트(SP) 표시를 없앴어요."],"en":["<b>Reincarnation Traces</b>: Honor Growth max level 20 → 22, new <b>Deep Easing</b> (from B1000, per-floor monster HP rate −0.0009 per level, max 10).","<b>Eternal Power</b>: now ×1.02 ATK and HP per level (multiplicative, was +3% additive).","Removed the skill point (SP) badge next to the level at the top."]},{"v":"5.14.18","ko":["<b>출석 보상 한 번 더</b>: 출석한 뒤 광고를 보면 오늘 받은 재화(소환석·조각·정수·부스트·열쇠)를 한 번 더 받아요 (하루 1번)."],"en":["<b>Check-in bonus</b>: after checking in, watch an ad to get today's currency rewards (stones, shards, essence, boosts, keys) once more (once a day)."]},{"v":"5.14.17","ko":["<b>장비 각인</b>: 각인 효과를 바꿔도 이미 돌린 등급과 수치가 그대로 남아요."],"en":["<b>Engravings</b>: changing an engraving effect keeps the grade and value you already rolled."]},{"v":"5.14.16","ko":["<b>절전 모드</b>: 위쪽 달 버튼을 누르면 검은 화면에 층 진행만 보여 주고, 화면이 꺼지지 않게 해요. 전투는 그대로 진행돼요(화면이 꺼지면 오프라인 60% 속도). 밀어서 돌아가요.","<b>자동 절전</b>: 설정에서 조작이 없을 때 1·3·5·10분 뒤 자동으로 절전 모드에 들어가게 할 수 있어요.","탑 일괄 소탕 결과 알림에 글자 코드가 보이던 문제를 고쳤어요."],"en":["<b>Power save</b>: tap the moon button for a dark screen that shows only floor progress and keeps the screen on. Combat keeps running (with the screen off it would drop to 60% offline speed). Slide to return.","<b>Auto power save</b>: in Settings, enter power save automatically after 1, 3, 5 or 10 minutes without input.","Fixed markup text showing in the tower bulk-sweep notice."]},{"v":"5.14.15","ko":["<b>동료형 각인</b>: 동료 피해 각인도 펫·룬처럼 스킬 피해로 바뀌어 효과가 생겨요(지금까지는 효과가 없었어요). 파티에 동료가 없으면 동료 피해 환산은 하지 않아요.","<b>출석</b>: 출석한 뒤 내일 받을 보상을 보여 줘요.","<b>초보자 가이드</b>: 첫 환생 전에 B20 이후 3분 동안 층이 오르지 않으면 환생 단계를 먼저 알려 줘요.","<b>원정</b>: 원정대가 돌아오는 시각을 함께 보여 줘요.","<b>랭킹</b>: 밸런스 조정을 위해 랭킹 기록을 보낼 때 최신 세이브 1개를 함께 보관해요(개인정보 처리방침 9항)."],"en":["<b>Companion style engravings</b>: companion DMG engravings now count as skill damage like pets and runes (they did nothing before). With no companion in the party, companion DMG is not converted.","<b>Check-in</b>: after checking in, you can see tomorrow's reward.","<b>Starter guide</b>: before your first rebirth, if your floor stops rising for 3 minutes past B20, the guide shows the rebirth step first.","<b>Expeditions</b>: shows the time your expedition comes back.","<b>Ranking</b>: to tune balance, your latest save is kept when you send a ranking record (privacy policy section 9)."]},{"v":"5.14.14","ko":["<b>평타형 펫</b>: 도적·전사 평타형에서 평타 피해 펫 효과가 평타에 더 많이(75%) 들어가요. 평타 펫을 끼면 평타형이 더 약하던 문제를 고쳤어요.","<b>마법사·성직자 평타형</b>: 평타 위주 세팅이면 평타 피해 펫을 평타에 그대로 쓰는 방식을 자동으로 골라, 평타형이 스킬형과 비슷해요."],"en":["<b>Basic-style pets</b>: for rogues and warriors in basic style, basic DMG pets now count much more (75%) on basic attacks, so basic pets no longer make basic style the weakest.","<b>Mage/cleric basic style</b>: basic-heavy builds now keep basic DMG pets on basic attacks, so basic style is about as strong as skill style."]},{"v":"5.14.13","ko":["<b>평타형(도적·전사)</b>: 신격 영역을 스킬 피해로 바꾸는 방식과 평타에 그대로 두는 방식 중 더 센 쪽을 자동으로 골라요. 평타 위주 세팅에서 평타형이 크게 강해져요.","<b>동료형</b>: 동료 피해%가 주는 보너스가 줄었어요. 모든 직업에서 동료형만 앞서던 것을 맞췄어요.","<b>추천 세팅 찾기</b>: 스킬 탭 전투 스타일 칸에서 지금 스타일 기준으로 무엇을 바꾸면 세지는지 계산해 보여 주고, 바로 적용할 수 있어요."],"en":["<b>Basic style (rogue, warrior)</b>: the game now picks the stronger of two ways to use your divine domain (as skill damage, or kept on basic attacks). Basic-heavy builds get much stronger.","<b>Companion style</b>: the bonus from companion DMG% is smaller, so companion style no longer leads for every class.","<b>Find best setup</b>: in the combat style box on the skill tab, see which change (style, domain, mutation, soul weapon, party, pet effect) makes you stronger and apply it."]},{"v":"5.14.12","ko":["<b>동료 장비 일괄 분해</b>: 등급(일반~<b>전설</b>)을 골라 그 등급 이하를 한 번에 분해해요. 영웅·전설은 한 번 더 눌러야 분해되고, 신화와 장착 중인 장비는 분해되지 않아요."],"en":["<b>Ally gear bulk salvage</b>: pick a rarity (Common to <b>Legendary</b>) and salvage everything at or below it. Epic and Legendary need a second tap; Mythic and equipped gear are never salvaged."]},{"v":"5.14.11","ko":["<b>탑 상위 이름·신화 장비 기준 조정</b>: 동료 장비 <b>신화</b> 보상이 탑 1001층부터 나와요(2000층·3000층부터 1개씩 더). 탑 기록이 1000층 이상이면 그 탑은 상위 탑 이름으로 바뀌어요. 신화 동료 장비 상자도 탑 기록 1000층부터 상점에 보여요."],"en":["<b>Upper towers and mythic gear moved to 1000F</b>: <b>mythic</b> companion gear now starts at 1001F (+1 from 2000F and 3000F). A tower with a record of 1000F or more takes its upper name. The mythic ally gear box shows from tower record 1000F."]},
   {"v":"5.14.10","ko":["<b>보스 레이드 참여 확대</b>: 성을 가진 모험가도 위계와 상관없이 레이드에 참여할 수 있어요.","<b>장비 각인</b>: 레이드 보상으로 <b>신성 조각</b>이 새로 생겨요(깬 단계마다 10개). 장비 화면의 <b>각인</b> 버튼에서 장비 칸마다 효과(공격력·체력·보스·스킬·평타·동료·탑·골드)를 직접 고르고, 신성 조각으로 값(고급 3~6% ~ 신화 33~50%)을 돌려요. 장비를 바꾸거나 환생·윤회해도 남아요.","<b>탑 100층 위</b>: 100층부터 이름이 바뀌고 동료 장비 <b>신화</b> 등급이 나와요(500층·1000층부터 더 많이).","<b>신화 동료 장비 상자</b>: 탑 기록 100층부터 소환석 상점에 생겨요(전설 이상 확정, 신화 25%).","<b>마을 땅값 40% 인하</b>: 이미 산 땅은 차액을 우편으로 돌려드려요.","<b>짧은 세이브 코드</b>: 세이브 코드 복사가 DM6-XXXXXXXX 형태의 짧은 코드로 바뀌었어요(30일 보관).","<b>원정 정리</b>: 심연 원정이 열리면(최고 300층) 심연 원정만, 그 전에는 일반 원정만 보여요. 진행 중이던 일반 원정은 끝나면 받을 수 있어요. 동료 탭의 보유 효과 요약은 닫았어요.","전투 화면에서 스킬·버프 아이콘이 겹치거나 깨지던 문제를 고쳤어요."],"en":["<b>Boss Raid</b>: castle owners can now join regardless of divine tier.","<b>Gear engraving</b>: raids now also give <b>holy shards</b> (10 per stage cleared). Tap <b>Engrave</b> in the gear screen, pick an effect (ATK, HP, boss, skill, basic, companion, tower, gold) for each slot and reroll its value with holy shards (common 3~6% up to mythic 33~50%). Stays through gear swaps, rebirth and reincarnation.","<b>Towers above 100F</b>: new names from 100F, and <b>mythic</b> companion gear drops (more from 500F and 1000F).","<b>Mythic ally gear box</b>: appears in the stone shop from tower record 100F (legendary or better, 25% mythic).","<b>Village plots 40% cheaper</b>: the difference for plots you already bought is refunded by mail.","<b>Short save codes</b>: copying a save code now gives a short DM6-XXXXXXXX code (kept for 30 days).","<b>Expeditions</b>: once Abyss expeditions unlock (best 300F) only those are shown; before that only normal expeditions. Running normal expeditions can still be claimed. The owned-effects summary in the Companion tab is closed.","Fixed skill and buff icons overlapping or breaking in the battle HUD."]},
   {"v":"5.14.9","ko":["도적 평타형 조정: 평타에는 그림자 영역·평타 펫 효과의 30%만 남아요(스킬형의 약 1.2~1.3배).","전사 광전 하향: 광전 영역 평타 피해 위계마다 +125 → +80, 평타형 스킬 피해 전환 ×1.1 → ×0.95."],"en":["Rogue basic style: only 30% of Shadow Domain and basic-attack pet effects stay on basic attacks (about 1.2~1.3x skill style).","Warrior Berserk nerf: domain basic damage +125 → +80 per tier, basic-style conversion x1.1 → x0.95."]},
   {"v":"5.14.8","ko":["탑 기록이 60층 단위로 뛰고 기기 프레임에 따라 달라지던 문제를 고쳤어요. 이제 체력과 보스 피해 둘 다로 높이가 정해져요.","도적 평타형 강화."],"en":["Tower records no longer jump in 60-floor steps or depend on frame rate. Height now depends on both HP and boss damage.","Rogue basic style buff."]},
@@ -2404,7 +2470,7 @@ function attendCard(modal) {
 }
 function qMission() {
   const bl = boostLeft(S), ch = (S.boost && S.boost.charges) || 0;
-  return attendCard() + `
+  return xmCard() + xmShopCard() + attendCard() + `
     <div class="qcard"><div class="qh"><b>${t('q.boost')}</b><span>${t('q.boostCharges', { n: ch })}</span></div>
       <div class="qx">${bl > 0 ? t('q.boostOn', { x: BOOST_X, t: fmtClock(bl) }) : t('q.boostDesc', { m: BOOST_MIN, x: BOOST_X })}</div>
       <button class="big sm" data-act="boost" ${ch ? '' : 'disabled'}>${t('q.boostBtn', { m: BOOST_MIN, x: BOOST_X })}</button></div>
@@ -2501,9 +2567,9 @@ ${t('sig.deep', { f: LOOP_LEN + zoneStart(z) })} · ${t('sig.tip', { u: su2.name
 function qMdex() {
   const d = S.mdex || {}, n = mdexStars(S);
   const cells = MDEX_KEYS.map(key => {
-    const k = Math.floor(d[key] || 0), on = BEST_STARS.filter(x => k >= x).length, hw = key.startsWith('hw');
-    const img = hw ? 'assets/mon/' + key + '.png' : 'assets/mon/m' + key + '.png', name = hw ? t('mon.hw.' + key.slice(2)) : t('mon.' + parseInt(key, 10) + '.' + key.slice(-1));
-    return `<div class="bk ${k > 0 ? '' : 'unk'}${hw ? ' hwk' : ''}"><img class="px" src="${img}" alt=""><div class="bn">${k > 0 ? name : '???'}</div>${pips(3, on)}<div class="bc">${fmt(k)}</div></div>`;
+    const k = Math.floor(d[key] || 0), on = BEST_STARS.filter(x => k >= x).length, hw = key.startsWith('hw') || key.startsWith('xm'), xmk = key.startsWith('xm');
+    const img = hw ? 'assets/mon/' + key + '.png' : 'assets/mon/m' + key + '.png', name = hw ? t('mon.' + key.slice(0, 2) + '.' + key.slice(2)) : t('mon.' + parseInt(key, 10) + '.' + key.slice(-1));
+    return `<div class="bk ${k > 0 ? '' : 'unk'}${hw ? (xmk ? ' xmk' : ' hwk') : ''}"><img class="px" src="${img}" alt=""><div class="bn">${k > 0 ? name : '???'}</div>${pips(3, on)}<div class="bc">${fmt(k)}</div></div>`;
   }).join('');
   return `<div class="qcard"><div class="qh"><b>${t('q.mdexTitle')}</b><span>${t('q.bookHead', { n, m: MDEX_KEYS.length * 3, v: fmtP(n * MDEX_PCT) })}</span></div><div class="qx">${t('q.mdexNote', { v: MDEX_PCT })}</div></div><div class="book">${cells}</div>`;
 }
@@ -2769,6 +2835,7 @@ function bindQuest() {
     const b = e.target.closest('button[data-act]'); if (!b || b.disabled) return;
     const act = b.dataset.act;
     if (act === 'attAd') { try { globalThis.__dgAttAd && globalThis.__dgAttAd.run(); } catch {} return; }
+    if (xmAct(act, b)) { buildQuest(); render(); return; }
     if (act === 'attend') { const r = attend(S); if (r) { addLog(t('q.attendLog', { n: r.day }) + ' · ' + rewardText(r.r)); flyTo('assets/ui/stone.png', 90, 40, $('#stoneBox'), 3); save(S, 'force'); setTimeout(afterGifts, 300); } }
     else if (act === 'boost') { if (useBoost(S)) addLog('<b>' + t('q.boostLog', { m: BOOST_MIN, x: BOOST_X }) + '</b>'); }
     else if (act === 'claim') { const r = claimMission(S, b.dataset.k, b.dataset.id); if (r) addLog(t('q.claimLog') + ' · ' + rewardText(r)); }
@@ -3031,20 +3098,20 @@ function renderPick() {
 let attShownDay = '';
 function attendDayKey() { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
 function maybeShowAttend(tries = 0) {
-  if (!S || !S.cls || !canAttend(S) || attShownDay === attendDayKey()) return;
+  if (!S || !S.cls || !(canAttend(S) || canXmAttend(S)) || attShownDay === attendDayKey()) return;
   if (!(S.rebirths > 0) && Math.max(S.bestFloor || 0, S.maxFloor || 0) < 6) { if (tries < 400) setTimeout(() => maybeShowAttend(tries + 1), 15000); return; }   // 5.14.26 새 플레이어는 첫 보스(B5)를 잡은 뒤에 (모험 탭에서는 바로 받을 수 있음)
   // 다른 창(오프라인 보고서·직업 선택 등)이 떠 있으면 닫힐 때까지 조금 기다린다
   if (document.querySelector('.modal:not(.hidden)')) { if (tries < 40) setTimeout(() => maybeShowAttend(tries + 1), 1500); return; }
   attShownDay = attendDayKey();
   renderAttModal(); $('#attModal').classList.remove('hidden');
 }
-function renderAttModal() { $('#attWin').innerHTML = attendCard(true) + `<button class="mini wide" data-att="close">${t('ui.close')}</button>`; attSnap($('#attWin')); }
+function renderAttModal() { $('#attWin').innerHTML = (xmOn() ? xmCard(true) : '') + attendCard(true) + `<button class="mini wide" data-att="close">${t('ui.close')}</button>`; attSnap($('#attWin')); }
 // 출석 칸 슬라이드: 새로 그려진 줄만 받을 차례(또는 마지막으로 받은 날) 칸으로 한 번 옮긴다 (live 요소에 속성을 달면 morph 가 매번 교체하므로 WeakSet)
 const attInit = new WeakSet();
 function attSnap(root) {
   for (const row of root.querySelectorAll('.attrow')) {
     if (attInit.has(row)) continue; attInit.add(row);
-    const cards = row.children, nx = ((S.quest.att || {}).n || 0) % 7, i = Math.max(0, Math.min(cards.length - 1, (canAttend(S) ? nx : nx - 1)));
+    const xmr = row.classList.contains('xmrow'), cards = row.children, nx = xmr ? xmState(S).n : ((S.quest.att || {}).n || 0) % 7, i = Math.max(0, Math.min(cards.length - 1, ((xmr ? canXmAttend(S) : canAttend(S)) ? nx : nx - 1)));
     requestAnimationFrame(() => { const c = cards[Math.max(0, i - 1)]; if (c) row.scrollLeft = c.offsetLeft - row.offsetLeft; });
   }
 }
@@ -3134,6 +3201,7 @@ function bindUI() {
     const b = e.target.closest('button'); if (!b || b.disabled) return;
     if (b.dataset.att === 'close') { $('#attModal').classList.add('hidden'); return; }
     if (b.dataset.act === 'attAd') { try { globalThis.__dgAttAd && globalThis.__dgAttAd.run(); } catch {} return; }
+    if (xmAct(b.dataset.act, b)) { hudSig = ''; render(); renderAttModal(); return; }
     if (b.dataset.act === 'attend') { const r = attend(S); if (r) { addLog(t('q.attendLog', { n: r.day }) + ' · ' + rewardText(r.r)); flyTo('assets/ui/stone.png', 90, 40, $('#stoneBox'), 3); save(S, 'force'); hudSig = ''; render(); } renderAttModal(); attAdSig = JSON.stringify(attAdState()); if (!attAdState()) setTimeout(() => { $('#attModal').classList.add('hidden'); afterGifts(); }, 2200); }   // 5.14.18 광고로 한 번 더 받을 수 있으면 열어 둔다
   });
   document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') setTimeout(() => maybeShowAttend(), 800); });
@@ -3371,7 +3439,7 @@ async function init() {
   render();
   if (!S.cls) autoStartClass();
   else addLog(`<b>${t('ui.resume', { n: S.floor })}</b>` + (S._from === 'sync' ? ` · <span class="hi">${t('ui.fromSync')}</span>` : ''));
-  applyHalloween();
+  applyHalloween(); applyXmas(); renderPgBox();
   renderMailDot(); renderPickBtn();
   setTimeout(() => maybeShowAttend(), 1200);
   requestAnimationFrame(rafLoop);
@@ -3414,8 +3482,8 @@ setInterval(async () => {
 // ================= 할로윈 이벤트 (기간 한정) =================
 // 사냥 중인 몬스터: 구역 기본 + 추가 2종, 이벤트 중 할로윈 몬스터 (게임 계산과 같은 규칙)
 function huntMon() { if (!S || S.boss || inRift() || inTower()) return { v: 0 }; const k = mon.die > 0 ? Math.max(0, (S.kills || 0) - 1) : (S.kills || 0); return monPick(S.floor, k); }
-function monKey(mi) { const p = huntMon(); return p.hw != null ? 'mon/hw' + p.hw : p.v ? 'mon/m' + mi + (p.v === 1 ? 'a' : 'b') : 'mon/m' + mi; }
-function monLabel(mi) { const p = huntMon(); return p.hw != null ? t('mon.hw.' + p.hw) : p.v ? t('mon.' + mi + (p.v === 1 ? '.a' : '.b')) : MONSTERS[mi]; }
+function monKey(mi) { const p = huntMon(); return p.xm != null ? 'mon/xm' + p.xm : p.hw != null ? 'mon/hw' + p.hw : p.v ? 'mon/m' + mi + (p.v === 1 ? 'a' : 'b') : 'mon/m' + mi; }
+function monLabel(mi) { const p = huntMon(); return p.xm != null ? t('mon.xm.' + p.xm) : p.hw != null ? t('mon.hw.' + p.hw) : p.v ? t('mon.' + mi + (p.v === 1 ? '.a' : '.b')) : MONSTERS[mi]; }
 
 // 기간 중에는 주황·보라 색감과 던전 화면에 박쥐·유령이 떠다니고, 보스를 잡으면 할로윈 코스튬이 나온다
 function applyHalloween() {
@@ -3433,7 +3501,154 @@ function applyHalloween() {
     if (!S.hwGift) { S.hwGift = 1; if (!c.own.includes(HW_GIFT)) c.own.push(HW_GIFT); if (!c.look.head) c.look.head = HW_GIFT; save(S); try { drawDoll(); } catch (e) {} const m = t('hw.gift', { c: t('cos.n.' + HW_GIFT) }); addLog('<b style="color:#ffa04d">' + m + '</b>'); toast(m, '#ffa04d'); } }
   if (on && !applyHalloween.told) { applyHalloween.told = true; const e = new Date(HW_END - 1); addLog('<b style="color:#ffa04d">' + t('hw.notice', { m: e.getMonth() + 1, d: e.getDate() }) + '</b>'); }
 }
-setInterval(() => { if (S) applyHalloween(); }, 60000);   // 기간이 시작·끝나는 순간에도 맞춰지게
+setInterval(() => { if (S) { applyHalloween(); applyXmas(); } }, 60000);
+// ================= 5.15.0 크리스마스 이벤트 =================
+// 미리보기에서만: 주소 끝에 ?xmtest=1 을 붙이면 이벤트 기간(12/20)인 것처럼 보여 준다 (출시 앱에서는 주소를 바꿀 수 없어 영향 없음)
+try { if (/[?&]xmtest=1/.test(location.search)) globalThis.__dgXmNow = Date.UTC(2026, 11, 20, 3); } catch (e) {}
+// 설정의 테마 고르기: 가진 테마만 (판매 테마는 토스판에서 구매)
+function fillThemeSel() {
+  const sel = $('#themeSel'); if (!sel) return;   // 5.15.0 설정의 테마 고르기는 상점 테마 탭으로 옮김 (요소가 없으면 아무것도 안 함) const own = THEMES.filter(id => themeOwned(S, id));
+  $('#themeSet').classList.toggle('hidden', !own.length && !xmOn());
+  sel.innerHTML = [['', t('th.auto')], ['none', t('th.none')], ...own.map(id => [id, t('th.n.' + id)])].map(([v, n]) => `<option value="${v}" ${(S.theme || '') === v ? 'selected' : ''}>${n}</option>`).join('');
+}
+globalThis.__dgApplyTheme = () => { try { applyXmas(); fillThemeSel(); } catch (e) {} };
+globalThis.__dgGoTo = w => { try { goTo(w); } catch (e) {} };   // 토스 상점의 '소환석 상점으로' 버튼   // 상점 미리 보기·구매 뒤 바로 반영
+function xmDate(ms) { const d = new Date(ms); return { m: d.getMonth() + 1, d: d.getDate() }; }
+function applyXmas() {
+  const on = xmOn(), win = winterOn(S);
+  document.documentElement.classList.toggle('xm', on);
+  document.documentElement.classList.toggle('winter', win);
+  { const th = activeTheme(S); for (const id of THEMES) document.documentElement.classList.toggle('th-' + id, th === id && id !== 'winter'); }
+  { let tg = $('#xmTag'); const fl = $('#fname'); if (on && fl && !tg) { tg = document.createElement('span'); tg.id = 'xmTag'; tg.className = 'xmtag'; tg.textContent = t('xm.tag'); fl.after(tg); } if (!on && tg) tg.remove(); }
+  if (on && S.cls) {
+    const c = S.cos || (S.cos = { own: [], look: {}, seen: {} }); c.own ||= []; c.look ||= {}; const x = xmState(S);
+    if (!x.gift) { x.gift = 1; if (!c.own.includes(XM_GIFT)) c.own.push(XM_GIFT); if (!c.look.head) c.look.head = XM_GIFT; save(S); try { drawDoll(); } catch (e) {} const m = t('xm.gift', { c: t('cos.n.' + XM_GIFT) }); addLog('<b style="color:#ff6b6b">' + m + '</b>'); toast(m, '#ff6b6b'); }
+    if (!applyXmas.told) { applyXmas.told = true; addLog('<b style="color:#ff6b6b">' + t('xm.notice', xmDate(XM_END - 1)) + '</b>'); }
+  }
+  xmSleighPlan();
+}
+// 출석 14일 + 접속 시간 선물 카드 (모험 탭 맨 위, 출석 창)
+// 코스튬 그림은 32칸 중 일부만 차지해서(모자·장갑) 작게 보인다 → 그려진 부분만 잘라 키운 아이콘
+const cosIconCache = {};
+function cosIcon(id) {
+  if (cosIconCache[id]) return cosIconCache[id];
+  const im = A['cos/' + id]; if (!im) return 'assets/cos/' + id + '.png';
+  try { const c = document.createElement('canvas'); c.width = c.height = 32; const x = c.getContext('2d'); x.drawImage(im, 0, 0); const d = x.getImageData(0, 0, 32, 32).data; let x0 = 32, y0 = 32, x1 = -1, y1 = -1;
+    for (let y = 0; y < 32; y++) for (let i = 0; i < 32; i++) if (d[(y * 32 + i) * 4 + 3]) { x0 = Math.min(x0, i); y0 = Math.min(y0, y); x1 = Math.max(x1, i); y1 = Math.max(y1, y); }
+    if (x1 < 0) return 'assets/cos/' + id + '.png';
+    const w = x1 - x0 + 1, h = y1 - y0 + 1, k = Math.max(1, Math.floor(28 / Math.max(w, h))), o = document.createElement('canvas'); o.width = o.height = 32; const ox = o.getContext('2d'); ox.imageSmoothingEnabled = false;
+    ox.drawImage(c, x0, y0, w, h, Math.round((32 - w * k) / 2), Math.round((32 - h * k) / 2), w * k, h * k);
+    return (cosIconCache[id] = o.toDataURL()); } catch (e) { return 'assets/cos/' + id + '.png'; }
+}
+function xmCard(modal) {
+  if (!xmOn() || !S || !S.cls) return '';
+  const x = xmRoll(S), can = canXmAttend(S), e = xmDate(XM_END - 1);
+  const cell = (r, i) => { const lab = r.cos ? t('cos.n.' + r.cos) : r.theme ? t('xm.theme') : rewardText(r).split(' · ').slice(0, 2).join(' · ');
+    const img = r.cos ? `<img class="px" src="${cosIcon(r.cos)}" alt="">` : r.theme ? '<img class="px" src="assets/deco/xm_tree.png" alt="">' : '';
+    return `<div class="att xmatt ${i < x.n ? 'got' : ''} ${i === x.n && can ? 'next' : ''} ${r.cos || r.theme ? 'big' : ''}"><b>${t('q.day', { n: i + 1 })}</b>${img}<i>${lab}</i></div>`; };
+  return `<div class="qcard xmcard"><div class="qh"><b>${t('xm.attTitle')}</b><span>${t('xm.until', e)} · ${x.n}/${XM_ATT.length}</span></div>
+    <div class="qx">${t('xm.attDesc', { n: XM_ATT.length })}</div>
+    <div class="attrow xmrow">${XM_ATT.map(cell).join('')}</div>
+    <button class="big sm xmbtn" data-act="xmAtt" ${can ? '' : 'disabled'}>${can ? t('xm.attBtn') : x.n >= XM_ATT.length ? t('xm.attDone') : t('xm.attTomorrow')}</button>
+    <div class="qx">${t('xm.sleighNote', { n: xmSleighLeft(S) })}</div></div>`;
+}
+function xmAct(act, b) {
+  if (act === 'xmAtt') { const r = xmAttend(S); if (r) { addLog('<b style="color:#ff6b6b">' + t('xm.attLog', { n: r.day }) + '</b> · ' + xmRewardText(r.r)); toast(t('xm.attLog', { n: r.day }) + ' · ' + xmRewardText(r.r), '#ff6b6b'); xmAfter(r.r); } return true; }
+  if (act === 'xmBuy') { const r = xmBuy(S, b.dataset.k, b.dataset.id); if (r) { const m = t('xm.buyLog') + ' · ' + xmRewardText(r); addLog('<b style="color:#ff6b6b">' + m + '</b>'); toast(m, '#ff6b6b'); xmAfter(r); } return true; }
+  return false;
+}
+function xmRewardText(r) { return [rewardText(r), r.cos ? t('cos.n.' + r.cos) : '', r.theme ? t('xm.theme') : '', r.snow ? t('xm.snowN', { n: r.snow }) : ''].filter(Boolean).join(' · '); }
+const snowIco = '<img class="px snowi" src="assets/ui/snow.png" alt="">';
+// ================= 5.15.0 접속 시간 선물 (상시): 전투 화면 오른쪽 아래 =================
+const fmtMS = sec => { sec = Math.max(0, Math.ceil(sec)); const m = Math.floor(sec / 60), s2 = sec % 60; return m + ':' + String(s2).padStart(2, '0'); };
+function pgRewardText(r, i) {
+  const a = [];
+  if (r.warpM) a.push(t('pg.warp', { t: r.warpM >= 60 ? t('pg.h', { n: r.warpM / 60 }) : t('pg.m', { n: r.warpM }) }));
+  if (r.hboost) a.push(t('pg.gb', { n: r.hboost }));
+  if (r.aby) a.push(t('pg.aby'));
+  if (r.abyc) a.push(t('pg.abyc', { n: fmtN(r.abyc) })); if (r.trace) a.push(t('pg.trace', { n: fmtN(r.trace) }));
+  const rest = rewardText({ stones: r.stones, holy: r.holy, boost: r.boost }); if (rest) a.push(rest);
+  if (r.snow) a.push(t('xm.snowN', { n: r.snow })); if (r.cos) a.push(t('cos.n.' + r.cos));
+  if (i != null && xmOn()) { a.push(t('xm.snowN', { n: PLAY_SNOW[i] })); if (i === PLAY_GIFTS.length - 1) a.push(t('xm.cosChance')); }
+  return a.join(' · ');
+}
+function applyWarp(min) {
+  if (!(min > 0) || !S.cls) return;
+  const b = S.boost, until = b && b.until; if (b) b.until = 0;
+  S.lastTick = Date.now() - min * 60000; S.pending = null; advance(S); if (b) b.until = until;
+  const rep2 = S.pending; S.pending = null; if (rep2 && rep2.seconds > 60) showReport(rep2);
+}
+function renderPgBox() {
+  const el = $('#pgBox'); if (!el) return;
+  if (!S || !S.cls) { el.classList.add('hidden'); return; }
+  const pg = playState(S), i = playNext(S);
+  if (i < 0) { el.classList.add('hidden'); return; }
+  const ready = playReady(S), g2 = PLAY_GIFTS[i], left = g2.m * 60 - pg.on;
+  const html = `<img class="px" src="assets/ui/gift.png" alt=""><span>${ready ? t('pg.ready') : fmtMS(left)}</span>`;
+  if (el.__h !== html) { el.innerHTML = html; el.__h = html; }
+  el.classList.remove('hidden'); el.classList.toggle('ready', ready);
+}
+function renderPgModal() {
+  const pg = playState(S), on = Math.floor(pg.on / 60);
+  $('#pgWin').innerHTML = `<div class="qcard pgcard"><div class="qh"><b>${t('pg.title')}</b><span>${t('pg.now', { n: on })}</span></div>
+    <div class="qx">${t('pg.desc')}</div>
+    ${PLAY_GIFTS.map((g2, i) => { const got = pg.got & (1 << i), ok = !got && pg.on >= g2.m * 60;
+      return `<div class="pgrow ${got ? 'got' : ok ? 'ok' : ''}"><b>${t('pg.min', { n: g2.m })}</b><span>${pgRewardText(g2.r, i)}</span><button class="mini" data-pg="${i}" ${ok ? '' : 'disabled'}>${got ? t('pg.got') : ok ? t('pg.claim') : fmtMS(g2.m * 60 - pg.on)}</button></div>`; }).join('')}
+    </div><button class="mini wide" data-pg="close">${t('ui.close')}</button>`;
+}
+function pgClaim(i) {
+  const r = playClaim(S, i); if (!r) return;
+  const m = t('pg.log', { n: PLAY_GIFTS[i].m }) + ' · ' + pgRewardText(r); addLog('<b style="color:#8ee6ff">' + m + '</b>'); toast(m, '#8ee6ff');
+  if (r.cos) { try { drawDoll(); } catch (e) {} }
+  st = stats(S); save(S, 'force'); hudSig = ''; render(); renderPgBox();
+  if (r.warpM) { $('#pgModal').classList.add('hidden'); applyWarp(r.warpM); }
+}
+$('#pgBox').addEventListener('click', e => { e.stopPropagation(); if (!S) return; const i = PLAY_GIFTS.findIndex((g2, k) => !(playState(S).got & (1 << k)) && playState(S).on >= g2.m * 60); if (i >= 0) { pgClaim(i); return; } renderPgModal(); $('#pgModal').classList.remove('hidden'); });
+$('#pgWin').addEventListener('click', e => { const b = e.target.closest('button[data-pg]'); if (!b || b.disabled) return; if (b.dataset.pg === 'close') { $('#pgModal').classList.add('hidden'); return; } pgClaim(+b.dataset.pg); renderPgModal(); });
+// 화면에 보이는 동안 5초마다 센다 (절전 화면도 앱을 켜 둔 것)
+setInterval(() => { if (!S || !S.cls || document.visibilityState !== 'visible') return; const was = playReady(S); playAdd(S, 5); if (!was && playReady(S)) toast(t('pg.toast'), '#8ee6ff'); renderPgBox(); if (!$('#pgModal').classList.contains('hidden')) renderPgModal(); }, 5000);
+// 눈송이 교환소 카드 (모험 탭, 크리스마스 출석 아래)
+function xmShopCard() {
+  if (!xmOn() || !S || !S.cls) return '';
+  const x = xmRoll(S), cs = XM_SHOP.find(i => i.k === 'cos'), left = XM_COS.filter(id => !cosHas(S, id));
+  const cos = left.length ? left.map(id => `<button class="xmcos" data-act="xmBuy" data-k="cos" data-id="${id}" ${x.snow >= cs.cost ? '' : 'disabled'} title="${t('cos.n.' + id)}"><img class="px" src="${cosIcon(id)}" alt=""><i>${t('cos.n.' + id)}</i></button>`).join('') : `<div class="qx">${t('xm.cosAll')}</div>`;
+  const th = XM_SHOP.find(i => i.k === 'theme');
+  const goods = XM_SHOP.filter(i => i.n).map(i => { const l = xmShopLeft(S, i.k), ok = x.snow >= i.cost && l > 0;
+    return `<button class="mini xmgood" data-act="xmBuy" data-k="${i.k}" ${ok ? '' : 'disabled'}><b>${rewardText({ [i.k]: i.n })}</b><span>${snowIco}${i.cost} · ${t('xm.left', { n: l })}</span></button>`; }).join('');
+  return `<div class="qcard xmcard xmshop"><div class="qh"><b>${t('xm.shopTitle')}</b><span class="snowc">${snowIco}<b>${fmtN(x.snow)}</b></span></div>
+    <div class="qx">${t('xm.shopDesc', { a: XM_SNOW.att, s: XM_SNOW.sleigh, m: XM_SNOW.mobPer, d: XM_SNOW.mobDay })}</div>
+    <div class="qh xmsub"><b>${t('xm.shopCos')}</b><span>${snowIco}${cs.cost}</span></div>
+    ${left.length ? `<div class="xmcosgrid">${cos}</div>` : cos}
+    ${x.theme ? '' : `<button class="mini wide xmgood" data-act="xmBuy" data-k="theme" ${x.snow >= th.cost ? '' : 'disabled'}><b>${t('xm.theme')}</b><span>${snowIco}${th.cost} · ${t('xm.themeKeep')}</span></button>`}
+    <div class="qh xmsub"><b>${t('xm.shopDaily')}</b><span>${t('xm.shopReset')}</span></div>
+    <div class="xmogs">${goods}</div>
+    <div class="qx">${t('xm.shopEnd')}</div></div>`;
+}
+function xmAfter(r) { if (r.cos || r.theme) { try { drawDoll(); } catch (e) {} applyXmas(); } st = stats(S); save(S, 'force'); hudSig = ''; }
+// 썰매: 몇 분마다 전투 화면 위로 지나간다. 누르면 선물 (지나가 버리면 횟수는 그대로)
+let xmSlT = 0; xmSleighPlan.n = 0;
+function xmSleighPlan() {
+  if (xmSlT || !xmOn() || !S || !S.cls || xmSleighLeft(S) <= 0) return;
+  const [a, b] = XM_SLEIGH_GAP, quick = globalThis.__dgXmNow && !xmSleighPlan.n++;   // 미리보기(?xmtest=1)는 첫 썰매를 6초 뒤에
+  xmSlT = setTimeout(() => { xmSlT = 0; xmSleighFly(); xmSleighPlan(); }, quick ? 6000 : (a + Math.random() * (b - a)) * 1000);
+}
+function xmSleighFly() {
+  if (!xmOn() || !S || !S.cls || document.visibilityState !== 'visible' || xmSleighLeft(S) <= 0 || $('#xmSleigh')) return;
+  const sc = $('#screen'); if (!sc) return;
+  const el = document.createElement('button'); el.id = 'xmSleigh'; el.className = 'xmsleigh'; el.setAttribute('aria-label', t('xm.sleigh'));
+  el.innerHTML = '<img class="px" src="assets/deco/xm_sleigh.png" alt="">';
+  el.style.top = (6 + Math.random() * 18) + '%';
+  const done = () => el.remove();
+  el.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation(); if (el.classList.contains('caught')) return;
+    const r = xmSleigh(S); el.style.transform = getComputedStyle(el).transform; el.style.animation = 'none'; void el.offsetWidth; el.classList.add('caught');
+    if (r) { const m = t('xm.sleighGot') + ' · ' + xmRewardText(r); addLog('<b style="color:#ff6b6b">' + m + '</b>'); toast(m, '#ff6b6b'); try { flyTo('assets/ui/stone.png', 90, 30, $('#stoneBox'), 3); } catch (e2) {} xmAfter(r); }
+    setTimeout(done, 450);
+  });
+  el.addEventListener('animationend', done);
+  sc.appendChild(el);
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && S) xmSleighPlan(); });   // 기간이 시작·끝나는 순간에도 맞춰지게
 
 // ================= 여러 창 동시 실행 =================
 // 같은 세이브를 여러 창(팝업·탭·브라우저 창)에서 열면 창마다 자기 상태를 4초마다 저장해서
@@ -3613,12 +3828,12 @@ document.addEventListener('click', e => {
 });
 
 // ================= 칭호 =================
-const TTL_COND = id => /^arena\d$/.test(id) ? 'arena' : /^hw\d$/.test(id) ? 'hw' : /^deep/.test(id) ? 'floor' : /^reinc/.test(id) ? 'reinc' : /^karma/.test(id) ? 'karma' : /^tw(Inf|Storm|Iron)$/.test(id) ? 'tw' : id === 'twAll' ? 'twAll' : /^rift/.test(id) ? 'rift' : /^pull/.test(id) ? 'pull' : /^boss/.test(id) ? 'boss' : /^dlShop/.test(id) ? 'shop' : id;
+const TTL_COND = id => /^arena\d$/.test(id) ? 'arena' : /^hw\d$/.test(id) ? 'hw' : /^xm\d$/.test(id) ? 'xm' : /^deep/.test(id) ? 'floor' : /^reinc/.test(id) ? 'reinc' : /^karma/.test(id) ? 'karma' : /^tw(Inf|Storm|Iron)$/.test(id) ? 'tw' : id === 'twAll' ? 'twAll' : /^rift/.test(id) ? 'rift' : /^pull/.test(id) ? 'pull' : /^boss/.test(id) ? 'boss' : /^dlShop/.test(id) ? 'shop' : id;
 const TTL_TW = { twInf: 'inf', twStorm: 'storm', twIron: 'iron' };
 function ttlFx(id) { const x = TITLE_BY_ID[id]; return [x.fx, ...(x.more || [])].map(([k, v]) => t('ttl.k.' + k, { v })).join(' · '); }
 function ttlCond(x) { const k = TTL_COND(x.id); return k === 'shop' ? t('ttl.c.shop', { n: fmtN(x.shop) }) : t('ttl.c.' + k, { n: fmtN(titleNeed(x)), t: TTL_TW[x.id] ? t('tw.' + TTL_TW[x.id]) : '' }); }
 function qTitle() {
-  const ts = titleState(S), tb = titleBonus(S), cats = ['event', 'arena', 'floor', 'reinc', 'tower', 'col', 'battle', 'town', 'daily'];
+  const ts = titleState(S), tb = titleBonus(S), cats = ['xmas', 'event', 'arena', 'floor', 'reinc', 'tower', 'col', 'battle', 'town', 'daily'];
   const fx = TITLE_KEYS.filter(k => tb[k] > 0).map(k => `<em>${t('ttl.k.' + k, { v: tb[k] })}</em>`).join('');
   return `<div class="qcard"><div class="qh"><b>${t('ttl.title')}</b><span>${ts.own.length} / ${TITLES.length}</span></div>
     <div class="qx">${t('ttl.desc')}</div><div class="townfx">${fx || `<span class="qx">${t('ui.none')}</span>`}</div>

@@ -1,1 +1,0 @@
-import"./index-BIo8bRMV.js";import"./env-ivrhDkVl.js";function e(){}export{e as initBanner};

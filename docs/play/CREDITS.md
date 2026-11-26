@@ -969,3 +969,12 @@ town/cwall2.png  ←  dngn/wall/stone2_gray2.png
 town/cwall3.png  ←  dngn/wall/stone2_gray3.png
 town/cgate.png  ←  dngn/gateways/stone_arch.png
 - 보스 레이드 그림 assets/raid/: 위 CC0 묶음(releases/Nov-2015)에서 게임에 처음 쓰는 타일만 골랐습니다 (지옥뱀·히드라·왕실 젤리·형언할 수 없는 것, 판데모니움 군주 3명은 날개·몸·머리 부품을 겹친 것, 지옥·코키토스·디스·타르타로스·늪·산성·심연·판데모니움 지형, 관문·제단 불꽃·이펙트)
+
+## 크리스마스 이벤트 (5.15.0)
+- 직접 그린 도트(CC0로 공개): cos/head_santa, cos/head_antler, cos/head_elfhat, cos/weapon_candycane, cos/offhand_gift, mon/xm0(눈사람), mon/xm1(진저브레드맨), mon/xm3(선물 미믹), deco/xm_tree, deco/xm_sleigh
+- 색상 변형(원본 CC0): cos/body_santa ← player/body/coat_red.png, cos/cloak_holly·cos/cloak_santa ← player/cloak/white.png, cos/gloves_mitten ← player/gloves/glove_white.png, cos/boots_santa ← player/boots/mesh_white.png, mon/xm2(루돌프) ← mon/animals/yak.png (+ 뿔·코 직접 그림), mon/xm7 ← mon/elf.png
+- 원본 그대로: cos/body_robewhitered ← player/body/robe_white_red.png, cos/body_robewhitegreen ← player/body/robe_white_green.png, cos/weapon_icecrystal ← player/hand1/misc/crystal.png, cos/offhand_snowstorm ← player/hand2/misc/fire_white.png, cos/offhand_icespark ← player/hand2/misc/fire_cyan.png, mon/xm4 ← mon/animals/ice_beast.png, mon/xm5 ← mon/undead/simulacra/simulacrum_quadruped_small.png, mon/xm6 ← mon/sprint/orb_of_ice.png
+
+## 테마 (5.15.0)
+- 직접 그린 도트(CC0로 공개): deco/th_sakura(벚나무), deco/th_deep(해초·산호), deco/th_hwnight(호박 등불), ui/gift, ui/snow
+- 원본 그대로: deco/th_gold ← dngn/vaults/golden_statue_1.png
