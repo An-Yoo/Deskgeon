@@ -1,1 +1,0 @@
-import"./index-B5sinrDV.js";import"./env-B6TT2lL-.js";function e(){}export{e as initBanner};
