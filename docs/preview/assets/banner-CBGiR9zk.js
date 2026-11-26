@@ -1,0 +1,1 @@
+import"./index-BGcObiJB.js";import"./env-C-80LNKt.js";function e(){}export{e as initBanner};
